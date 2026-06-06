@@ -115,6 +115,14 @@
             <div class="panel-icon-node">📦</div>
             <div><h2 class="panel-title">Parts Catalog</h2><p class="panel-description">Snap real-world parts onto the chassis</p></div>
           </div>
+          <div class="presets-section">
+            <span class="presets-label">QUICK BUILD PRESETS</span>
+            <div class="presets-buttons">
+              <button class="preset-btn" data-preset="micro">Micro Whoop</button>
+              <button class="preset-btn active" data-preset="avata">CineWhoop</button>
+              <button class="preset-btn" data-preset="racing">5" Freestyle</button>
+            </div>
+          </div>
           <div class="catalog-tabs-container"><div id="catalog-tabs" class="catalog-tabs"></div></div>
           <div id="catalog-list" class="components-scroll-list"></div>
         </aside>
@@ -216,6 +224,32 @@
             </div>
             <button class="env-deck-btn env-deck-btn-active" data-launch="city">Select &amp; Launch City</button>
           </div>
+
+          <div id="card-training" class="env-deck-card" data-env="training">
+            <div class="env-deck-visual training-ground-visual">
+              <div class="training-grid-lines"></div><div class="training-decor-ring"></div>
+              <div class="env-deck-tag">🎯 TRAINING GROUNDS</div>
+            </div>
+            <div class="env-deck-body">
+              <h3 class="env-deck-title">Training Grounds</h3>
+              <p class="env-deck-desc">Slalom winding turns, low arches, and tunnels. Perfect mild drone training session with a looped layout to practice control indefinitely.</p>
+              <div class="env-deck-pills"><span class="env-pill">Slalom Turns</span><span class="env-pill">Low Tunnels</span><span class="env-pill">Looped Map</span></div>
+            </div>
+            <button class="env-deck-btn" data-launch="training">Select &amp; Launch Training</button>
+          </div>
+
+          <div id="card-cyber" class="env-deck-card" data-env="cyber">
+            <div class="env-deck-visual cyber-city-visual">
+              <div class="cyber-neon-grid"></div><div class="cyber-tower-glow"></div>
+              <div class="env-deck-tag">⚡ CYBERSCAPE</div>
+            </div>
+            <div class="env-deck-body">
+              <h3 class="env-deck-title">Cyberscape City</h3>
+              <p class="env-deck-desc">Infinite neon grid, cybernetic streets, glowing skyscrapers, and real-time layout randomization for continuous FPV flight.</p>
+              <div class="env-deck-pills"><span class="env-pill target-pill-hl">Infinite Map</span><span class="env-pill">Randomise Layout</span><span class="env-pill">Neon Sci-Fi</span></div>
+            </div>
+            <button class="env-deck-btn" data-launch="cyber">Select &amp; Launch Cyber</button>
+          </div>
         </div>
         <div class="env-back-wrap"><button id="btn-back-builder" class="cancel-btn">← Back to Workbench</button></div>
       </div>
@@ -309,6 +343,7 @@
           <div class="dock-actions">
             <button id="btn-cam" class="hud-control-btn">📷 Chase</button>
             <button id="btn-mode" class="hud-control-btn">⚙️ Level</button>
+            <button id="btn-randomise" class="hud-control-btn hidden">🎲 Layout</button>
             <button id="btn-reset" class="hud-control-btn">↺ Reset</button>
             <button id="btn-exit" class="hud-control-btn exit-accent-btn">✕ Exit</button>
           </div>

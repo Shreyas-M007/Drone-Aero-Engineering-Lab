@@ -54,6 +54,120 @@ function terrainY(x, z) {
   return h * river - (1 - river) * 9;
 }
 
+// Helper to create sprite number
+function makeTextSprite(message) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#fbbf24';
+  ctx.font = 'bold 44px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(message, 32, 32);
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  const mat = new THREE.SpriteMaterial({map: texture, depthTest: false});
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(3.5, 3.5, 1);
+  return sprite;
+}
+
+// Global helper to build a specific component mesh for a given configuration
+function buildComponentMesh(cat, id, frameId, propsArray) {
+  const g = new THREE.Group(), M = AssemblyLab.MAT;
+  const duct = frameId === 'fr-neo' || frameId === 'fr-avata';
+  const s = frameId === 'fr-neo' ? 0.3 : frameId === 'fr-avata' ? 0.35 : 0.45;
+  const armAngles = [Math.PI/4,-Math.PI/4,3*Math.PI/4,-3*Math.PI/4];
+  const motorPos = [[s,.02,s],[-s,.02,s],[s,.02,-s],[-s,.02,-s]];
+
+  if(cat==='frame'){
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(duct?.4:.5,.02,duct?.48:.8), M.carbon));
+    if(id==='fr-avata'){
+      [[.35,.04,.35],[-.35,.04,.35],[.35,.04,-.35],[-.35,.04,-.35]].forEach(p=>{
+        g.add(new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.18,32,1,true), M.orange).translateX(p[0]).translateY(p[1]).translateZ(p[2]));
+      });
+    }
+    armAngles.forEach(a=>{
+      const arm=new THREE.Mesh(new THREE.BoxGeometry(.04,.02,duct?.5:.9),M.carbon);
+      arm.rotation.y=a; arm.position.set(Math.sin(a)*s*.7,0,Math.cos(a)*s*.7); g.add(arm);
+    });
+    if(duct){ const pod=new THREE.Mesh(new THREE.SphereGeometry(.1,16,16),M.indigo); pod.scale.set(1,.6,1.3); pod.position.y=.05; g.add(pod); }
+    else {
+      [[.1,.08,.2],[-.1,.08,.2],[.1,.08,-.2],[-.1,.08,-.2]].forEach(p=>{
+        g.add(new THREE.Mesh(new THREE.CylinderGeometry(.01,.01,.15,8),M.indigo).translateX(p[0]).translateY(p[1]).translateZ(p[2]));
+      });
+    }
+  }
+  else if(cat==='motors'){
+    let r=id==='mt-1306'?.045:id==='mt-2806'?.095:.07, h=id==='mt-1306'?.05:id==='mt-2806'?.09:.08;
+    motorPos.forEach(p=>{
+      const mg=new THREE.Group(); mg.position.set(p[0],p[1],p[2]);
+      mg.add(new THREE.Mesh(new THREE.CylinderGeometry(r-.008,r-.008,h*.75,12),M.copper));
+      const bell=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,16),M.silver); bell.position.y=h*.1;
+      bell.add(new THREE.Mesh(new THREE.CylinderGeometry(r+.002,r+.002,h*.15,16),id==='mt-2806'?M.indigo:M.silver).translateY(h*.5));
+      bell.add(new THREE.Mesh(new THREE.CylinderGeometry(.01,.01,h*1.3,8),M.carbon).translateY(h*.55));
+      mg.add(bell); g.add(mg);
+    });
+  }
+  else if(cat==='esc'){
+    const w=id==='es-70a'?.26:.18;
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.015,w),id==='es-70a'?M.silver:M.carbon).translateY(.02).translateZ(-.02));
+    for(let i=0;i<(id==='es-20a'?2:4);i++)
+      g.add(new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.065,8),M.silver).translateX((i%2?-1:1)*w*.3).translateY(.045).translateZ(-.02+(i>1?.04:-.04)));
+  }
+  else if(cat==='propellers'){
+    const span=id==='pr-3b'?.28:id==='pr-5b'?.34:.5, nb=id==='pr-2b'?2:id==='pr-5b'?5:3;
+    if (propsArray) propsArray.length = 0;
+    motorPos.forEach(p=>{
+      const pg=new THREE.Group(); pg.position.set(p[0],.1,p[2]);
+      pg.add(new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,.025,10),M.silver));
+      for(let i=0;i<nb;i++){
+        const bg=new THREE.BoxGeometry(.028,.005,span); bg.translate(0,0,span/2);
+        const b=new THREE.Mesh(bg,M.orange); b.rotation.y=i*2*Math.PI/nb; b.rotation.x=.06; pg.add(b);
+      }
+      g.add(pg);
+      if(propsArray) propsArray.push(pg);
+    });
+  }
+  else if(cat==='flight_controller'){
+    const w=id==='fc-o3'?.22:.16;
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.015,w),id==='fc-f7'?M.indigo:M.carbon).translateY(.055).translateZ(-.02));
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(.06,.01,.06),M.silver).translateY(.065));
+  }
+  else if(cat==='battery'){
+    const bw=id==='bt-3s'?.2:id==='bt-6s'?.35:.28, bh=id==='bt-3s'?.11:id==='bt-6s'?.24:.18, bl=id==='bt-3s'?.42:id==='bt-6s'?.7:.58;
+    const yOff=duct?.32:.2;
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(bw,bh,bl),id==='bt-6s'?M.white:M.carbon).translateY(yOff).translateZ(-.02));
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(bw+.01,bh+.01,.08),M.dark).translateY(yOff).translateZ(-.02));
+  }
+  else if(cat==='camera'){
+    [.1,-.1].forEach(x=>g.add(new THREE.Mesh(new THREE.BoxGeometry(.015,.15,.18),M.carbon).translateX(x).translateY(.07).translateZ(.36)));
+    const r2=id==='cm-4k'?.095:.065;
+    const cam=new THREE.Mesh(new THREE.CylinderGeometry(r2,r2,.14,16),M.white); cam.rotation.x=Math.PI/2; cam.position.set(0,.07,.36);
+    cam.add(new THREE.Mesh(new THREE.CylinderGeometry(r2-.01,r2-.01,.01,16),new THREE.MeshBasicMaterial({color:0x111827})).translateY(.071));
+    g.add(cam);
+  }
+  else if(cat==='transmitter'){
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(.1,.015,.1),M.carbon).translateY(.035).translateZ(-.32));
+    if(id==='tx-o3'){
+      [.05,-.05].forEach(x=>{
+        const a=new THREE.Mesh(new THREE.CylinderGeometry(.01,.01,.22,8),M.white);
+        a.position.set(x,.07,-.38); a.rotation.z=x>.0?Math.PI/8:-Math.PI/8;
+        a.add(new THREE.Mesh(new THREE.CylinderGeometry(.014,.014,.04,8),M.copper).translateY(.11));
+        g.add(a);
+      });
+    } else {
+      const w=new THREE.Mesh(new THREE.CylinderGeometry(.005,.005,.2,8),M.white);
+      w.position.set(0,.07,-.38); w.rotation.x=-Math.PI/4; g.add(w);
+    }
+  }
+
+  g.traverse(n=>{ if(n.isMesh){ n.castShadow=true; n.receiveShadow=true; }});
+  return g;
+}
+
+
 /* ═══════════════════════════════════════════════════════════════
    SECTION 2 — FM SOUND SYNTHESISER
    ═══════════════════════════════════════════════════════════════ */
@@ -251,100 +365,8 @@ class AssemblyLab {
     this._calc();
   }
 
-  _spread() {
-    const f = this.slots.frame?.id;
-    return f==='fr-neo'?.3 : f==='fr-avata'?.35 : .45;
-  }
-  _isDuct(){ const f=this.slots.frame?.id; return f==='fr-neo'||f==='fr-avata'; }
-
   _buildMesh(cat, id) {
-    const g = new THREE.Group(), M = AssemblyLab.MAT, s = this._spread(), duct = this._isDuct();
-    const armAngles = [Math.PI/4,-Math.PI/4,3*Math.PI/4,-3*Math.PI/4];
-    const motorPos = [[s,.02,s],[-s,.02,s],[s,.02,-s],[-s,.02,-s]];
-
-    if(cat==='frame'){
-      g.add(new THREE.Mesh(new THREE.BoxGeometry(duct?.4:.5,.02,duct?.48:.8), M.carbon));
-      if(id==='fr-avata'){
-        [[.35,.04,.35],[-.35,.04,.35],[.35,.04,-.35],[-.35,.04,-.35]].forEach(p=>{
-          g.add(new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.18,32,1,true), M.orange).translateX(p[0]).translateY(p[1]).translateZ(p[2]));
-        });
-      }
-      armAngles.forEach(a=>{
-        const arm=new THREE.Mesh(new THREE.BoxGeometry(.04,.02,duct?.5:.9),M.carbon);
-        arm.rotation.y=a; arm.position.set(Math.sin(a)*s*.7,0,Math.cos(a)*s*.7); g.add(arm);
-      });
-      if(duct){ const pod=new THREE.Mesh(new THREE.SphereGeometry(.1,16,16),M.indigo); pod.scale.set(1,.6,1.3); pod.position.y=.05; g.add(pod); }
-      else {
-        [[.1,.08,.2],[-.1,.08,.2],[.1,.08,-.2],[-.1,.08,-.2]].forEach(p=>{
-          g.add(new THREE.Mesh(new THREE.CylinderGeometry(.01,.01,.15,8),M.indigo).translateX(p[0]).translateY(p[1]).translateZ(p[2]));
-        });
-      }
-    }
-    else if(cat==='motors'){
-      let r=id==='mt-1306'?.045:id==='mt-2806'?.095:.07, h=id==='mt-1306'?.05:id==='mt-2806'?.09:.08;
-      motorPos.forEach(p=>{
-        const mg=new THREE.Group(); mg.position.set(p[0],p[1],p[2]);
-        mg.add(new THREE.Mesh(new THREE.CylinderGeometry(r-.008,r-.008,h*.75,12),M.copper));
-        const bell=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,16),M.silver); bell.position.y=h*.1;
-        bell.add(new THREE.Mesh(new THREE.CylinderGeometry(r+.002,r+.002,h*.15,16),id==='mt-2806'?M.indigo:M.silver).translateY(h*.5));
-        bell.add(new THREE.Mesh(new THREE.CylinderGeometry(.01,.01,h*1.3,8),M.carbon).translateY(h*.55));
-        mg.add(bell); g.add(mg);
-      });
-    }
-    else if(cat==='esc'){
-      const w=id==='es-70a'?.26:.18;
-      g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.015,w),id==='es-70a'?M.silver:M.carbon).translateY(.02).translateZ(-.02));
-      for(let i=0;i<(id==='es-20a'?2:4);i++)
-        g.add(new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.065,8),M.silver).translateX((i%2?-1:1)*w*.3).translateY(.045).translateZ(-.02+(i>1?.04:-.04)));
-    }
-    else if(cat==='propellers'){
-      const span=id==='pr-3b'?.28:id==='pr-5b'?.34:.5, nb=id==='pr-2b'?2:id==='pr-5b'?5:3;
-      this.props=[];
-      motorPos.forEach(p=>{
-        const pg=new THREE.Group(); pg.position.set(p[0],.1,p[2]);
-        pg.add(new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,.025,10),M.silver));
-        for(let i=0;i<nb;i++){
-          const bg=new THREE.BoxGeometry(.028,.005,span); bg.translate(0,0,span/2);
-          const b=new THREE.Mesh(bg,M.orange); b.rotation.y=i*2*Math.PI/nb; b.rotation.x=.06; pg.add(b);
-        }
-        g.add(pg); this.props.push(pg);
-      });
-    }
-    else if(cat==='flight_controller'){
-      const w=id==='fc-o3'?.22:.16;
-      g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.015,w),id==='fc-f7'?M.indigo:M.carbon).translateY(.055).translateZ(-.02));
-      g.add(new THREE.Mesh(new THREE.BoxGeometry(.06,.01,.06),M.silver).translateY(.065));
-    }
-    else if(cat==='battery'){
-      const bw=id==='bt-3s'?.2:id==='bt-6s'?.35:.28, bh=id==='bt-3s'?.11:id==='bt-6s'?.24:.18, bl=id==='bt-3s'?.42:id==='bt-6s'?.7:.58;
-      const yOff=duct?.32:.2;
-      g.add(new THREE.Mesh(new THREE.BoxGeometry(bw,bh,bl),id==='bt-6s'?M.white:M.carbon).translateY(yOff).translateZ(-.02));
-      g.add(new THREE.Mesh(new THREE.BoxGeometry(bw+.01,bh+.01,.08),M.dark).translateY(yOff).translateZ(-.02));
-    }
-    else if(cat==='camera'){
-      [.1,-.1].forEach(x=>g.add(new THREE.Mesh(new THREE.BoxGeometry(.015,.15,.18),M.carbon).translateX(x).translateY(.07).translateZ(.36)));
-      const r2=id==='cm-4k'?.095:.065;
-      const cam=new THREE.Mesh(new THREE.CylinderGeometry(r2,r2,.14,16),M.white); cam.rotation.x=Math.PI/2; cam.position.set(0,.07,.36);
-      cam.add(new THREE.Mesh(new THREE.CylinderGeometry(r2-.01,r2-.01,.01,16),new THREE.MeshBasicMaterial({color:0x111827})).translateY(.071));
-      g.add(cam);
-    }
-    else if(cat==='transmitter'){
-      g.add(new THREE.Mesh(new THREE.BoxGeometry(.1,.015,.1),M.carbon).translateY(.035).translateZ(-.32));
-      if(id==='tx-o3'){
-        [.05,-.05].forEach(x=>{
-          const a=new THREE.Mesh(new THREE.CylinderGeometry(.01,.01,.22,8),M.white);
-          a.position.set(x,.07,-.38); a.rotation.z=x>.0?Math.PI/8:-Math.PI/8;
-          a.add(new THREE.Mesh(new THREE.CylinderGeometry(.014,.014,.04,8),M.copper).translateY(.11));
-          g.add(a);
-        });
-      } else {
-        const w=new THREE.Mesh(new THREE.CylinderGeometry(.005,.005,.2,8),M.white);
-        w.position.set(0,.07,-.38); w.rotation.x=-Math.PI/4; g.add(w);
-      }
-    }
-
-    g.traverse(n=>{ if(n.isMesh){ n.castShadow=true; n.receiveShadow=true; }});
-    return g;
+    return buildComponentMesh(cat, id, this.slots.frame?.id, this.props);
   }
 
   pct()   { return Math.round(REQUIRED.filter(k=>this.slots[k]).length/REQUIRED.length*100); }
@@ -373,7 +395,9 @@ class AssemblyLab {
       wg: Object.values(this.slots).reduce((s,v)=>s+(v? v.w*(v.id?.startsWith('mt')||v.id?.startsWith('pr')?4:1) :0),0),
       thrN: ((this.slots.motors?.thrust*4||1200)/1000)*9.81*.62,
       cells: this.slots.battery?.sp.V.includes('6S')?6:this.slots.battery?.sp.V.includes('3S')?3:4,
-      frame: this.slots.frame?.id||'fr-fpv5'
+      frame: this.slots.frame?.id||'fr-fpv5',
+      cap: this.slots.battery ? parseInt(this.slots.battery.sp.Cap) : 2000,
+      config: Object.fromEntries(Object.entries(this.slots).map(([cat, item]) => [cat, item ? item.id : null]))
     };
   }
 
@@ -415,12 +439,32 @@ class FlightSim {
     this.bat=100; this.cleared.clear();
     this.crashed=false; this.cutoff=false; this.alarmCD=0; this.shakeT=0;
     this.thr=0; this.yaw=0; this.pit=0; this.rol=0;
+    this.targetGateIdx = 0;
+    this.obstaclesClearedCount = 0;
 
     document.getElementById('crash-overlay').classList.add('hidden');
     document.getElementById('hud-battery-warn').classList.add('hidden');
     document.body.classList.remove('glitch-active');
 
-    this.pos.set(0, env==='ar'?.6:6, env==='ar'?0:15);
+    // Update HUD labels for training/cyber mode
+    const gateVal = document.getElementById('h-gate');
+    if (gateVal && gateVal.previousElementSibling) {
+      if (env === 'training') {
+        gateVal.previousElementSibling.innerText = 'OBSTACLES';
+      } else if (env === 'cyber') {
+        gateVal.previousElementSibling.innerText = 'FLIGHT';
+      } else {
+        gateVal.previousElementSibling.innerText = 'GATE';
+      }
+    }
+
+    const btnRand = document.getElementById('btn-randomise');
+    if (btnRand) {
+      if (env === 'cyber') btnRand.classList.remove('hidden');
+      else btnRand.classList.add('hidden');
+    }
+
+    this.pos.set(0, env==='ar'?.6:(env==='cyber'?40.42:6), env==='ar'?0:(env==='cyber'?0:15));
     this.vel.set(0,0,0);
     this.quat.identity();
 
@@ -434,22 +478,40 @@ class FlightSim {
   _buildScene() {
     this.scene = new THREE.Scene();
     const isCity = this.env==='city';
+    const isTraining = this.env==='training';
+    const isCyber = this.env==='cyber';
+    const opaque = isCity || isTraining || isCyber;
+
     if(isCity){ this.scene.background=new THREE.Color(0xF1F5F9); this.scene.fog=new THREE.FogExp2(0xF1F5F9,.005); }
+    else if(isTraining){ this.scene.background=new THREE.Color(0x0F172A); this.scene.fog=new THREE.FogExp2(0x0F172A,.012); }
+    else if(isCyber){ this.scene.background=new THREE.Color(0x030712); this.scene.fog=new THREE.FogExp2(0x030712,.015); }
     else this.scene.background=null;
 
     const r=this.cv.getBoundingClientRect();
     this.cam3 = new THREE.PerspectiveCamera(60,r.width/r.height,.1,800);
-    this.ren = new THREE.WebGLRenderer({canvas:this.cv,antialias:true,alpha:!isCity});
+    this.ren = new THREE.WebGLRenderer({canvas:this.cv,antialias:true,alpha:!opaque});
     this.ren.setSize(r.width,r.height); this.ren.setPixelRatio(Math.min(devicePixelRatio,2));
-    if(isCity){ this.ren.shadowMap.enabled=true; this.ren.shadowMap.type=THREE.PCFSoftShadowMap; }
+    if(opaque){ this.ren.shadowMap.enabled=true; this.ren.shadowMap.type=THREE.PCFSoftShadowMap; }
 
-    this.scene.add(new THREE.AmbientLight(0xffffff,isCity?.65:.9));
+    this.scene.add(new THREE.AmbientLight(0xffffff,isCity?.65:isTraining?.4:(isCyber?.45:.9)));
     if(isCity){
       const sun=new THREE.DirectionalLight(0xfffaed,1.5); sun.position.set(150,300,100); sun.castShadow=true;
       sun.shadow.mapSize.set(1024,1024); sun.shadow.camera.near=.5; sun.shadow.camera.far=700;
       const d=180; sun.shadow.camera.left=-d; sun.shadow.camera.right=d; sun.shadow.camera.top=d; sun.shadow.camera.bottom=-d;
       sun.shadow.bias=-.0007; this.scene.add(sun);
       this._buildCity();
+    } else if(isTraining){
+      const sun=new THREE.DirectionalLight(0xffffff,1.2); sun.position.set(50,150,50); sun.castShadow=true;
+      sun.shadow.mapSize.set(1024,1024); sun.shadow.camera.near=.5; sun.shadow.camera.far=400;
+      const d=100; sun.shadow.camera.left=-d; sun.shadow.camera.right=d; sun.shadow.camera.top=d; sun.shadow.camera.bottom=-d;
+      sun.shadow.bias=-.0007; this.scene.add(sun);
+      this._buildTraining();
+    } else if(isCyber){
+      const l1=new THREE.DirectionalLight(0x8b5cf6,1.2); l1.position.set(100,150,50); this.scene.add(l1);
+      const l2=new THREE.DirectionalLight(0x06b6d4,1.0); l2.position.set(-100,150,-50); this.scene.add(l2);
+      const l3=new THREE.DirectionalLight(0x10b981,1.0); l3.position.set(50,150,100); this.scene.add(l3);
+      const l4=new THREE.DirectionalLight(0xeab308,0.8); l4.position.set(-50,150,-100); this.scene.add(l4);
+      this._buildCyber();
     } else {
       const pl=new THREE.PointLight(0xffffff,1,30); pl.position.set(0,6,0); this.scene.add(pl);
     }
@@ -481,9 +543,14 @@ class FlightSim {
 
     /* towers */
     const tMat=new THREE.MeshStandardMaterial({color:0xe2e8f0,roughness:.1,metalness:.9,flatShading:true});
-    [[42,28,42],[-42,36,-55],[-55,42,60],[60,48,-75],[30,24,110],[-38,32,130],[-70,52,-110],[75,45,95]].forEach((c,i)=>{
+    [
+      [42,28,42],[-42,36,-55],[-75,42,60],[60,48,-75],[30,24,110],[-38,32,130],[-70,52,-110],[75,45,95],
+      [-90,40,-40],[90,30,-30],[-30,25,-90],[30,35,-130],[-80,45,10],[80,28,20],[-110,50,80],[110,42,-90],
+      [-25,30,-150],[25,38,-190],[-120,35,-130],[120,48,120],[-60,22,-160],[60,32,160],[-140,40,0],[140,28,-60]
+    ].forEach((c,i)=>{
+      const ty=terrainY(c[0],c[2]);
       const t=new THREE.Mesh(new THREE.BoxGeometry(22,c[1],22),tMat);
-      t.position.set(c[0],c[1]/2-8,c[2]); t.castShadow=true; t.receiveShadow=true; this.scene.add(t);
+      t.position.set(c[0],ty+c[1]/2-2,c[2]); t.castShadow=true; t.receiveShadow=true; this.scene.add(t);
       this.buildings.push({box:new THREE.Box3().setFromObject(t),name:`Tower ${i+1}`});
     });
 
@@ -505,7 +572,11 @@ class FlightSim {
     road.position.set(0,4,0); road.receiveShadow=true; this.scene.add(road);
     this.buildings.push({box:new THREE.Box3().setFromObject(road),name:'Bridge Deck'});
     const pilMat=new THREE.MeshStandardMaterial({color:0x475569,metalness:.6});
-    [[-5.5,12,0],[5.5,12,0]].forEach(p=>this.scene.add(new THREE.Mesh(new THREE.BoxGeometry(1.2,24,1.2),pilMat).translateX(p[0]).translateY(p[1])));
+    [[-5.5,12,0],[5.5,12,0]].forEach((p,i)=>{
+      const pillar=new THREE.Mesh(new THREE.BoxGeometry(1.2,24,1.2),pilMat);
+      pillar.position.set(p[0],p[1],p[2]); pillar.castShadow=true; pillar.receiveShadow=true; this.scene.add(pillar);
+      this.buildings.push({box:new THREE.Box3().setFromObject(pillar),name:`Bridge Pillar ${i+1}`});
+    });
     const wireMat=new THREE.LineBasicMaterial({color:0x6366F1});
     [[-5.5],[5.5]].forEach(x=>{
       const pts=[new THREE.Vector3(x,4.4,-47),new THREE.Vector3(x,23.5,0),new THREE.Vector3(x,4.4,47)];
@@ -513,12 +584,507 @@ class FlightSim {
     });
 
     /* checkpoint gates */
-    const rMat=new THREE.MeshStandardMaterial({color:0x6366f1,emissive:0x6366f1,emissiveIntensity:.9,roughness:.2});
-    [[0,10,-25,0],[42,22,-22,.8],[60,32,30,1.6],[0,8,80,-.5],[-55,25,60,1],[-42,18,-20,0],[0,15,-90,-1.6],[0,18,-160,0]].forEach((c,i)=>{
-      const ring=new THREE.Mesh(new THREE.TorusGeometry(3.6,.4,8,24),rMat);
+    const activeCityGateMat = new THREE.MeshStandardMaterial({color:0x8b5cf6,emissive:0x8b5cf6,emissiveIntensity:1.5,roughness:.2});
+    const inactiveCityGateMat = new THREE.MeshStandardMaterial({color:0x334155,roughness:.8,metalness:.2});
+    const cityGates = [[0,10,-25,0],[42,22,-22,.8],[60,32,30,1.6],[0,8,80,-.5],[-55,25,60,1],[-42,18,-20,0],[0,15,-90,-1.6],[0,18,-160,0]];
+    cityGates.forEach((c,i)=>{
+      const isTarget = i === 0;
+      const ring=new THREE.Mesh(new THREE.TorusGeometry(3.6,.4,8,24), isTarget ? activeCityGateMat : inactiveCityGateMat);
       ring.position.set(c[0],c[1],c[2]); ring.rotation.y=c[3]; this.scene.add(ring);
       this.gates.push({mesh:ring,idx:i,sphere:new THREE.Sphere(ring.position,4)});
+
+      // Floating number sprite above the gate
+      const numSprite = makeTextSprite((i + 1).toString());
+      numSprite.position.set(c[0], c[1] + 5.5, c[2]);
+      this.scene.add(numSprite);
     });
+
+    // Vertical glowing beacon for active gate
+    const beaconGeo = new THREE.CylinderGeometry(0.05, 1.5, 400, 16, 1, true);
+    beaconGeo.translate(0, 200, 0);
+    const beaconMat = new THREE.MeshBasicMaterial({
+      color: 0x8b5cf6, // neon purple/indigo
+      transparent: true,
+      opacity: 0.25,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    this.beacon = new THREE.Mesh(beaconGeo, beaconMat);
+    this.beacon.position.copy(this.gates[0].mesh.position);
+    this.scene.add(this.beacon);
+  }
+
+  /* ── Training World ── */
+  _buildTraining() {
+    this.trainingObstacles = [];
+    this.gates = [];
+
+    /* floor */
+    const fMat = new THREE.MeshStandardMaterial({color: 0x0f172a, roughness: 0.8, metalness: 0.3});
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), fMat);
+    floor.rotation.x = -Math.PI/2;
+    floor.receiveShadow = true;
+    this.scene.add(floor);
+
+    /* floor grid lines */
+    const grid = new THREE.GridHelper(300, 60, 0x6366F1, 0x1e293b);
+    grid.position.y = 0.01;
+    this.scene.add(grid);
+
+    /* obstacle materials */
+    const poleMat = new THREE.MeshStandardMaterial({color: 0xf59e0b, metalness: 0.5, roughness: 0.2});
+    const archMat = new THREE.MeshStandardMaterial({color: 0x475569, metalness: 0.7, roughness: 0.1});
+
+    /* Slalom Poles (Vertical Cylinders for winding turns) */
+    const poles = [
+      [-4, -10, "Slalom Pole 1"],
+      [4, -25, "Slalom Pole 2"],
+      [-4, -40, "Slalom Pole 3"],
+      [30, 5, "Slalom Pole 4"],
+      [42, 20, "Slalom Pole 5"]
+    ];
+    poles.forEach(p => {
+      const poleGeo = new THREE.CylinderGeometry(0.4, 0.4, 12, 16);
+      const pole = new THREE.Mesh(poleGeo, poleMat);
+      pole.position.set(p[0], 6, p[1]);
+      pole.castShadow = true;
+      pole.receiveShadow = true;
+      this.scene.add(pole);
+      this.trainingObstacles.push({box: new THREE.Box3().setFromObject(pole), name: p[2]});
+    });
+
+    /* Arches / Tunnels (low clearance obstacles) */
+    const makeArch = (x, z, rotY, name) => {
+      const g = new THREE.Group();
+      const p1 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 5, 0.8), archMat);
+      p1.position.set(-3.5, 2.5, 0);
+      const p2 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 5, 0.8), archMat);
+      p2.position.set(3.5, 2.5, 0);
+      const bar = new THREE.Mesh(new THREE.BoxGeometry(7.8, 0.8, 0.8), archMat);
+      bar.position.set(0, 4.6, 0);
+      
+      g.add(p1, p2, bar);
+      g.position.set(x, 0, z);
+      g.rotation.y = rotY;
+      
+      g.traverse(n => { if(n.isMesh) { n.castShadow = true; n.receiveShadow = true; } });
+      this.scene.add(g);
+      
+      // Update world matrix recursively so children have correct world coordinates!
+      g.updateMatrixWorld(true);
+      
+      this.trainingObstacles.push({box: new THREE.Box3().setFromObject(p1), name: name + " Left Pillar"});
+      this.trainingObstacles.push({box: new THREE.Box3().setFromObject(p2), name: name + " Right Pillar"});
+      this.trainingObstacles.push({box: new THREE.Box3().setFromObject(bar), name: name + " Crossbar"});
+    };
+
+    makeArch(35, -40, Math.PI / 2, "Tunnel Arch 1");
+    makeArch(0, 35, 0, "Tunnel Arch 2");
+
+    /* Checkpoint Gates (Torus rings arranged in a loop) */
+    const trainingGates = [
+      [0, 3, 10, 0],              // Gate 1 (Start)
+      [4, 3, -10, -Math.PI / 6],  // Gate 2 (Weave right of Pole 1)
+      [-4, 3, -25, Math.PI / 6],  // Gate 3 (Weave left of Pole 2)
+      [4, 3, -40, -Math.PI / 6],  // Gate 4 (Weave right of Pole 3)
+      [20, 3, -40, Math.PI / 2],  // Gate 5 (Turn gate towards Arch 1)
+      [35, 3, -40, Math.PI / 2],  // Gate 6 (Inside Tunnel Arch 1)
+      [42, 3, 5, -Math.PI / 6],   // Gate 7 (Weave right of Pole 4)
+      [30, 3, 20, Math.PI / 6],   // Gate 8 (Weave left of Pole 5)
+      [15, 3, 35, 0],             // Gate 9 (Turn gate towards Arch 2)
+      [0, 3, 35, 0],              // Gate 10 (Inside Tunnel Arch 2)
+      [-25, 4, 25, -Math.PI / 4]  // Gate 11 (Loop return)
+    ];
+
+
+
+    const activeGateMat = new THREE.MeshStandardMaterial({color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 1.2, roughness: 0.2});
+    const inactiveGateMat = new THREE.MeshStandardMaterial({color: 0x334155, roughness: 0.8, metalness: 0.2});
+
+    trainingGates.forEach((c, i) => {
+      const isTarget = i === 0;
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(3.6, 0.4, 8, 24), isTarget ? activeGateMat : inactiveGateMat);
+      ring.position.set(c[0], c[1], c[2]);
+      ring.rotation.y = c[3];
+      this.scene.add(ring);
+      this.gates.push({mesh: ring, idx: i, sphere: new THREE.Sphere(ring.position, 4)});
+
+      // Floating number sprite above the gate
+      const numSprite = makeTextSprite((i + 1).toString());
+      numSprite.position.set(c[0], c[1] + 4.8, c[2]);
+      this.scene.add(numSprite);
+    });
+  }
+
+  /* ── Cyberscape World ── */
+  _buildCyber(randomise = false) {
+    if (randomise && this.cyberTowers) {
+      for (const t of this.cyberTowers) {
+        if (t.mesh) {
+          this.scene.remove(t.mesh);
+          if (t.mesh.geometry) t.mesh.geometry.dispose();
+          if (t.mesh.material) {
+            const mats = Array.isArray(t.mesh.material) ? t.mesh.material : [t.mesh.material];
+            const uniqueMats = [...new Set(mats)];
+            for (const m of uniqueMats) {
+              if (m.map) m.map.dispose();
+              if (m.emissiveMap) m.emissiveMap.dispose();
+              m.dispose();
+            }
+          }
+        }
+        if (t.wireframe) {
+          this.scene.remove(t.wireframe);
+          if (t.wireframe.geometry) t.wireframe.geometry.dispose();
+          if (t.wireframe.material) t.wireframe.material.dispose();
+        }
+      }
+    }
+
+    // Helper to generate glowing neon window textures custom-fit to a building face's dimensions
+    const makeCustomNeonWindowTexture = (faceWidth, faceHeight, neonColorStr, style) => {
+      const canvas = document.createElement('canvas');
+      const canvasW = Math.max(64, Math.round(faceWidth * 8));
+      const canvasH = Math.max(128, Math.round(faceHeight * 8));
+      canvas.width = canvasW;
+      canvas.height = canvasH;
+      const ctx = canvas.getContext('2d');
+      
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, canvasW, canvasH);
+      
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = neonColorStr;
+
+      if (style === 'grid') {
+        const winW = 6;
+        const winH = 8;
+        const gapX = 12;
+        const gapY = 16;
+        for (let x = 8; x <= canvasW - winW - 8; x += gapX) {
+          if (Math.random() < 0.1) continue;
+          for (let y = 8; y <= canvasH - winH - 8; y += gapY) {
+            if (Math.random() < 0.2) continue;
+            ctx.shadowBlur = 6;
+            ctx.fillStyle = neonColorStr;
+            ctx.fillRect(x, y, winW, winH);
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(x + 1.5, y + 2, winW - 3, winH - 4);
+          }
+        }
+      } 
+      else if (style === 'stripes') {
+        const barW = 4;
+        const gapX = 20;
+        for (let x = 10; x <= canvasW - barW - 10; x += gapX) {
+          if (Math.random() < 0.2) continue;
+          ctx.shadowBlur = 8;
+          ctx.fillStyle = neonColorStr;
+          ctx.fillRect(x, 0, barW, canvasH);
+          ctx.shadowBlur = 0;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(x + 1, 0, barW - 2, canvasH);
+        }
+      } 
+      else if (style === 'bands') {
+        const bandH = 3;
+        const gapY = 24;
+        for (let y = 12; y <= canvasH - bandH - 12; y += gapY) {
+          if (Math.random() < 0.25) continue;
+          ctx.shadowBlur = 8;
+          ctx.fillStyle = neonColorStr;
+          ctx.fillRect(0, y, canvasW, bandH);
+          ctx.shadowBlur = 0;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, y + 0.5, canvasW, bandH - 1);
+        }
+      } 
+      else {
+        const dotW = 6;
+        const gapX = 14;
+        const gapY = 14;
+        for (let x = 8; x <= canvasW - dotW - 8; x += gapX) {
+          for (let y = 8; y <= canvasH - dotW - 8; y += gapY) {
+            if (Math.random() < 0.55) continue;
+            ctx.shadowBlur = 5;
+            ctx.fillStyle = neonColorStr;
+            ctx.fillRect(x, y, dotW, dotW);
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(x + 1.5, y + 1.5, dotW - 3, dotW - 3);
+          }
+        }
+      }
+      return new THREE.CanvasTexture(canvas);
+    };
+
+    // Helper to generate a glowing landing pad texture for starting tower rooftop
+    const makeRooftopLandingPadTexture = (w, d, neonColorStr) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      
+      ctx.fillStyle = '#0a0a0f';
+      ctx.fillRect(0, 0, 256, 256);
+      
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = neonColorStr;
+      ctx.strokeStyle = neonColorStr;
+      ctx.lineWidth = 6;
+      
+      ctx.beginPath();
+      ctx.arc(128, 128, 80, 0, Math.PI * 2);
+      ctx.stroke();
+      
+      ctx.lineWidth = 3;
+      ctx.setLineDash([10, 10]);
+      ctx.beginPath();
+      ctx.arc(128, 128, 60, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      ctx.fillStyle = neonColorStr;
+      ctx.font = 'bold 72px Outfit, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('H', 128, 128);
+      
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(128, 128, 80, 0, Math.PI * 2);
+      ctx.stroke();
+      
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 68px Outfit, Arial, sans-serif';
+      ctx.fillText('H', 128, 128);
+      
+      return new THREE.CanvasTexture(canvas);
+    };
+
+    this.cyberTowers = [];
+
+    if (!randomise) {
+      /* floor canvas texture */
+      const canvas = document.createElement('canvas');
+      canvas.width = 512; canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+
+      // Asphalt background
+      ctx.fillStyle = '#05050b';
+      ctx.fillRect(0, 0, 512, 512);
+
+      // Sidewalk blocks (dark slate)
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(40, 40, 432, 432);
+
+      // Neon purple glowing curb borders
+      ctx.strokeStyle = '#8b5cf6';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(40, 40, 432, 432);
+
+      // Solid cyan lane markers on road edges
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(24, 24, 464, 464);
+
+      // Bright neon-yellow dashed road center lines along tile borders
+      ctx.strokeStyle = '#facc15';
+      ctx.lineWidth = 4;
+      ctx.setLineDash([16, 16]);
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 512); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(512, 0); ctx.lineTo(512, 512); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(512, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, 512); ctx.lineTo(512, 512); ctx.stroke();
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(15, 15);
+
+      const gMat = new THREE.MeshStandardMaterial({
+        map: texture,
+        roughness: 0.6,
+        metalness: 0.4
+      });
+
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), gMat);
+      floor.rotation.x = -Math.PI / 2;
+      this.scene.add(floor);
+    }
+
+    // Shared roof material without window markings
+    const roofMat = new THREE.MeshStandardMaterial({
+      color: 0x050508,
+      roughness: 0.4,
+      metalness: 0.6
+    });
+
+    const spawnTower = (x, z, w, h, d, yPos = null) => {
+      const hSegs = Math.max(1, Math.round(h / 15));
+      // Divide width and depth into 2 segments to get glowing neon window/face center lines!
+      const geom = new THREE.BoxGeometry(w, h, d, 2, hSegs, 2);
+      
+      const neonConfigs = [
+        { color: 0x8b5cf6, cssColor: '#a78bfa' }, // purple
+        { color: 0x06b6d4, cssColor: '#22d3ee' }, // cyan
+        { color: 0x10b981, cssColor: '#34d399' }, // green
+        { color: 0xfacc15, cssColor: '#fbbf24' }  // yellow
+      ];
+      
+      const config = neonConfigs[Math.floor(Math.random() * neonConfigs.length)];
+      const style = ['grid', 'stripes', 'bands', 'dots'][Math.floor(Math.random() * 4)];
+      
+      // Generate custom-fit window textures for X sides (depth d) and Z sides (width w)
+      const texX = makeCustomNeonWindowTexture(d, h, config.cssColor, style);
+      const texZ = makeCustomNeonWindowTexture(w, h, config.cssColor, style);
+
+      // Glossy face material mapping glowing windows for X sides
+      const towerMatX = new THREE.MeshStandardMaterial({
+        color: 0x0a0a10,
+        map: texX,
+        emissiveMap: texX,
+        emissive: config.color,
+        emissiveIntensity: 1.5,
+        roughness: 0.15,
+        metalness: 0.85
+      });
+
+      // Glossy face material mapping glowing windows for Z sides
+      const towerMatZ = new THREE.MeshStandardMaterial({
+        color: 0x0a0a10,
+        map: texZ,
+        emissiveMap: texZ,
+        emissive: config.color,
+        emissiveIntensity: 1.5,
+        roughness: 0.15,
+        metalness: 0.85
+      });
+
+      // Starting tower gets a custom landing pad rooftop
+      let currentRoofMat = roofMat;
+      if (x === 0 && z === 0) {
+        const startPadTex = makeRooftopLandingPadTexture(w, d, config.cssColor);
+        currentRoofMat = new THREE.MeshStandardMaterial({
+          color: 0x08080c,
+          map: startPadTex,
+          emissiveMap: startPadTex,
+          emissive: config.color,
+          emissiveIntensity: 1.5,
+          roughness: 0.3,
+          metalness: 0.7
+        });
+      }
+
+      // Apply materials to vertical sides and top/bottom
+      const materials = [
+        towerMatX, // +X
+        towerMatX, // -X
+        currentRoofMat,  // +Y (Roof)
+        roofMat,  // -Y (Bottom)
+        towerMatZ, // +Z
+        towerMatZ  // -Z
+      ];
+
+      const tMesh = new THREE.Mesh(geom, materials);
+      const y = yPos !== null ? yPos : h / 2;
+      tMesh.position.set(x, y, z);
+      this.scene.add(tMesh);
+
+      const edges = new THREE.EdgesGeometry(geom);
+      // Make neon wireframe outline color match window color config!
+      const lineMat = new THREE.LineBasicMaterial({color: config.color});
+      const wireframe = new THREE.LineSegments(edges, lineMat);
+      wireframe.position.copy(tMesh.position);
+      this.scene.add(wireframe);
+
+      const box = new THREE.Box3().setFromObject(tMesh);
+      this.cyberTowers.push({
+        mesh: tMesh,
+        wireframe: wireframe,
+        box: box,
+        name: yPos !== null ? `CyberBridge ${this.cyberTowers.length + 1}` : `CyberTower ${this.cyberTowers.length + 1}`
+      });
+    };
+
+    // Spawn the central starting tower for rooftop takeoff (height 40m)
+    spawnTower(0, 0, 24, 40, 24);
+
+    // Block centers for X and Z spaced every 40 units
+    const blockCoords = [-280, -240, -200, -160, -120, -80, -40, 0, 40, 80, 120, 160, 200, 240, 280];
+
+    for (const bx of blockCoords) {
+      for (const bz of blockCoords) {
+        // Skip the central starting block since we spawned the start tower separately above
+        if (bx === 0 && bz === 0) continue;
+
+        // 85% chance to populate this block with skyscrapers
+        if (Math.random() > 0.85) continue;
+
+        // Choose block sub-layout:
+        // 1: Single massive skyscraper
+        // 2: Two tall slender skyscrapers side-by-side (X-axis split + sky bridge)
+        // 3: Two tall slender skyscrapers side-by-side (Z-axis split + sky bridge)
+        // 4: Three tightly grouped buildings (cramped valley!)
+        const layout = Math.random();
+
+        if (layout < 0.3) {
+          // Single large skyscraper
+          const w = 18 + Math.random() * 8; // 18 to 26 width
+          const d = 18 + Math.random() * 8; // 18 to 26 depth
+          // 15% chance of super-tall mega-tower
+          const isMega = Math.random() < 0.15;
+          const h = isMega ? (180 + Math.random() * 100) : (60 + Math.random() * 80);
+          spawnTower(bx, bz, w, h, d);
+        } else if (layout < 0.6) {
+          // Two side-by-side along X
+          const h1 = 50 + Math.random() * 70;
+          const h2 = 60 + Math.random() * 90;
+          const w = 8 + Math.random() * 4;
+          const d = 15 + Math.random() * 5;
+          spawnTower(bx - 6, bz, w, h1, d);
+          spawnTower(bx + 6, bz, w, h2, d);
+
+          // 45% chance of an FPV fly-through sky bridge underpass connecting them!
+          if (Math.random() < 0.45) {
+            const bridgeH = 15 + Math.random() * 20;
+            const bridgeThickness = 6 + Math.random() * 6;
+            spawnTower(bx, bz, 12, bridgeThickness, d - 2, bridgeH + bridgeThickness / 2);
+          }
+        } else if (layout < 0.85) {
+          // Two side-by-side along Z
+          const h1 = 50 + Math.random() * 70;
+          const h2 = 60 + Math.random() * 90;
+          const w = 15 + Math.random() * 5;
+          const d = 8 + Math.random() * 4;
+          spawnTower(bx, bz - 6, w, h1, d);
+          spawnTower(bx, bz + 6, w, h2, d);
+
+          // 45% chance of an FPV fly-through sky bridge underpass along Z
+          if (Math.random() < 0.45) {
+            const bridgeH = 15 + Math.random() * 20;
+            const bridgeThickness = 6 + Math.random() * 6;
+            spawnTower(bx, bz, w - 2, bridgeThickness, 12, bridgeH + bridgeThickness / 2);
+          }
+        } else {
+          // Three tightly grouped towers
+          const h1 = 120 + Math.random() * 80; // center tall tower
+          const h2 = 40 + Math.random() * 40;  // front short tower
+          const h3 = 45 + Math.random() * 45;  // back short tower
+          spawnTower(bx, bz, 14, h1, 14);       // center
+          spawnTower(bx - 7, bz - 7, 7, h2, 7); // front-left offset
+          spawnTower(bx + 7, bz + 7, 7, h3, 7); // back-right offset
+        }
+      }
+    }
+  }
+
+  randomiseCyber() {
+    this._buildCyber(true);
   }
 
   /* ── AR scan ── */
@@ -574,22 +1140,27 @@ class FlightSim {
   /* ── Drone mesh for sim ── */
   _droneMesh() {
     const g=new THREE.Group();
-    const C=new THREE.MeshStandardMaterial({color:0x242426,roughness:.2,metalness:.8});
-    const S=new THREE.MeshStandardMaterial({color:0xe5e7eb,metalness:.85});
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(.4,.02,.6),C));
-    [Math.PI/4,-Math.PI/4,3*Math.PI/4,-3*Math.PI/4].forEach(a=>{
-      const arm=new THREE.Mesh(new THREE.BoxGeometry(.04,.02,.5),C); arm.rotation.y=a;
-      arm.position.set(Math.sin(a)*.22,0,Math.cos(a)*.22); g.add(arm);
-    });
+    const config = (this.droneSpec && this.droneSpec.config) || {
+      frame: 'fr-avata',
+      motors: 'mt-2207',
+      esc: 'es-50a',
+      propellers: 'pr-5b',
+      flight_controller: 'fc-o3',
+      battery: 'bt-4s',
+      camera: 'cm-4k',
+      transmitter: 'tx-o3'
+    };
+    const frameId = config.frame || 'fr-fpv5';
     this.propGrps=[];
-    [[.35,.03,.35],[-.35,.03,.35],[.35,.03,-.35],[-.35,.03,-.35]].forEach(m=>{
-      g.add(new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.06,12),S).translateX(m[0]).translateY(m[1]).translateZ(m[2]));
-      const pg=new THREE.Group(); pg.position.set(m[0],.06,m[2]);
-      pg.add(new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.02,8),S));
-      pg.add(new THREE.Mesh(new THREE.BoxGeometry(.02,.004,.38),new THREE.MeshStandardMaterial({color:0xD97706,transparent:true,opacity:.7})));
-      g.add(pg); this.propGrps.push(pg);
+
+    // Build and add each component mesh from specs/config
+    REQUIRED.forEach(cat => {
+      const id = config[cat];
+      if(id){
+        const mesh = buildComponentMesh(cat, id, frameId, cat === 'propellers' ? this.propGrps : null);
+        if(mesh) g.add(mesh);
+      }
     });
-    g.add(new THREE.Mesh(new THREE.SphereGeometry(.06,12,12),new THREE.MeshBasicMaterial({color:0x111827})).translateZ(.3));
 
     /* sparks */
     const spN=40, spArr=new Float32Array(spN*3);
@@ -657,7 +1228,7 @@ class FlightSim {
     const now=performance.now(), dt=Math.min((now-this.prevT)/1000,.1); this.prevT=now;
     this._readKeys();
     if(!this.crashed) this._physics(dt); else this._tumble(dt);
-    if(this.env==='city') this._checkGates();
+    if(this.env==='city' || this.env==='training') this._checkGates();
     this._ambient(now);
     this._camera();
     this._hud();
@@ -667,8 +1238,13 @@ class FlightSim {
   /* ── physics ── */
   _physics(dt) {
     /* battery */
-    if(!this.cutoff){
-      this.bat=Math.max(0,this.bat-(1+this.thr*4.5)*dt*.45);
+    if(this.env === 'training') {
+      this.bat = 100;
+      document.getElementById('hud-battery-warn').classList.add('hidden');
+    } else if(!this.cutoff){
+      const capacityFactor = 1500 / (this.droneSpec.cap || 2000);
+      const drainRate = 0.08 * capacityFactor;
+      this.bat=Math.max(0,this.bat-(1+this.thr*4.5)*dt*drainRate);
       if(this.bat<20){ document.getElementById('hud-battery-warn').classList.remove('hidden'); this.alarmCD-=dt; if(this.alarmCD<=0){sfx.alarm();this.alarmCD=1.6;} }
       if(this.bat<=0){ this.cutoff=true; this.thr=0; }
     }
@@ -677,7 +1253,8 @@ class FlightSim {
     const thrForce=this.droneSpec.thrN*this.thr*batScale;
 
     /* ground height */
-    const gndY=this.env==='city'?terrainY(this.pos.x,this.pos.z):0;
+    const inStartingRoof = this.env === 'cyber' && Math.abs(this.pos.x) < 12 && Math.abs(this.pos.z) < 12;
+    const gndY = inStartingRoof ? 40 : (this.env === 'city' ? terrainY(this.pos.x, this.pos.z) : 0);
     const agl=this.pos.y-gndY;
 
     /* ground effect */
@@ -692,6 +1269,25 @@ class FlightSim {
     const acc=new THREE.Vector3().add(grav).add(thrDir).add(drag).add(wind).divideScalar(mass);
     this.vel.add(acc.clone().multiplyScalar(dt));
     this.pos.add(this.vel.clone().multiplyScalar(dt));
+
+    if (this.env === 'cyber') {
+      const boundary = 300;
+      const size = 600;
+      if (this.pos.x > boundary) {
+        this.pos.x -= size;
+        this.cam3.position.x -= size;
+      } else if (this.pos.x < -boundary) {
+        this.pos.x += size;
+        this.cam3.position.x += size;
+      }
+      if (this.pos.z > boundary) {
+        this.pos.z -= size;
+        this.cam3.position.z -= size;
+      } else if (this.pos.z < -boundary) {
+        this.pos.z += size;
+        this.cam3.position.z += size;
+      }
+    }
 
     /* rotation */
     const eu=new THREE.Euler().setFromQuaternion(this.quat,'YXZ');
@@ -713,14 +1309,14 @@ class FlightSim {
   }
 
   _collide(agl, gndY) {
-    const minH=this.env==='ar'?.05:gndY+.05;
+    const minH=this.env==='ar'?.05:gndY+.42;
     if(this.pos.y<minH){
       if(this.vel.length()>4.2) this._crash(this.vel.length(),'Ground');
       else { this.pos.y=minH; this.vel.set(0,0,0); }
       return;
     }
     const sp=new THREE.Sphere(this.pos,.42);
-    const list=this.env==='city'?this.buildings:this.arBoxes;
+    const list=this.env==='city'?this.buildings:(this.env==='training'?this.trainingObstacles:(this.env==='cyber'?this.cyberTowers:this.arBoxes));
     for(const b of list) if(b.box.intersectsSphere(sp)){ this._crash(this.vel.length(),b.name); break; }
   }
 
@@ -750,7 +1346,8 @@ class FlightSim {
     this.quat.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,.5,.2).normalize(),12*dt));
     this.vel.y=Math.max(-15,this.vel.y-9.81*dt); this.vel.x*=.95; this.vel.z*=.95;
     this.pos.add(this.vel.clone().multiplyScalar(dt));
-    const fl=this.env==='city'?-7:.05;
+    const inStartingRoof = this.env === 'cyber' && Math.abs(this.pos.x) < 12 && Math.abs(this.pos.z) < 12;
+    const fl = inStartingRoof ? 40.42 : (this.env === 'city' ? terrainY(this.pos.x, this.pos.z) + 0.42 : 0.42);
     if(this.pos.y<fl){this.pos.y=fl;this.vel.set(0,0,0);}
     this.drone.position.copy(this.pos); this.drone.quaternion.copy(this.quat);
 
@@ -777,14 +1374,115 @@ class FlightSim {
   }
 
   _checkGates() {
-    this.gates.forEach(g=>{
-      if(this.cleared.has(g.idx)) return;
-      if(g.sphere.containsPoint(this.pos)){
-        this.cleared.add(g.idx); sfx.snap();
-        g.mesh.material=new THREE.MeshStandardMaterial({color:0x10b981,emissive:0x10b981,emissiveIntensity:.9});
-        this._toast(`Gate ${this.cleared.size}/8`);
+    if (this.env === 'training') {
+      const targetGate = this.gates[this.targetGateIdx];
+      if (targetGate && targetGate.sphere.containsPoint(this.pos)) {
+        sfx.snap();
+        this.obstaclesClearedCount++;
+        
+        // Turn cleared gate green
+        targetGate.mesh.material = new THREE.MeshStandardMaterial({
+          color: 0x10b981,
+          emissive: 0x10b981,
+          emissiveIntensity: 0.9,
+          roughness: 0.2
+        });
+
+        this.targetGateIdx = (this.targetGateIdx + 1) % this.gates.length;
+        
+        // Light up the next target gate orange
+        const nextGate = this.gates[this.targetGateIdx];
+        if (nextGate && this.targetGateIdx !== 0) {
+          nextGate.mesh.material = new THREE.MeshStandardMaterial({
+            color: 0xf59e0b,
+            emissive: 0xf59e0b,
+            emissiveIntensity: 1.2,
+            roughness: 0.2
+          });
+        }
+        
+        this._toast(`Obstacles: ${this.obstaclesClearedCount}`);
+        
+        if (this.targetGateIdx === 0) {
+          setTimeout(() => {
+            if (this.env !== 'training') return;
+            const activeGateMat = new THREE.MeshStandardMaterial({color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 1.2, roughness: 0.2});
+            const inactiveGateMat = new THREE.MeshStandardMaterial({color: 0x334155, roughness: 0.8, metalness: 0.2});
+            this.gates.forEach((g, i) => {
+              g.mesh.material = i === 0 ? activeGateMat : inactiveGateMat;
+            });
+          }, 1000);
+        }
       }
-    });
+    } else {
+      const targetGate = this.gates[this.targetGateIdx];
+      if (targetGate && targetGate.sphere.containsPoint(this.pos)) {
+        sfx.snap();
+        this.cleared.add(targetGate.idx);
+        
+        // Turn cleared gate green
+        targetGate.mesh.material = new THREE.MeshStandardMaterial({
+          color: 0x10b981,
+          emissive: 0x10b981,
+          emissiveIntensity: 0.9,
+          roughness: 0.2
+        });
+
+        this.targetGateIdx = (this.targetGateIdx + 1) % this.gates.length;
+        
+        // Light up the next target gate neon purple
+        const nextGate = this.gates[this.targetGateIdx];
+        if (nextGate && this.targetGateIdx !== 0) {
+          nextGate.mesh.material = new THREE.MeshStandardMaterial({
+            color: 0x8b5cf6,
+            emissive: 0x8b5cf6,
+            emissiveIntensity: 1.5,
+            roughness: 0.2
+          });
+          if (this.beacon) {
+            this.beacon.position.copy(nextGate.mesh.position);
+          }
+        }
+        
+        this._toast(`Gate ${this.cleared.size}/8`);
+
+        if (this.targetGateIdx === 0) {
+          setTimeout(() => {
+            if (this.env !== 'city') return;
+            this.cleared.clear();
+            const activeCityGateMat = new THREE.MeshStandardMaterial({
+              color: 0x8b5cf6,
+              emissive: 0x8b5cf6,
+              emissiveIntensity: 1.5,
+              roughness: 0.2
+            });
+            const inactiveCityGateMat = new THREE.MeshStandardMaterial({
+              color: 0x334155,
+              roughness: 0.8,
+              metalness: 0.2
+            });
+            this.gates.forEach((g, i) => {
+              g.mesh.material = i === 0 ? activeCityGateMat : inactiveCityGateMat;
+            });
+            if (!this.beacon) {
+              const beaconGeo = new THREE.CylinderGeometry(0.05, 1.5, 400, 16, 1, true);
+              beaconGeo.translate(0, 200, 0);
+              const beaconMat = new THREE.MeshBasicMaterial({
+                color: 0x8b5cf6,
+                transparent: true,
+                opacity: 0.25,
+                blending: THREE.AdditiveBlending,
+                side: THREE.DoubleSide,
+                depthWrite: false
+              });
+              this.beacon = new THREE.Mesh(beaconGeo, beaconMat);
+              this.scene.add(this.beacon);
+            }
+            this.beacon.position.copy(this.gates[0].mesh.position);
+          }, 1500);
+        }
+      }
+    }
   }
 
   _ambient(now) {
@@ -820,16 +1518,16 @@ class FlightSim {
     const spd=Math.round(this.vel.length()*3.6), alt=Math.max(0,this.pos.y);
     this.onHud({
       thr:Math.round(this.thr*100),bat:Math.round(this.bat),spd:spd+' km/h',alt:alt.toFixed(1)+' m',
-      gates:this.cleared.size+'/8',mode:this.mode.toUpperCase(),
+      gates:this.env==='cyber'?'FREE':(this.env==='training'?this.obstaclesClearedCount:this.cleared.size+'/8'),mode:this.mode.toUpperCase(),
       drag:(this._tDrag||'0')+' N',lift:(this._tLift||'0')+' N',rho:'1.225',gef:(this._tGef||'1.00')+'×',
       g:(1+this.vel.length()/9.81*.08).toFixed(1)+' G'
     });
   }
 
   resetPos() {
-    this.pos.set(0,this.env==='ar'?.6:6,this.env==='ar'?0:15);
+    this.pos.set(0, this.env==='ar'?.6:(this.env==='cyber'?40.42:6), this.env==='ar'?0:(this.env==='cyber'?0:15));
     this.vel.set(0,0,0); this.quat.identity();
-    this.crashed=false; this.cutoff=false; this.bat=Math.max(this.bat,20);
+    this.crashed=false; this.cutoff=false; this.bat=100;
     document.body.classList.remove('glitch-active');
     document.getElementById('crash-overlay').classList.add('hidden');
     document.getElementById('hud-battery-warn').classList.add('hidden');
@@ -854,6 +1552,54 @@ class FlightSim {
 document.addEventListener('DOMContentLoaded', () => {
   let lab = null, sim = null, tab = 'frame';
 
+  const PRESETS = {
+    micro: {
+      frame: 'fr-neo',
+      motors: 'mt-1306',
+      esc: 'es-20a',
+      propellers: 'pr-3b',
+      flight_controller: 'fc-f4',
+      battery: 'bt-3s',
+      camera: 'cm-ana',
+      transmitter: 'tx-elrs'
+    },
+    avata: {
+      frame: 'fr-avata',
+      motors: 'mt-2207',
+      esc: 'es-50a',
+      propellers: 'pr-5b',
+      flight_controller: 'fc-o3',
+      battery: 'bt-4s',
+      camera: 'cm-4k',
+      transmitter: 'tx-o3'
+    },
+    racing: {
+      frame: 'fr-fpv5',
+      motors: 'mt-2806',
+      esc: 'es-70a',
+      propellers: 'pr-2b',
+      flight_controller: 'fc-f7',
+      battery: 'bt-6s',
+      camera: 'cm-ana',
+      transmitter: 'tx-elrs'
+    }
+  };
+
+  const applyPreset = type => {
+    if(!lab) return;
+    sfx.snap();
+    const config = PRESETS[type];
+    Object.entries(config).forEach(([cat, id]) => {
+      lab.equip(cat, id);
+    });
+    document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.preset === type));
+    renderList();
+  };
+
+  document.querySelectorAll('[data-preset]').forEach(btn => btn.addEventListener('click', () => {
+    applyPreset(btn.dataset.preset);
+  }));
+
   /* ── navigation ── */
   const show = name => {
     document.querySelectorAll('.lab-view').forEach(v => v.classList.toggle('active', v.id === 'view-'+name));
@@ -876,9 +1622,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-go-builder').addEventListener('click', () => { sfx.snap(); show('builder'); });
   document.getElementById('btn-quick-fly').addEventListener('click', () => {
     sfx.snap();
+    show('sim');
     sim = new FlightSim('sim-canvas','cam-feed', hudUpdate);
     sim.launch({wg:610,thrN:25.1,cells:6,frame:'fr-avata'},'city');
-    show('sim'); document.getElementById('hud').classList.remove('hidden');
+    document.getElementById('hud').classList.remove('hidden');
   });
 
   /* builder → env */
@@ -890,9 +1637,10 @@ document.addEventListener('DOMContentLoaded', () => {
     e.stopPropagation();
     const env = btn.dataset.launch;
     sfx.snap();
+    show('sim');
     sim = new FlightSim('sim-canvas','cam-feed', hudUpdate);
     sim.launch(lab.specs(), env);
-    show('sim'); document.getElementById('hud').classList.remove('hidden');
+    document.getElementById('hud').classList.remove('hidden');
   }));
 
   /* env card highlight */
@@ -906,6 +1654,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-mode').addEventListener('click', () => { if(sim){sim.mode=sim.mode==='level'?'acro':'level';document.getElementById('btn-mode').innerText='⚙️ '+sim.mode.charAt(0).toUpperCase()+sim.mode.slice(1);} });
   document.getElementById('btn-reset').addEventListener('click', () => sim?.resetPos());
   document.getElementById('btn-repair').addEventListener('click', () => sim?.resetPos());
+  document.getElementById('btn-randomise').addEventListener('click', () => {
+    if (sim && sim.env === 'cyber') {
+      sfx.snap();
+      sim.randomiseCyber();
+    }
+  });
   document.getElementById('btn-exit').addEventListener('click', () => {
     sfx.snap(); if(sim){sim.stop();sim=null;} document.getElementById('hud').classList.add('hidden'); show('builder');
   });
@@ -940,6 +1694,7 @@ document.addEventListener('DOMContentLoaded', () => {
       card.innerHTML = `<div class="comp-top-row"><span class="comp-title">${item.name}</span><span class="comp-badge">${item.w} g</span></div><div class="comp-desc">${item.desc}</div><div class="comp-specs-grid">${specs}</div>`;
       card.onclick = () => {
         sfx.snap(); lab.equip(tab, item.id);
+        document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
         const t = document.getElementById('snap-toast'); t.innerText = '✓ ' + item.name; t.classList.add('show');
         setTimeout(() => t.classList.remove('show'), 1500);
         renderList();
