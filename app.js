@@ -430,6 +430,10 @@ class FlightSim {
     this.propGrps=[]; this.sparkPts=null; this.smokePts=null;
     this.prevT=0; this.env='city'; this.droneSpec=null; this.drone=null;
     this.riverMesh=null;
+    
+    this.arMode = 'hologram';
+    this.arPoints = null;
+    this.holoGridTexture = null;
 
     this._initKeys();
   }
@@ -464,7 +468,18 @@ class FlightSim {
       else btnRand.classList.add('hidden');
     }
 
-    this.pos.set(0, env==='ar'?.6:(env==='cyber'?40.42:6), env==='ar'?0:(env==='cyber'?0:15));
+    const btnAr = document.getElementById('btn-ar-mode');
+    if (btnAr) {
+      if (env === 'ar') btnAr.classList.remove('hidden');
+      else btnAr.classList.add('hidden');
+      btnAr.innerText = '🌐 Hologram';
+    }
+
+    this.arMode = 'hologram';
+    this.arPoints = null;
+    this.holoGridTexture = null;
+
+    this.pos.set(0, env==='ar'?0.85:(env==='cyber'?40.42:6), env==='ar'?0:(env==='cyber'?0:15));
     this.vel.set(0,0,0);
     this.quat.identity();
 
@@ -476,6 +491,33 @@ class FlightSim {
   }
 
   _buildScene() {
+    // Clean up old AR objects if present to prevent memory leaks
+    if (this.arBoxes) {
+      for (const item of this.arBoxes) {
+        if (item.mesh) {
+          if (item.mesh.geometry) item.mesh.geometry.dispose();
+          if (item.mesh.material) {
+            if (item.mesh.material.map) item.mesh.material.map.dispose();
+            item.mesh.material.dispose();
+          }
+        }
+        if (item.wireframe) {
+          if (item.wireframe.geometry) item.wireframe.geometry.dispose();
+          if (item.wireframe.material) item.wireframe.material.dispose();
+        }
+      }
+      this.arBoxes = [];
+    }
+    if (this.arPoints) {
+      if (this.arPoints.geometry) this.arPoints.geometry.dispose();
+      if (this.arPoints.material) this.arPoints.material.dispose();
+      this.arPoints = null;
+    }
+    if (this.holoGridTexture) {
+      this.holoGridTexture.dispose();
+      this.holoGridTexture = null;
+    }
+
     this.scene = new THREE.Scene();
     const isCity = this.env==='city';
     const isTraining = this.env==='training';
@@ -1089,50 +1131,216 @@ class FlightSim {
 
   /* ── AR scan ── */
   _startAR() {
-    this.vid.style.display='block';
+    this.vid.style.display = 'block';
     document.getElementById('scanner-overlay').classList.remove('hidden');
     sfx.startScan();
-    if(navigator.mediaDevices?.getUserMedia)
-      navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(s=>this.vid.srcObject=s).catch(()=>{});
 
-    /* point cloud */
-    const N=1300, vp=new Float32Array(N*3), vc=new Float32Array(N*3);
-    for(let i=0;i<N;i++){
-      let x=(Math.random()-.5)*8, y=Math.random()*4, z=(Math.random()-.5)*8;
-      if(Math.abs(x)<2&&Math.abs(z)<1&&y<.8) y=Math.random()*.7;
-      else if(x>1.8&&x<3&&Math.abs(z)<.8&&y<1.1) y=Math.random()*1;
-      vp[i*3]=x; vp[i*3+1]=y; vp[i*3+2]=z;
-      vc[i*3]=.06; vc[i*3+1]=.72; vc[i*3+2]=.5;
+    this.arMode = 'hologram';
+
+    if (navigator.mediaDevices?.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(s => { this.vid.srcObject = s; })
+        .catch(() => {
+          // Fallback Grid Chamber background if camera fails
+          this.scene.background = new THREE.Color(0x05080c);
+          this.scene.fog = new THREE.FogExp2(0x05080c, 0.04);
+          
+          const fallbackGrid = new THREE.GridHelper(20, 20, 0x10b981, 0x112233);
+          fallbackGrid.position.y = 0.01;
+          this.scene.add(fallbackGrid);
+        });
     }
-    const cGeo=new THREE.BufferGeometry();
-    cGeo.setAttribute('position',new THREE.BufferAttribute(vp,3));
-    cGeo.setAttribute('color',new THREE.BufferAttribute(vc,3));
-    const cMat=new THREE.PointsMaterial({size:.045,vertexColors:true,transparent:true,opacity:0});
-    this.scene.add(new THREE.Points(cGeo,cMat));
 
-    const wireMat=new THREE.MeshBasicMaterial({color:0x10B981,wireframe:true,transparent:true,opacity:0});
-    const sofa=new THREE.Mesh(new THREE.BoxGeometry(4,.8,2),wireMat); sofa.position.set(0,.4,0);
-    const cab=new THREE.Mesh(new THREE.BoxGeometry(1.2,1.5,1.6),wireMat); cab.position.set(2.4,.75,0);
-    const desk=new THREE.Mesh(new THREE.BoxGeometry(1,.95,1.3),wireMat); desk.position.set(-2.3,.475,1.85);
-    this.scene.add(sofa,cab,desk);
-    this.arBoxes=[
-      {box:new THREE.Box3().setFromObject(sofa),name:'Sofa'},
-      {box:new THREE.Box3().setFromObject(cab),name:'Cabinet'},
-      {box:new THREE.Box3().setFromObject(desk),name:'Desk'}
+    const sampleBoxSurface = (w, h, d, x, y, z) => {
+      const face = Math.floor(Math.random() * 3);
+      let px = 0, py = 0, pz = 0;
+      if (face === 0) {
+        px = (Math.random() > 0.5 ? w / 2 : -w / 2);
+        py = (Math.random() - 0.5) * h;
+        pz = (Math.random() - 0.5) * d;
+      } else if (face === 1) {
+        px = (Math.random() - 0.5) * w;
+        py = (Math.random() > 0.5 ? h / 2 : -h / 2);
+        pz = (Math.random() - 0.5) * d;
+      } else {
+        px = (Math.random() - 0.5) * w;
+        py = (Math.random() - 0.5) * h;
+        pz = (Math.random() > 0.5 ? d / 2 : -d / 2);
+      }
+      return [px + x, py + y, pz + z];
+    };
+
+    // Shared holographic grid texture for scanned furniture/boundaries
+    const canvas = document.createElement('canvas');
+    canvas.width = 64; canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'rgba(16, 185, 129, 0.04)';
+    ctx.fillRect(0, 0, 64, 64);
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, 0, 64, 64);
+    this.holoGridTexture = new THREE.CanvasTexture(canvas);
+    this.holoGridTexture.wrapS = THREE.RepeatWrapping;
+    this.holoGridTexture.wrapT = THREE.RepeatWrapping;
+    this.holoGridTexture.repeat.set(4, 4);
+
+    this.arBoxes = [];
+
+    const addHoloObject = (geom, x, y, z, name) => {
+      const mat = new THREE.MeshBasicMaterial({
+        map: this.holoGridTexture,
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+      const mesh = new THREE.Mesh(geom, mat);
+      mesh.position.set(x, y, z);
+      this.scene.add(mesh);
+
+      const edges = new THREE.EdgesGeometry(geom);
+      const edgeMat = new THREE.LineBasicMaterial({
+        color: 0x10b981,
+        transparent: true,
+        opacity: 0
+      });
+      const wireframe = new THREE.LineSegments(edges, edgeMat);
+      wireframe.position.copy(mesh.position);
+      this.scene.add(wireframe);
+
+      const box = new THREE.Box3().setFromObject(mesh);
+      this.arBoxes.push({
+        box: box,
+        name: name,
+        mesh: mesh,
+        wireframe: wireframe
+      });
+    };
+
+    // Construct the scanned room boundary (walls, floor, ceiling)
+    // Floor is collidable (Y=0)
+    addHoloObject(new THREE.BoxGeometry(10, 0.1, 10), 0, -0.05, 0, 'Floor');
+    // Ceiling is collidable (Y=3)
+    addHoloObject(new THREE.BoxGeometry(10, 0.1, 10), 0, 3.05, 0, 'Ceiling');
+    // Walls
+    addHoloObject(new THREE.BoxGeometry(10, 3, 0.1), 0, 1.5, -5.05, 'Back Wall');
+    addHoloObject(new THREE.BoxGeometry(10, 3, 0.1), 0, 1.5, 5.05, 'Front Wall');
+    addHoloObject(new THREE.BoxGeometry(0.1, 3, 10), -5.05, 1.5, 0, 'Left Wall');
+    addHoloObject(new THREE.BoxGeometry(0.1, 3, 10), 5.05, 1.5, 0, 'Right Wall');
+
+    // Add scanned room furniture models
+    addHoloObject(new THREE.BoxGeometry(1.2, 0.4, 0.8), 0, 0.2, 0, 'Coffee Table');
+    addHoloObject(new THREE.BoxGeometry(2.4, 0.85, 0.9), 0, 0.425, -2.5, 'Sofa');
+    addHoloObject(new THREE.BoxGeometry(2.0, 0.6, 0.5), 0, 0.3, 3.2, 'TV Cabinet');
+    addHoloObject(new THREE.BoxGeometry(1.4, 0.75, 0.7), -3.2, 0.375, 1.8, 'Desk');
+    addHoloObject(new THREE.BoxGeometry(0.8, 1.8, 0.4), 3.5, 0.9, -1.8, 'Bookshelf');
+    addHoloObject(new THREE.BoxGeometry(0.9, 0.8, 0.9), -2.8, 0.4, -1.2, 'Armchair');
+
+    /* point cloud surface sampling */
+    const N = 1500;
+    const vp = new Float32Array(N * 3);
+    const vc = new Float32Array(N * 3);
+
+    const sampleTargets = [
+      { w: 10, h: 0.1, d: 10, x: 0, y: -0.05, z: 0, count: 300 }, // Floor
+      { w: 10, h: 0.1, d: 10, x: 0, y: 3.05, z: 0, count: 150 },  // Ceiling
+      { w: 10, h: 3, d: 0.1, x: 0, y: 1.5, z: -5.05, count: 200 }, // Back Wall
+      { w: 10, h: 3, d: 0.1, x: 0, y: 1.5, z: 5.05, count: 150 },  // Front Wall
+      { w: 0.1, h: 3, d: 10, x: -5.05, y: 1.5, z: 0, count: 200 }, // Left Wall
+      { w: 0.1, h: 3, d: 10, x: 5.05, y: 1.5, z: 0, count: 200 },  // Right Wall
+      { w: 1.2, h: 0.4, d: 0.8, x: 0, y: 0.2, z: 0, count: 60 },   // Coffee Table
+      { w: 2.4, h: 0.85, d: 0.9, x: 0, y: 0.425, z: -2.5, count: 100 }, // Sofa
+      { w: 2.0, h: 0.6, d: 0.5, x: 0, y: 0.3, z: 3.2, count: 60 }, // TV Cabinet
+      { w: 1.4, h: 0.75, d: 0.7, x: -3.2, y: 0.375, z: 1.8, count: 50 }, // Desk
+      { w: 0.8, h: 1.8, d: 0.4, x: 3.5, y: 0.9, z: -1.8, count: 30 } // Bookshelf
     ];
 
-    const t0=performance.now();
-    const tick=now=>{
-      if(!this.alive||this.env!=='ar') return;
-      const p=Math.min((now-t0)/5000,1);
-      document.getElementById('scanner-fill').style.width=p*100+'%';
-      document.getElementById('scanner-pct').innerText=Math.round(p*100)+' %';
-      document.getElementById('scanner-log').innerText=`PTS: ${Math.round(p*1300)}/1300 | MESH: ${p>.4?'COMPILING':'ACQUIRING'}`;
-      cMat.opacity=p*.95; wireMat.opacity=p*.45;
-      const arc=document.getElementById('radar-arc');
-      if(arc) arc.style.strokeDashoffset=339.3*(1-p);
-      if(p<1) requestAnimationFrame(tick);
-      else { document.getElementById('scanner-overlay').classList.add('hidden'); sfx.stopScan(); }
+    let pIdx = 0;
+    for (const target of sampleTargets) {
+      for (let i = 0; i < target.count && pIdx < N; i++) {
+        const pt = sampleBoxSurface(target.w, target.h, target.d, target.x, target.y, target.z);
+        vp[pIdx * 3] = pt[0];
+        vp[pIdx * 3 + 1] = pt[1];
+        vp[pIdx * 3 + 2] = pt[2];
+        vc[pIdx * 3] = 0.05 + Math.random() * 0.05;
+        vc[pIdx * 3 + 1] = 0.7 + Math.random() * 0.15;
+        vc[pIdx * 3 + 2] = 0.4 + Math.random() * 0.15;
+        pIdx++;
+      }
+    }
+
+    while (pIdx < N) {
+      vp[pIdx * 3] = (Math.random() - 0.5) * 10;
+      vp[pIdx * 3 + 1] = Math.random() * 3;
+      vp[pIdx * 3 + 2] = (Math.random() - 0.5) * 10;
+      vc[pIdx * 3] = 0.06; vc[pIdx * 3 + 1] = 0.72; vc[pIdx * 3 + 2] = 0.5;
+      pIdx++;
+    }
+
+    const cGeo = new THREE.BufferGeometry();
+    cGeo.setAttribute('position', new THREE.BufferAttribute(vp, 3));
+    cGeo.setAttribute('color', new THREE.BufferAttribute(vc, 3));
+    cGeo.setDrawRange(0, 0); // Initially draw nothing, animated in tick
+    
+    const cMat = new THREE.PointsMaterial({ size: 0.045, vertexColors: true, transparent: true, opacity: 0 });
+    this.arPoints = new THREE.Points(cGeo, cMat);
+    this.scene.add(this.arPoints);
+
+    // Laser Sweep Plane
+    const sweepPlaneGeo = new THREE.PlaneGeometry(10, 10);
+    const sweepPlaneMat = new THREE.MeshBasicMaterial({
+      color: 0x10b981,
+      transparent: true,
+      opacity: 0.15,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    const sweepPlane = new THREE.Mesh(sweepPlaneGeo, sweepPlaneMat);
+    sweepPlane.rotation.x = -Math.PI / 2;
+    sweepPlane.position.y = 0;
+    this.scene.add(sweepPlane);
+
+    const sweepEdges = new THREE.EdgesGeometry(sweepPlaneGeo);
+    const sweepLineMat = new THREE.LineBasicMaterial({ color: 0x10b981, transparent: true, opacity: 0.6 });
+    const sweepWire = new THREE.LineSegments(sweepEdges, sweepLineMat);
+    sweepPlane.add(sweepWire);
+
+    const t0 = performance.now();
+    const tick = now => {
+      if (!this.alive || this.env !== 'ar') return;
+      const p = Math.min((now - t0) / 5000, 1);
+      document.getElementById('scanner-fill').style.width = p * 100 + '%';
+      document.getElementById('scanner-pct').innerText = Math.round(p * 100) + ' %';
+      document.getElementById('scanner-log').innerText = `PTS: ${Math.round(p * N)}/${N} | MESH: ${p > 0.4 ? 'RECONSTRUCTING' : 'ACQUIRING'}`;
+      
+      const activeCount = Math.round(p * N);
+      cGeo.setDrawRange(0, activeCount);
+      cMat.opacity = Math.min(p * 1.5, 0.95);
+      
+      sweepPlane.position.y = (Math.sin(now * 0.006) + 1) * 1.5;
+      
+      for (const item of this.arBoxes) {
+        if (item.mesh && item.mesh.material) {
+          item.mesh.material.opacity = p * 0.45;
+        }
+        if (item.wireframe && item.wireframe.material) {
+          item.wireframe.material.opacity = p * 0.85;
+        }
+      }
+      
+      const arc = document.getElementById('radar-arc');
+      if (arc) arc.style.strokeDashoffset = 339.3 * (1 - p);
+      if (p < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        document.getElementById('scanner-overlay').classList.add('hidden');
+        sfx.stopScan();
+        this.scene.remove(sweepPlane);
+        sweepPlaneGeo.dispose();
+        sweepPlaneMat.dispose();
+        sweepEdges.dispose();
+        sweepLineMat.dispose();
+      }
     };
     requestAnimationFrame(tick);
   }
@@ -1525,7 +1733,7 @@ class FlightSim {
   }
 
   resetPos() {
-    this.pos.set(0, this.env==='ar'?.6:(this.env==='cyber'?40.42:6), this.env==='ar'?0:(this.env==='cyber'?0:15));
+    this.pos.set(0, this.env==='ar'?0.85:(this.env==='cyber'?40.42:6), this.env==='ar'?0:(this.env==='cyber'?0:15));
     this.vel.set(0,0,0); this.quat.identity();
     this.crashed=false; this.cutoff=false; this.bat=100;
     document.body.classList.remove('glitch-active');
@@ -1533,6 +1741,52 @@ class FlightSim {
     document.getElementById('hud-battery-warn').classList.add('hidden');
     this.sparkPts.material.opacity=0; this.smokePts.material.opacity=0;
     sfx.stopMotors(); sfx.startMotors(4);
+  }
+
+  toggleArMode() {
+    const modes = ['hologram', 'lidar', 'solid', 'camera'];
+    this.arMode = modes[(modes.indexOf(this.arMode) + 1) % modes.length];
+    
+    const btn = document.getElementById('btn-ar-mode');
+    if (btn) btn.innerText = '🌐 ' + this.arMode.charAt(0).toUpperCase() + this.arMode.slice(1);
+    
+    this._updateArVisuals();
+  }
+
+  _updateArVisuals() {
+    if (this.env !== 'ar') return;
+    
+    const showPoints = this.arMode === 'hologram' || this.arMode === 'lidar';
+    const showWireframes = this.arMode === 'hologram';
+    const showSolid = this.arMode === 'hologram' || this.arMode === 'solid';
+    
+    if (this.arPoints) {
+      this.arPoints.visible = showPoints;
+    }
+    
+    for (const item of this.arBoxes) {
+      if (item.mesh) {
+        item.mesh.visible = showSolid;
+        if (item.mesh.material) {
+          if (this.arMode === 'solid') {
+            item.mesh.material.opacity = 0.85;
+            item.mesh.material.map = null;
+            item.mesh.material.color.setHex(0x4b5563);
+          } else {
+            item.mesh.material.opacity = 0.45;
+            item.mesh.material.map = this.holoGridTexture;
+            item.mesh.material.color.setHex(0x10b981);
+          }
+          item.mesh.material.needsUpdate = true;
+        }
+      }
+      if (item.wireframe) {
+        item.wireframe.visible = showWireframes;
+        if (item.wireframe.material) {
+          item.wireframe.material.opacity = 0.85;
+        }
+      }
+    }
   }
 
   stop() {
@@ -1658,6 +1912,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sim && sim.env === 'cyber') {
       sfx.snap();
       sim.randomiseCyber();
+    }
+  });
+  document.getElementById('btn-ar-mode').addEventListener('click', () => {
+    if (sim && sim.env === 'ar') {
+      sfx.snap();
+      sim.toggleArMode();
     }
   });
   document.getElementById('btn-exit').addEventListener('click', () => {
