@@ -1421,9 +1421,10 @@ class FlightSim {
     });
   }
 
-  _readKeys() {
-    if(this.keys['w']||this.keys['W']) this.thr=Math.min(this.thr+.04,1);
-    else if(this.keys['s']||this.keys['S']) this.thr=Math.max(this.thr-.04,0);
+  _readKeys(dt) {
+    // Decreased thrust sensitivity: increment/decrement rate is time-scaled and smoother (0.8 units per second)
+    if(this.keys['w']||this.keys['W']) this.thr=Math.min(this.thr + 0.8 * dt, 1);
+    else if(this.keys['s']||this.keys['S']) this.thr=Math.max(this.thr - 0.8 * dt, 0);
     this.yaw=(this.keys['a']||this.keys['A'])?-.75:(this.keys['d']||this.keys['D'])?.75:0;
     this.pit=(this.keys['ArrowUp'])?.65:(this.keys['ArrowDown'])?-.65:0;
     this.rol=(this.keys['ArrowLeft'])?-.65:(this.keys['ArrowRight'])?.65:0;
@@ -1434,7 +1435,7 @@ class FlightSim {
     if(!this.alive) return;
     requestAnimationFrame(()=>this._loop());
     const now=performance.now(), dt=Math.min((now-this.prevT)/1000,.1); this.prevT=now;
-    this._readKeys();
+    this._readKeys(dt);
     if(!this.crashed) this._physics(dt); else this._tumble(dt);
     if(this.env==='city' || this.env==='training') this._checkGates();
     this._ambient(now);
