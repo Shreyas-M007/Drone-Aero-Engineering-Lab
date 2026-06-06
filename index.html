@@ -1,2 +1,325 @@
-"<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover\">\n  <meta name=\"description\" content=\"Drone Aero-Engineering Lab — Assemble DJI-referenced quadcopters and fly them in simulated AR scans and AAA sandbox environments.\">\n  <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n  <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black-translucent\">\n  <title>Drone Aero-Engineering Lab</title>\n  \n  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n  <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n  <link href=\"https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">\n  \n  <link rel=\"stylesheet\" href=\"index.css\">\n  \n  <script type=\"importmap\">\n  {\n    \"imports\": {\n      \"three\": \"https://unpkg.com/three@0.160.0/build/three.module.js\",\n      \"three/examples/jsm/controls/OrbitControls.js\": \"https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js\"\n    }\n  }\n  </script>\n</head>\n<body>\n\n  <!-- GLOBAL TERMINAL NAVIGATION -->\n  <header id=\"lab-header\">\n    <div class=\"header-branding\">\n      <div class=\"logo-node\">\n        <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n          <path d=\"M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z\"/>\n          <polyline points=\"3.27 6.96 12 12.01 20.73 6.96\"/>\n          <line x1=\"12\" y1=\"22.08\" x2=\"12\" y2=\"12\"/>\n        </svg>\n      </div>\n      <span class=\"logo-title\">AERO<span class=\"logo-accent\">LAB</span></span>\n    </div>\n    \n    <div id=\"nav-wizard\" class=\"nav-wizard\">\n      <div class=\"step-node active\" id=\"step-home\">Welcome</di
-<truncated 22109 bytes>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="description" content="Drone Aero-Engineering Lab — Build DJI-referenced quadcopters and fly them in AR room scans or AAA city sandbox environments.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Drone Aero-Engineering Lab</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+
+  <script type="importmap">
+  { "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }}
+  </script>
+</head>
+<body>
+
+  <!-- ═══ HEADER ═══ -->
+  <header id="lab-header">
+    <div class="header-branding">
+      <div class="logo-node">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+          <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+          <line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>
+      </div>
+      <span class="logo-title">AERO<span class="logo-accent">LAB</span></span>
+    </div>
+
+    <nav id="nav-wizard" class="nav-wizard">
+      <div class="step-node active" data-screen="home">Welcome</div>
+      <span class="step-arrow">/</span>
+      <div class="step-node" data-screen="builder">Assembly</div>
+      <span class="step-arrow">/</span>
+      <div class="step-node" data-screen="env">Mission</div>
+      <span class="step-arrow">/</span>
+      <div class="step-node" data-screen="sim">Flight</div>
+    </nav>
+
+    <div class="header-utilities">
+      <div class="connection-pill"><span class="indicator-dot"></span><span class="indicator-text">ONLINE</span></div>
+      <button id="btn-sound-toggle" class="utility-btn">🔊 Audio</button>
+    </div>
+  </header>
+
+  <!-- ═══ VIEW ROOT ═══ -->
+  <main id="lab-root">
+
+    <!-- ── HOME ── -->
+    <section id="view-home" class="lab-view active">
+      <canvas id="hub-particle-canvas"></canvas>
+      <div class="hub-container">
+        <div class="hub-left-panel">
+          <div class="badge-tag"><span class="badge-ring"></span>Drone Engineering Terminal v3</div>
+          <h1 class="hub-headline">
+            <span class="line-bold">Configure.</span><br>
+            <span class="line-gradient">Calibrate.</span><br>
+            <span class="line-dim">Simulate.</span>
+          </h1>
+          <p class="hub-summary">A photorealistic DJI-referenced simulator. Select carbon frames, brushless stators, ESCs and batteries — then pilot your build inside a lidar room scan or a procedural open-world city.</p>
+          <div class="hub-actions">
+            <button id="btn-go-builder" class="action-btn action-primary">
+              <span class="btn-icon">🔧</span>
+              <div class="btn-label-wrap"><span class="btn-main-lbl">Enter Assembly Lab</span><span class="btn-sub-lbl">Choose components &amp; specs</span></div>
+              <span class="btn-arrow">→</span>
+            </button>
+            <button id="btn-quick-fly" class="action-btn action-outline">
+              <span class="btn-icon">🛸</span>
+              <div class="btn-label-wrap"><span class="btn-main-lbl">Instant FPV Launch</span><span class="btn-sub-lbl">Fly default DJI Avata preset</span></div>
+              <span class="btn-arrow">→</span>
+            </button>
+          </div>
+          <div class="hub-specs-row">
+            <div class="spec-tile"><span class="tile-val">08</span><span class="tile-lbl">Systems</span></div>
+            <div class="tile-sep"></div>
+            <div class="spec-tile"><span class="tile-val">DJI</span><span class="tile-lbl">Reference</span></div>
+            <div class="tile-sep"></div>
+            <div class="spec-tile"><span class="tile-val">AR</span><span class="tile-lbl">Scan</span></div>
+            <div class="tile-sep"></div>
+            <div class="spec-tile"><span class="tile-val">AAA</span><span class="tile-lbl">Graphics</span></div>
+          </div>
+        </div>
+
+        <div class="hub-right-panel">
+          <div class="showcase-frame">
+            <div class="showcase-bar">
+              <span class="showcase-title">DJI AVATA PREVIEW</span>
+              <span class="showcase-status"><span class="status-dot"></span>STANDBY</span>
+            </div>
+            <div class="showcase-3d-wrap"><canvas id="hub-drone-preview"></canvas></div>
+            <div class="showcase-strips">
+              <div class="strip-node active">FRAME</div><div class="strip-node active">MTR</div>
+              <div class="strip-node active">ESC</div><div class="strip-node active">PROP</div>
+              <div class="strip-node active">FC</div><div class="strip-node active">BAT</div>
+              <div class="strip-node active">CAM</div><div class="strip-node active">TX</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── BUILDER ── -->
+    <section id="view-builder" class="lab-view">
+      <div class="builder-layout">
+        <!-- Catalog -->
+        <aside class="side-panel catalog-panel">
+          <div class="panel-header">
+            <div class="panel-icon-node">📦</div>
+            <div><h2 class="panel-title">Parts Catalog</h2><p class="panel-description">Snap real-world parts onto the chassis</p></div>
+          </div>
+          <div class="catalog-tabs-container"><div id="catalog-tabs" class="catalog-tabs"></div></div>
+          <div id="catalog-list" class="components-scroll-list"></div>
+        </aside>
+
+        <!-- 3-D viewport -->
+        <div class="stage-viewport">
+          <canvas id="assembly-canvas"></canvas>
+          <div class="stage-guide">Left-drag: Orbit · Right-drag: Pan · Scroll: Zoom</div>
+          <div id="snap-toast" class="assembly-toast"></div>
+          <div class="assembly-progress-indicator">
+            <span class="progress-title">BUILD</span>
+            <div class="progress-bar-bg"><div id="progress-fill" class="progress-bar-fill" style="width:0%"></div></div>
+            <span id="progress-pct" class="progress-percent">0 %</span>
+          </div>
+        </div>
+
+        <!-- Diagnostics -->
+        <aside class="side-panel diagnostics-panel">
+          <div class="panel-header">
+            <div class="panel-icon-node">📊</div>
+            <div><h2 class="panel-title">Aero Diagnostics</h2><p class="panel-description">Live flight indicators</p></div>
+          </div>
+          <div class="diagnostics-content">
+            <div class="gauges-flex-row">
+              <div class="svg-gauge-box">
+                <svg class="svg-gauge" viewBox="0 0 100 60">
+                  <path d="M10 52A40 40 0 0190 52" fill="none" stroke="rgba(99,102,241,.08)" stroke-width="6" stroke-linecap="round"/>
+                  <path id="arc-weight" d="M10 52A40 40 0 0190 52" fill="none" stroke="#6366F1" stroke-width="6" stroke-linecap="round" stroke-dasharray="125.6" stroke-dashoffset="125.6"/>
+                </svg>
+                <span class="svg-gauge-lbl">Mass</span><span id="val-weight" class="svg-gauge-val">—</span>
+              </div>
+              <div class="svg-gauge-box">
+                <svg class="svg-gauge" viewBox="0 0 100 60">
+                  <path d="M10 52A40 40 0 0190 52" fill="none" stroke="rgba(99,102,241,.08)" stroke-width="6" stroke-linecap="round"/>
+                  <path id="arc-thrust" d="M10 52A40 40 0 0190 52" fill="none" stroke="#D97706" stroke-width="6" stroke-linecap="round" stroke-dasharray="125.6" stroke-dashoffset="125.6"/>
+                </svg>
+                <span class="svg-gauge-lbl">Thrust</span><span id="val-thrust" class="svg-gauge-val">—</span>
+              </div>
+              <div class="svg-gauge-box">
+                <svg class="svg-gauge" viewBox="0 0 100 60">
+                  <path d="M10 52A40 40 0 0190 52" fill="none" stroke="rgba(99,102,241,.08)" stroke-width="6" stroke-linecap="round"/>
+                  <path id="arc-twr" d="M10 52A40 40 0 0190 52" fill="none" stroke="#10B981" stroke-width="6" stroke-linecap="round" stroke-dasharray="125.6" stroke-dashoffset="125.6"/>
+                </svg>
+                <span class="svg-gauge-lbl">TWR</span><span id="val-twr" class="svg-gauge-val">—</span>
+              </div>
+            </div>
+            <div id="twr-verdict" class="verdict-banner">Snap parts to begin diagnostics.</div>
+            <div class="panel-divider"></div>
+            <div class="specs-grid">
+              <div class="grid-row"><span class="grid-icon">🔋</span><span class="grid-key">Power</span><span id="sp-bat" class="grid-val">—</span></div>
+              <div class="grid-row"><span class="grid-icon">⏱</span><span class="grid-key">Hover</span><span id="sp-hover" class="grid-val">—</span></div>
+              <div class="grid-row"><span class="grid-icon">💨</span><span class="grid-key">Speed</span><span id="sp-speed" class="grid-val">—</span></div>
+              <div class="grid-row"><span class="grid-icon">📷</span><span class="grid-key">Camera</span><span id="sp-cam" class="grid-val">—</span></div>
+              <div class="grid-row"><span class="grid-icon">📡</span><span class="grid-key">Range</span><span id="sp-range" class="grid-val">—</span></div>
+              <div class="grid-row"><span class="grid-icon">⚡</span><span class="grid-key">Cells</span><span id="sp-cells" class="grid-val">—</span></div>
+            </div>
+            <div class="panel-divider"></div>
+            <div id="checklist" class="checklist-box"></div>
+            <button id="btn-deploy" class="deploy-btn disabled" disabled>🚀 Deploy Mission →</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ── ENVIRONMENT SELECT ── -->
+    <section id="view-env" class="lab-view">
+      <div class="env-layout">
+        <div class="env-text-header">
+          <div class="badge-tag" style="margin-bottom:12px">MISSION SELECT</div>
+          <h2 class="env-headline">Choose Flight Map</h2>
+          <p class="env-tagline">Deploy the quadcopter to a physical or synthetic workspace</p>
+        </div>
+
+        <div class="env-flex-cards">
+          <div id="card-ar" class="env-deck-card" data-env="ar">
+            <div class="env-deck-visual ar-scanner-simulation-visual">
+              <div class="scanning-beam"></div><div class="laser-mesh-grid"></div>
+              <div class="env-deck-tag">📱 ROOM RECONSTRUCTION</div>
+              <div class="decor-corner top-l"></div><div class="decor-corner top-r"></div>
+              <div class="decor-corner bot-l"></div><div class="decor-corner bot-r"></div>
+            </div>
+            <div class="env-deck-body">
+              <h3 class="env-deck-title">Simulated AR Room Scanner</h3>
+              <p class="env-deck-desc">Reconstruct your room via camera simulation. Spawns point-cloud meshes, builds collision boundaries over furniture models.</p>
+              <div class="env-deck-pills"><span class="env-pill">Webcam Overlay</span><span class="env-pill">Triangulated Mesh</span></div>
+            </div>
+            <button class="env-deck-btn" data-launch="ar">Select &amp; Launch AR</button>
+          </div>
+
+          <div id="card-city" class="env-deck-card active-selection" data-env="city">
+            <div class="env-deck-visual city-simulation-visual">
+              <div class="city-skyscrapers-backdrop"></div><div class="water-waves-accent"></div>
+              <div class="env-deck-tag">🌆 AAA SANDBOX</div>
+            </div>
+            <div class="env-deck-body">
+              <h3 class="env-deck-title">Procedural City Sandbox</h3>
+              <p class="env-deck-desc">Rolling hills, reflective skyscrapers, instanced forests, flowing river, and an 8-checkpoint FPV racecourse.</p>
+              <div class="env-deck-pills"><span class="env-pill target-pill-hl">High Graphics</span><span class="env-pill">Wave Shader</span><span class="env-pill">Racecourse</span></div>
+            </div>
+            <button class="env-deck-btn env-deck-btn-active" data-launch="city">Select &amp; Launch City</button>
+          </div>
+        </div>
+        <div class="env-back-wrap"><button id="btn-back-builder" class="cancel-btn">← Back to Workbench</button></div>
+      </div>
+    </section>
+
+    <!-- ── SIMULATOR ── -->
+    <section id="view-sim" class="lab-view">
+      <canvas id="sim-canvas"></canvas>
+      <video id="cam-feed" autoplay playsinline muted></video>
+
+      <!-- Scanner overlay -->
+      <div id="scanner-overlay" class="scanner-sweep-container hidden">
+        <div class="spatial-scanner-inner">
+          <div class="radar-outer-ring">
+            <div class="radar-sweep-arm"></div>
+            <svg class="radar-svg" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(16,185,129,.1)" stroke-width="2"/>
+              <circle id="radar-arc" cx="60" cy="60" r="54" fill="none" stroke="#10B981" stroke-width="3" stroke-dasharray="339.3" stroke-dashoffset="339.3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="scanner-headline">Reconstructing Spatial Geometry</h3>
+          <p id="scanner-log" class="scanner-status-log">Processing camera feed…</p>
+          <div class="scanner-progress-wrapper">
+            <div class="scanner-progress-empty"><div id="scanner-fill" class="scanner-progress-filled" style="width:0%"></div></div>
+            <span id="scanner-pct" class="scanner-pct-digits">0 %</span>
+          </div>
+          <p class="scanner-tips">Scanning furniture to compile collision bounds</p>
+        </div>
+      </div>
+
+      <!-- Black Box crash overlay -->
+      <div id="crash-overlay" class="black-box-container hidden">
+        <div class="black-box-inner">
+          <div class="black-box-alert-icon">⚡</div>
+          <h2 class="black-box-headline">BLACK BOX: CRASH DETECTED</h2>
+          <p class="black-box-subline">Impact exceeded structural integrity limits</p>
+          <div class="black-box-metrics">
+            <div class="bb-metric-node"><span class="bb-lbl">IMPACT SPEED</span><span id="crash-speed" class="bb-val">0 km/h</span></div>
+            <div class="bb-metric-node"><span class="bb-lbl">G-FORCE</span><span id="crash-g" class="bb-val">0 G</span></div>
+            <div class="bb-metric-node"><span class="bb-lbl">ROTOR STATUS</span><span class="bb-val val-danger">CRITICAL</span></div>
+          </div>
+          <div id="crash-log" class="black-box-diagnostic-log"></div>
+          <button id="btn-repair" class="rebuild-btn">🔧 Repair &amp; Restart</button>
+        </div>
+      </div>
+
+      <!-- HUD -->
+      <div id="hud" class="hidden">
+        <div id="hud-battery-warn" class="voltage-warning-flash hidden">⚠️ BATTERY COLLAPSED — Land immediately</div>
+
+        <div class="hud-top-dock">
+          <div class="top-dock-group">
+            <div class="dock-node"><span class="dock-lbl">MODE</span><span id="h-mode" class="dock-val val-cyan">LEVEL</span></div>
+            <div class="dock-divider"></div>
+            <div class="dock-node"><span class="dock-lbl">THR</span><span id="h-thr" class="dock-val">0 %</span></div>
+            <div class="dock-divider"></div>
+            <div class="dock-node"><span class="dock-lbl">BATT</span><span id="h-bat" class="dock-val">100 %</span></div>
+          </div>
+          <div class="top-dock-center">FPV LINK 1080p/60</div>
+          <div class="top-dock-group">
+            <div class="dock-node"><span class="dock-lbl">SPD</span><span id="h-spd" class="dock-val val-cyan">0 km/h</span></div>
+            <div class="dock-divider"></div>
+            <div class="dock-node"><span class="dock-lbl">ALT</span><span id="h-alt" class="dock-val">0 m</span></div>
+            <div class="dock-divider"></div>
+            <div class="dock-node"><span class="dock-lbl">GATE</span><span id="h-gate" class="dock-val">0/8</span></div>
+          </div>
+        </div>
+
+        <div class="hud-center-sights">
+          <div class="reticle-ring"></div><div class="reticle-dot"></div>
+          <div class="reticle-hair reticle-hair-h"></div><div class="reticle-hair reticle-hair-v"></div>
+          <div class="angle-marker top-left"></div><div class="angle-marker top-right"></div>
+          <div class="angle-marker bot-left"></div><div class="angle-marker bot-right"></div>
+        </div>
+
+        <div class="hud-vectors-panel">
+          <div class="vectors-title">🎛️ Aero Vectors</div>
+          <div class="vectors-row"><span class="v-key">Drag</span><span id="v-drag" class="v-val">0 N</span></div>
+          <div class="vectors-row"><span class="v-key">Lift</span><span id="v-lift" class="v-val">0 N</span></div>
+          <div class="vectors-row"><span class="v-key">ρ Air</span><span id="v-rho" class="v-val">1.225</span></div>
+          <div class="vectors-row"><span class="v-key">GndFX</span><span id="v-gnd" class="v-val">1.00×</span></div>
+          <div class="vectors-row"><span class="v-key">G-Load</span><span id="v-g" class="v-val">1.0 G</span></div>
+        </div>
+
+        <div class="hud-bottom-dock">
+          <div class="keyboard-controls-hint">
+            <div class="hint-cell"><span class="hint-title">Throttle / Yaw</span><span><kbd>W</kbd><kbd>S</kbd> <kbd>A</kbd><kbd>D</kbd></span></div>
+            <div class="hint-cell"><span class="hint-title">Pitch / Roll</span><span><kbd>↑</kbd><kbd>↓</kbd> <kbd>←</kbd><kbd>→</kbd></span></div>
+            <div class="hint-cell"><span class="hint-title">Misc</span><span><kbd>C</kbd>cam <kbd>F</kbd>mode <kbd>R</kbd>reset</span></div>
+          </div>
+          <div class="dock-actions">
+            <button id="btn-cam" class="hud-control-btn">📷 Chase</button>
+            <button id="btn-mode" class="hud-control-btn">⚙️ Level</button>
+            <button id="btn-reset" class="hud-control-btn">↺ Reset</button>
+            <button id="btn-exit" class="hud-control-btn exit-accent-btn">✕ Exit</button>
+          </div>
+        </div>
+
+        <div id="joy-l" class="touch-joystick-zone zone-left"><div class="joystick-ring"><div class="joystick-stick"></div></div><span class="joystick-label">THR / YAW</span></div>
+        <div id="joy-r" class="touch-joystick-zone zone-right"><div class="joystick-ring"><div class="joystick-stick"></div></div><span class="joystick-label">PITCH / ROLL</span></div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
