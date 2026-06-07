@@ -223,22 +223,15 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
       pg.add(new THREE.Mesh(new THREE.CylinderGeometry(.032,.032,.022,10),M.dark));
       pg.add(new THREE.Mesh(new THREE.CylinderGeometry(.016,.016,.01,10),M.silver).translateY(0.011)); // locknut
       
-      // Aerodynamic pitched propeller blades
       for(let i=0;i<nb;i++){
         const bladeGroup = new THREE.Group();
         bladeGroup.rotation.y = i * 2 * Math.PI / nb;
         
-        // Inner blade segment (tapered and pitched)
-        const innerBlade = new THREE.Mesh(new THREE.BoxGeometry(0.024, 0.004, span/2), M.orange);
-        innerBlade.position.set(0, 0.002, span/4);
-        innerBlade.rotation.x = 0.12; // pitch angle
-        bladeGroup.add(innerBlade);
-        
-        // Outer blade segment (thinned and twisted)
-        const outerBlade = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.003, span/2), M.orange);
-        outerBlade.position.set(0, 0.006, span * 0.7);
-        outerBlade.rotation.x = 0.06; // reduced twist pitch
-        bladeGroup.add(outerBlade);
+        // Single continuous straight blade
+        const blade = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.003, span * 0.95), M.orange);
+        blade.position.set(0, 0.003, span * 0.475);
+        blade.rotation.x = 0.08; // pitch angle
+        bladeGroup.add(blade);
         
         pg.add(bladeGroup);
       }
@@ -274,7 +267,7 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
   }
   else if(cat==='battery'){
     const bw=id==='bt-3s'?.14:id==='bt-6s'?.22:.18, bh=id==='bt-3s'?.08:id==='bt-6s'?.15:.12, bl=id==='bt-3s'?.26:id==='bt-6s'?.42:.34;
-    const yOff=duct?.32:.2;
+    const yOff = -bh/2 - 0.004;
     
     // Individual layered cells (shows multi-cell LiPo structure)
     const numCells = id==='bt-6s'?6:id==='bt-3s'?3:4;
@@ -587,7 +580,10 @@ class AssemblyLab {
 
     // Initialize drone pivot resting on the tabletop board (Avata is default frame, offset = 0.05)
     this.pivot = new THREE.Group();
-    this.pivot.position.y = 0.05;
+    const frameId = this.slots.frame?.id;
+    const offset = frameId === 'fr-avata' ? 0.05 : 0.01;
+    const bh = this.slots.battery ? (this.slots.battery.id === 'bt-3s' ? 0.08 : this.slots.battery.id === 'bt-6s' ? 0.15 : 0.12) : 0;
+    this.pivot.position.y = Math.max(offset, bh + 0.006);
     this.workbenchGroup.add(this.pivot);
     
     this._tick();
@@ -633,10 +629,11 @@ class AssemblyLab {
       });
     }
 
-    // Dynamic height adjustment: Rest bottom of drone frame flat on tabletop (Y = 0)
+    // Dynamic height adjustment: Rest bottom of drone frame/battery flat on tabletop (Y = 0)
     const frameId = this.slots.frame?.id;
     const offset = frameId === 'fr-avata' ? 0.05 : 0.01;
-    this.pivot.position.y = 0 + offset;
+    const bh = this.slots.battery ? (this.slots.battery.id === 'bt-3s' ? 0.08 : this.slots.battery.id === 'bt-6s' ? 0.15 : 0.12) : 0;
+    this.pivot.position.y = Math.max(offset, bh + 0.006);
 
     this._calc();
   }
