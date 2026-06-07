@@ -273,7 +273,7 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
     g.add(puck);
   }
   else if(cat==='battery'){
-    const bw=id==='bt-3s'?.2:id==='bt-6s'?.35:.28, bh=id==='bt-3s'?.11:id==='bt-6s'?.24:.18, bl=id==='bt-3s'?.42:id==='bt-6s'?.7:.58;
+    const bw=id==='bt-3s'?.14:id==='bt-6s'?.22:.18, bh=id==='bt-3s'?.08:id==='bt-6s'?.15:.12, bl=id==='bt-3s'?.26:id==='bt-6s'?.42:.34;
     const yOff=duct?.32:.2;
     
     // Individual layered cells (shows multi-cell LiPo structure)
@@ -285,7 +285,7 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
     for(let i=0; i<numCells; i++) {
       const cy = -bh/2 + cellH/2 + i*cellH;
       // Cell wrapper (silver metal look inside wrapper)
-      const cell = new THREE.Mesh(new THREE.BoxGeometry(bw-0.008, cellH-0.002, bl-0.008), M.silver);
+      const cell = new THREE.Mesh(new THREE.BoxGeometry(bw-0.006, cellH-0.002, bl-0.006), M.silver);
       cell.position.y = cy;
       battGroup.add(cell);
     }
@@ -297,34 +297,36 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
     g.add(battGroup);
     
     // Velcro Battery Strap wrapping around frame
-    const strap = new THREE.Mesh(new THREE.BoxGeometry(bw + 0.012, bh + 0.012, 0.06), M.dark);
+    const strap = new THREE.Mesh(new THREE.BoxGeometry(bw + 0.008, bh + 0.008, 0.04), M.dark);
     strap.position.set(0, yOff, -0.02);
     g.add(strap);
-    const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.03, 0.04), M.silver);
-    buckle.position.set(bw/2 + 0.006, yOff, -0.02);
+    const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.005, 0.02, 0.025), M.silver);
+    buckle.position.set(bw/2 + 0.004, yOff, -0.02);
     g.add(buckle);
 
     // Thick Power Cables (Red & Black) with Yellow XT60 plug
-    const cableRed = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.18, 8), M.orange);
-    cableRed.position.set(0.015, yOff, -bl/2 - 0.05);
+    const cableRadius = 0.004;
+    const cableLen = 0.1;
+    const cableRed = new THREE.Mesh(new THREE.CylinderGeometry(cableRadius, cableRadius, cableLen, 8), M.orange);
+    cableRed.position.set(0.01, yOff, -bl/2 - cableLen/3);
     cableRed.rotation.x = Math.PI/3;
     g.add(cableRed);
-    const cableBlack = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.18, 8), M.dark);
-    cableBlack.position.set(-0.015, yOff, -bl/2 - 0.05);
+    const cableBlack = new THREE.Mesh(new THREE.CylinderGeometry(cableRadius, cableRadius, cableLen, 8), M.dark);
+    cableBlack.position.set(-0.01, yOff, -bl/2 - cableLen/3);
     cableBlack.rotation.x = Math.PI/3;
     g.add(cableBlack);
-    const xt60 = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.022, 0.04), yellowMat);
-    xt60.position.set(0, yOff - 0.04, -bl/2 - 0.1);
+    const xt60 = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.015, 0.026), yellowMat);
+    xt60.position.set(0, yOff - 0.025, -bl/2 - cableLen * 0.7);
     xt60.rotation.x = Math.PI/6;
     g.add(xt60);
     
     // White JST-XH Balance charging lead (highly realistic detail!)
-    const balCable = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.09, 6), M.white);
-    balCable.position.set(-bw/3, yOff, bl/2 + 0.03);
+    const balCable = new THREE.Mesh(new THREE.CylinderGeometry(0.0018, 0.0018, 0.05, 6), M.white);
+    balCable.position.set(-bw/3, yOff, bl/2 + 0.02);
     balCable.rotation.z = Math.PI/4;
     g.add(balCable);
-    const jstPlug = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.008, 0.018), M.white);
-    jstPlug.position.set(-bw/3 - 0.03, yOff + 0.03, bl/2 + 0.045);
+    const jstPlug = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.005, 0.012), M.white);
+    jstPlug.position.set(-bw/3 - 0.02, yOff + 0.02, bl/2 + 0.03);
     g.add(jstPlug);
   }
   else if(cat==='camera'){
@@ -2324,7 +2326,11 @@ document.addEventListener('DOMContentLoaded', () => {
       n.classList.remove('active');
       if(n.dataset.screen === name) n.classList.add('active');
     });
-    if(name==='builder' && !lab){ lab = new AssemblyLab('assembly-canvas', onStats); buildTabs(); }
+    if(name==='builder' && !lab){
+      lab = new AssemblyLab('assembly-canvas', onStats);
+      buildTabs();
+      applyPreset('avata');
+    }
   };
 
   /* breadcrumb clicks */
