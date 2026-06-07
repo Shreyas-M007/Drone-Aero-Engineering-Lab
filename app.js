@@ -332,37 +332,43 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
       });
       
       // Top carbon deck plate (elevated)
-      const topPlate = new THREE.Mesh(new THREE.BoxGeometry(duct?.2:.26, .006, duct?.32:.48), M.carbon);
-      topPlate.position.y = 0.22;
-      topPlate.position.z = -0.05;
-      g.add(topPlate);
+      if (id !== 'fr-neo') {
+        const topPlate = new THREE.Mesh(new THREE.BoxGeometry(duct?.2:.26, .006, duct?.32:.48), M.carbon);
+        topPlate.position.y = 0.22;
+        topPlate.position.z = -0.05;
+        g.add(topPlate);
+      }
 
       // Standoff columns
-      const standoffHeight = 0.22;
-      const standoffPositions = duct ? 
-        [[0.09, 0.11, 0.14], [-0.09, 0.11, 0.14], [0.09, 0.11, -0.18], [-0.09, 0.11, -0.18]] :
-        [[0.11, 0.11, 0.2], [-0.11, 0.11, 0.2], [0.11, 0.11, -0.2], [-0.11, 0.11, -0.2], [0.09, 0.11, 0], [-0.09, 0.11, 0]];
-        
-      standoffPositions.forEach(p => {
-        const column = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, standoffHeight, 8), M.indigo);
-        column.position.set(p[0], p[1], p[2]);
-        g.add(column);
-        
-        const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.006, 6), M.silver);
-        bolt.position.set(p[0], 0.223, p[2]);
-        g.add(bolt);
-      });
+      if (id !== 'fr-neo') {
+        const standoffHeight = 0.22;
+        const standoffPositions = duct ? 
+          [[0.09, 0.11, 0.14], [-0.09, 0.11, 0.14], [0.09, 0.11, -0.18], [-0.09, 0.11, -0.18]] :
+          [[0.11, 0.11, 0.2], [-0.11, 0.11, 0.2], [0.11, 0.11, -0.2], [-0.11, 0.11, -0.2], [0.09, 0.11, 0], [-0.09, 0.11, 0]];
+          
+        standoffPositions.forEach(p => {
+          const column = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, standoffHeight, 8), M.indigo);
+          column.position.set(p[0], p[1], p[2]);
+          g.add(column);
+          
+          const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.006, 6), M.silver);
+          bolt.position.set(p[0], 0.223, p[2]);
+          g.add(bolt);
+        });
+      }
 
       // Camera Cage side carbon plates
-      const cageZ = duct ? 0.24 : 0.32;
-      [-0.08, 0.08].forEach(x => {
-        const cagePlate = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.22, 0.15), M.carbon);
-        cagePlate.position.set(x, 0.11, cageZ);
-        g.add(cagePlate);
-      });
+      if (id !== 'fr-neo') {
+        const cageZ = duct ? 0.24 : 0.32;
+        [-0.08, 0.08].forEach(x => {
+          const cagePlate = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.22, 0.15), M.carbon);
+          cagePlate.position.set(x, 0.11, cageZ);
+          g.add(cagePlate);
+        });
+      }
 
-      if(id==='fr-avata'){
-        const ductR = 0.38;
+      if(id==='fr-avata' || id==='fr-neo'){
+        const ductR = id==='fr-neo' ? 0.32 : 0.38;
         motorPos.forEach(p => {
           g.add(new THREE.Mesh(new THREE.CylinderGeometry(ductR, ductR, .18, 32, 1, true), M.orange).translateX(p[0]).translateY(.03).translateZ(p[2]));
         });
