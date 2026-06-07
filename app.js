@@ -12,6 +12,7 @@ const PARTS = {
     { id:'fr-phantom', name:'DJI Phantom 6″ unibody',  w:220, desc:'Classic white aerodynamic unibody shell. Highly stable.', sp:{Size:'6″ Quad',Mat:'ABS Unibody'}},
     { id:'fr-mavic', name:'DJI Mavic 3 folding shell', w:175, desc:'Foldable carbon-composite frame with low aerodynamic drag.', sp:{Size:'5″ Fold',Mat:'Carbon Composite'}},
     { id:'fr-inspire', name:'DJI Inspire 3 carbon T-frame', w:340, desc:'Professional dual-boom CineCore frame with retractable landing gear.', sp:{Size:'7″ Cine',Mat:'Carbon Weave'}},
+    { id:'fr-redbull', name:'Red Bull Drone 1 speed shell', w:130, desc:'Custom aerodynamic rocket-shape high-speed frame designed by Dutch Drone Gods & RBAT.', sp:{Size:'5″ Speed',Mat:'Aerodynamic Fairing'}},
   ],
   motors: [
     { id:'mt-1404', name:'1404 2900KV micro bell',     w:9,  thrust:420,  desc:'Lightweight high-efficiency motors for micro quads.', sp:{KV:'2900',Lift:'420 g ea'}},
@@ -117,10 +118,10 @@ function makeTextSprite(message) {
 // Global helper to build a specific component mesh for a given configuration
 function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
   const g = new THREE.Group(), M = AssemblyLab.MAT;
-  const actualMotorId = motorId || (frameId === 'fr-inspire' ? 'mt-3512' : (frameId === 'fr-phantom' ? 'mt-2312' : (frameId === 'fr-mavic' ? 'mt-2008' : 'mt-2207')));
+  const actualMotorId = motorId || (frameId === 'fr-inspire' ? 'mt-3512' : (frameId === 'fr-phantom' ? 'mt-2312' : (frameId === 'fr-mavic' ? 'mt-2008' : (frameId === 'fr-redbull' ? 'mt-2806' : 'mt-2207'))));
   const duct = frameId === 'fr-neo' || frameId === 'fr-avata';
-  const s = frameId === 'fr-neo' ? 0.38 : frameId === 'fr-avata' ? 0.44 : (frameId === 'fr-mavic' ? 0.52 : (frameId === 'fr-phantom' ? 0.58 : (frameId === 'fr-inspire' ? 0.80 : 0.56)));
-  const motorY = frameId === 'fr-inspire' ? 0.06 : (frameId === 'fr-phantom' ? 0.03 : (frameId === 'fr-mavic' ? 0.03 : 0.02));
+  const s = frameId === 'fr-neo' ? 0.38 : frameId === 'fr-avata' ? 0.44 : (frameId === 'fr-mavic' ? 0.52 : (frameId === 'fr-phantom' ? 0.58 : (frameId === 'fr-inspire' ? 0.80 : (frameId === 'fr-redbull' ? 0.56 : 0.56))));
+  const motorY = frameId === 'fr-inspire' ? 0.06 : (frameId === 'fr-phantom' ? 0.03 : (frameId === 'fr-mavic' ? 0.03 : (frameId === 'fr-redbull' ? 0.07 : 0.02)));
   
   const getMotorPos = (fid, s, mY) => {
     if (fid === 'fr-mavic') {
@@ -300,6 +301,55 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
         });
         
         g.add(legGroup);
+      });
+    }
+    else if(id==='fr-redbull'){
+      // Red Bull Drone 1 Rocket-shaped aerodynamic fairing
+      const redBullBlue = new THREE.MeshStandardMaterial({color:0x0b132b, roughness:0.2, metalness:0.8});
+      const redBullRed = new THREE.MeshStandardMaterial({color:0xef4444, roughness:0.3, metalness:0.5});
+      const redBullYellow = new THREE.MeshStandardMaterial({color:0xeab308, roughness:0.3, metalness:0.5});
+      
+      // Main torpedo/rocket body fuselage
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.36, 24), redBullBlue);
+      body.rotation.x = Math.PI / 2;
+      body.position.set(0, 0.07, -0.02);
+      g.add(body);
+      
+      // Red nose cone (front)
+      const nose = new THREE.Mesh(new THREE.CylinderGeometry(0, 0.055, 0.10, 24), redBullRed);
+      nose.rotation.x = Math.PI / 2;
+      nose.position.set(0, 0.07, 0.21);
+      g.add(nose);
+      
+      // Tail cone (rear)
+      const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.02, 0.08, 24), redBullBlue);
+      tail.rotation.x = Math.PI / 2;
+      tail.position.set(0, 0.07, -0.24);
+      g.add(tail);
+      
+      // Yellow decal stripe ring around the body
+      const stripe = new THREE.Mesh(new THREE.CylinderGeometry(0.056, 0.056, 0.03, 24), redBullYellow);
+      stripe.rotation.x = Math.PI / 2;
+      stripe.position.set(0, 0.07, -0.06);
+      g.add(stripe);
+
+      // Red tail warning light at the very back tip
+      const tailLight = new THREE.Mesh(new THREE.SphereGeometry(0.016, 8, 8), new THREE.MeshBasicMaterial({color:0xef4444}));
+      tailLight.position.set(0, 0.07, -0.28);
+      g.add(tailLight);
+
+      // 4 carbon fiber arms to motor mounts (lying in the x-z plane at y = 0.07)
+      armConfigs.forEach(cfg => {
+        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, cfg.length, 12), M.carbon);
+        arm.rotation.x = Math.PI / 2;
+        arm.rotation.y = cfg.angle;
+        arm.position.set(cfg.x, 0.07, cfg.z);
+        g.add(arm);
+        
+        // Compact motor mounts
+        const mount = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.02, 12), M.dark);
+        mount.position.set(cfg.x * 2, 0.07, cfg.z * 2);
+        g.add(mount);
       });
     }
     else {
@@ -649,6 +699,7 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
       if (fid === 'fr-phantom') return { y: 0.08, z: 0.20 };
       if (fid === 'fr-mavic') return { y: 0.06, z: 0.24 };
       if (fid === 'fr-inspire') return { y: 0.08, z: 0.22 };
+      if (fid === 'fr-redbull') return { y: 0.07, z: 0.24 };
       return { y: 0.11, z: 0.32 }; // default/FPV 5"
     };
 
@@ -1145,6 +1196,8 @@ class AssemblyLab {
       frameLowestY = -0.18;
     } else if (frameId === 'fr-mavic') {
       frameLowestY = -0.005; // body bottom is at -0.005 (no landing pillars)
+    } else if (frameId === 'fr-redbull') {
+      frameLowestY = -0.01; // aerodynamic body bottom is at -0.01 relative to pivot
     } else {
       // For Neo, Avata, FPV 5" and default frames
       const getBatteryHeight = id => {
@@ -1367,8 +1420,8 @@ class FlightSim {
       return 0.04;
     };
     const bh = batteryId ? getBatteryHeight(batteryId) : 0;
-    const baseLandingHeight = frameId === 'fr-phantom' ? 0.13 : (frameId === 'fr-inspire' ? 0.235 : (frameId === 'fr-mavic' ? 0.005 : 0.18));
-    this.landingHeight = frameId === 'fr-phantom' || frameId === 'fr-inspire' || frameId === 'fr-mavic' ? baseLandingHeight : Math.max(baseLandingHeight, bh + 0.006);
+    const baseLandingHeight = frameId === 'fr-phantom' ? 0.13 : (frameId === 'fr-inspire' ? 0.235 : (frameId === 'fr-mavic' ? 0.005 : (frameId === 'fr-redbull' ? 0.01 : 0.18)));
+    this.landingHeight = frameId === 'fr-phantom' || frameId === 'fr-inspire' || frameId === 'fr-mavic' || frameId === 'fr-redbull' ? baseLandingHeight : Math.max(baseLandingHeight, bh + 0.006);
 
     document.getElementById('crash-overlay').classList.add('hidden');
     document.getElementById('hud-battery-warn').classList.add('hidden');
@@ -2907,6 +2960,7 @@ class FlightSim {
         if (fid === 'fr-phantom') return { y: 0.08, z: 0.20 };
         if (fid === 'fr-mavic') return { y: 0.06, z: 0.24 };
         if (fid === 'fr-inspire') return { y: 0.08, z: 0.22 };
+        if (fid === 'fr-redbull') return { y: 0.07, z: 0.24 };
         return { y: 0.11, z: 0.32 };
       };
       const fpvPos = getFpvCamPos(frameId);
@@ -3159,6 +3213,16 @@ document.addEventListener('DOMContentLoaded', () => {
       battery: 'bt-inspire',
       camera: 'cm-inspire',
       transmitter: 'tx-inspire'
+    },
+    redbull: {
+      frame: 'fr-redbull',
+      motors: 'mt-2806',
+      esc: 'es-70a',
+      propellers: 'pr-2b',
+      flight_controller: 'fc-f7',
+      battery: 'bt-6s',
+      camera: 'cm-4k',
+      transmitter: 'tx-o3'
     }
   };
 
