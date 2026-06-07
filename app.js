@@ -90,7 +90,7 @@ const _tempSphere = new THREE.Sphere();
 
 /* helper — terrain height at world (x,z) */
 function terrainY(x, z) {
-  let h = Math.sin(x * 0.012) * Math.cos(z * 0.012) * 12 + Math.sin(x * 0.03) * 3.5;
+  let h = Math.sin(Math.abs(x) * 0.012) * Math.cos(z * 0.012) * 12 + Math.sin(Math.abs(x) * 0.03) * 3.5;
   const river = Math.min(Math.abs(x) / 36, 1);
   return h * river - (1 - river) * 9;
 }
@@ -115,13 +115,24 @@ function makeTextSprite(message) {
 }
 
 // Global helper to build a specific component mesh for a given configuration
-function buildComponentMesh(cat, id, frameId, propsArray) {
+function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
   const g = new THREE.Group(), M = AssemblyLab.MAT;
   const duct = frameId === 'fr-neo' || frameId === 'fr-avata';
   const s = frameId === 'fr-neo' ? 0.3 : frameId === 'fr-avata' ? 0.35 : (frameId === 'fr-mavic' ? 0.42 : (frameId === 'fr-phantom' ? 0.48 : (frameId === 'fr-inspire' ? 0.65 : 0.45)));
   const armAngles = [Math.PI/4,-Math.PI/4,3*Math.PI/4,-3*Math.PI/4];
   const motorY = frameId === 'fr-inspire' ? 0.06 : (frameId === 'fr-phantom' ? 0.03 : (frameId === 'fr-mavic' ? 0.03 : 0.02));
   const motorPos = [[s,motorY,s],[-s,motorY,s],[s,motorY,-s],[-s,motorY,-s]];
+
+  const getBatteryHeight = bid => {
+    if (bid === 'bt-1s') return 0.04;
+    if (bid === 'bt-3s') return 0.08;
+    if (bid === 'bt-6s') return 0.15;
+    if (bid === 'bt-phantom') return 0.20;
+    if (bid === 'bt-mavic') return 0.16;
+    if (bid === 'bt-inspire') return 0.22;
+    return 0.12;
+  };
+  const bh = batteryId ? getBatteryHeight(batteryId) : 0;
 
   // Local helper materials for high-fidelity detailing
   const yellowMat = new THREE.MeshStandardMaterial({color: 0xeab308, roughness: 0.4});
@@ -137,9 +148,9 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
       
       // White arms
       armAngles.forEach(a=>{
-        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.03, s * 0.9), M.white);
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.03, s * 1.05), M.white);
         arm.rotation.y = a;
-        arm.position.set(Math.sin(a)*s*0.45, 0.03, Math.cos(a)*s*0.45);
+        arm.position.set(Math.sin(a)*s*0.5, 0.03, Math.cos(a)*s*0.5);
         g.add(arm);
         
         // Motor mounts
@@ -185,9 +196,9 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
       armAngles.forEach((a, idx) => {
         const isFront = idx < 2;
         const armL = isFront ? s * 0.95 : s * 0.85;
-        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.026, 0.022, armL), M.carbon);
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.026, 0.022, armL * 1.05), M.carbon);
         arm.rotation.y = a;
-        arm.position.set(Math.sin(a)*armL*0.45, 0.03, Math.cos(a)*armL*0.45);
+        arm.position.set(Math.sin(a)*armL*0.5, 0.03, Math.cos(a)*armL*0.5);
         g.add(arm);
         
         // Motor pods
@@ -228,10 +239,10 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
       
       // Heavy carbon arm tubes to motor mounts
       armAngles.forEach(a => {
-        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, s * 0.9, 10), M.carbon);
+        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, s * 1.05, 10), M.carbon);
         arm.rotation.z = Math.PI / 2;
         arm.rotation.y = a;
-        arm.position.set(Math.sin(a)*s*0.45, 0.06, Math.cos(a)*s*0.45);
+        arm.position.set(Math.sin(a)*s*0.5, 0.06, Math.cos(a)*s*0.5);
         g.add(arm);
         
         // Large motor mounts
@@ -272,6 +283,21 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
       // Bottom carbon chassis plate
       g.add(new THREE.Mesh(new THREE.BoxGeometry(duct?.3:.38, .008, duct?.4:.65), M.carbon));
       
+      // Vertical landing gear legs with rubber feet
+      const legW = duct ? 0.3 : 0.38;
+      const legL = duct ? 0.4 : 0.65;
+      const legX = legW / 2 - 0.02;
+      const legZ = legL / 2 - 0.04;
+      const legH = Math.max(0.18, bh + 0.006);
+      [[legX, legZ], [-legX, legZ], [legX, -legZ], [-legX, -legZ]].forEach(p => {
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, legH, 8), M.carbon);
+        leg.position.set(p[0], -legH / 2, p[1]);
+        g.add(leg);
+        const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.012, 8), M.dark);
+        foot.position.set(p[0], -legH + 0.006, p[1]);
+        g.add(foot);
+      });
+      
       // Top carbon deck plate (elevated)
       const topPlate = new THREE.Mesh(new THREE.BoxGeometry(duct?.2:.26, .006, duct?.32:.48), M.carbon);
       topPlate.position.y = 0.22;
@@ -310,8 +336,8 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
       
       // Frame arms
       armAngles.forEach(a=>{
-        const arm=new THREE.Mesh(new THREE.BoxGeometry(.04,.016,duct?.5:.9),M.carbon);
-        arm.rotation.y=a; arm.position.set(Math.sin(a)*s*.7,0,Math.cos(a)*s*.7); g.add(arm);
+        const arm=new THREE.Mesh(new THREE.BoxGeometry(.04,.016,s * 1.05),M.carbon);
+        arm.rotation.y=a; arm.position.set(Math.sin(a)*s*0.5,0,Math.cos(a)*s*0.5); g.add(arm);
       });
       
       if(duct){ 
@@ -949,7 +975,7 @@ class AssemblyLab {
     // Initialize drone pivot resting on the tabletop board
     this.pivot = new THREE.Group();
     const frameId = this.slots.frame?.id;
-    const offset = frameId === 'fr-avata' ? 0.05 : (frameId === 'fr-phantom' ? 0.135 : (frameId === 'fr-inspire' ? 0.18 : (frameId === 'fr-mavic' ? 0.02 : 0.01)));
+    const landingHeight = frameId === 'fr-phantom' ? 0.13 : (frameId === 'fr-inspire' ? 0.235 : (frameId === 'fr-mavic' ? 0.06 : 0.18));
     const getBatteryHeight = id => {
       if (id === 'bt-1s') return 0.04;
       if (id === 'bt-3s') return 0.08;
@@ -960,7 +986,7 @@ class AssemblyLab {
       return 0.12;
     };
     const bh = this.slots.battery ? getBatteryHeight(this.slots.battery.id) : 0;
-    this.pivot.position.y = Math.max(offset, bh + 0.006);
+    this.pivot.position.y = frameId === 'fr-phantom' || frameId === 'fr-inspire' || frameId === 'fr-mavic' ? landingHeight : Math.max(landingHeight, bh + 0.006);
     this.workbenchGroup.add(this.pivot);
     
     this._tick();
@@ -1008,7 +1034,7 @@ class AssemblyLab {
 
     // Dynamic height adjustment: Rest bottom of drone frame/battery flat on tabletop (Y = 0)
     const frameId = this.slots.frame?.id;
-    const offset = frameId === 'fr-avata' ? 0.05 : (frameId === 'fr-phantom' ? 0.135 : (frameId === 'fr-inspire' ? 0.18 : (frameId === 'fr-mavic' ? 0.02 : 0.01)));
+    const landingHeight = frameId === 'fr-phantom' ? 0.13 : (frameId === 'fr-inspire' ? 0.235 : (frameId === 'fr-mavic' ? 0.06 : 0.18));
     const getBatteryHeight = id => {
       if (id === 'bt-1s') return 0.04;
       if (id === 'bt-3s') return 0.08;
@@ -1019,13 +1045,13 @@ class AssemblyLab {
       return 0.12;
     };
     const bh = this.slots.battery ? getBatteryHeight(this.slots.battery.id) : 0;
-    this.pivot.position.y = Math.max(offset, bh + 0.006);
+    this.pivot.position.y = frameId === 'fr-phantom' || frameId === 'fr-inspire' || frameId === 'fr-mavic' ? landingHeight : Math.max(landingHeight, bh + 0.006);
 
     this._calc();
   }
 
   _buildMesh(cat, id) {
-    return buildComponentMesh(cat, id, this.slots.frame?.id, this.props);
+    return buildComponentMesh(cat, id, this.slots.frame?.id, this.props, this.slots.battery?.id);
   }
 
   pct()   { return Math.round(REQUIRED.filter(k=>this.slots[k]).length/REQUIRED.length*100); }
@@ -1101,7 +1127,6 @@ class FlightSim {
     this.cv = document.getElementById(canvasId);
     this.vid = document.getElementById(videoId);
     this.onHud = onHud;
-
     this.pos = new THREE.Vector3(); this.vel = new THREE.Vector3(); this.quat = new THREE.Quaternion();
     this.thr=0; this.yaw=0; this.pit=0; this.rol=0;
     this.mode='level'; this.camMode='chase';
@@ -1151,6 +1176,21 @@ class FlightSim {
     this.targetGateIdx = 0;
     this.obstaclesClearedCount = 0;
 
+    const frameId = spec?.config?.frame || 'fr-fpv5';
+    const batteryId = spec?.config?.battery;
+    const getBatteryHeight = bid => {
+      if (bid === 'bt-1s') return 0.04;
+      if (bid === 'bt-3s') return 0.08;
+      if (bid === 'bt-6s') return 0.15;
+      if (bid === 'bt-phantom') return 0.20;
+      if (bid === 'bt-mavic') return 0.16;
+      if (bid === 'bt-inspire') return 0.22;
+      return 0.12;
+    };
+    const bh = batteryId ? getBatteryHeight(batteryId) : 0;
+    const baseLandingHeight = frameId === 'fr-phantom' ? 0.13 : (frameId === 'fr-inspire' ? 0.235 : (frameId === 'fr-mavic' ? 0.06 : 0.18));
+    this.landingHeight = frameId === 'fr-phantom' || frameId === 'fr-inspire' || frameId === 'fr-mavic' ? baseLandingHeight : Math.max(baseLandingHeight, bh + 0.006);
+
     document.getElementById('crash-overlay').classList.add('hidden');
     document.getElementById('hud-battery-warn').classList.add('hidden');
     document.body.classList.remove('glitch-active');
@@ -1189,7 +1229,7 @@ class FlightSim {
     this.timeActive = 0;
     this._gamepadActive = false;
     this._gamepadFpvThrottle = false;
-    const spawnY = env==='ar' ? 0.42 : (env==='cyber' ? 40.42 : (env==='city' ? 4.82 : 0.42));
+    const spawnY = env==='ar' ? this.landingHeight : (env==='cyber' ? 40.0 + this.landingHeight : (env==='city' ? 4.4 + this.landingHeight : this.landingHeight));
     const spawnZ = env==='ar' ? 1.2 : (env==='cyber' ? 0 : (env==='city' ? 15 : 10));
     this.pos.set(0, spawnY, spawnZ);
     this.vel.set(0,0,0);
@@ -1330,21 +1370,21 @@ class FlightSim {
     }
 
     /* bridge */
-    const road=new THREE.Mesh(new THREE.BoxGeometry(12,.8,95),new THREE.MeshLambertMaterial({color:0x334155}));
+    const road=new THREE.Mesh(new THREE.BoxGeometry(95,.8,12),new THREE.MeshLambertMaterial({color:0x334155}));
     road.position.set(0,4,0); road.receiveShadow=true; this.scene.add(road);
     road.updateMatrixWorld(true);
     this.buildings.push({box:new THREE.Box3().setFromObject(road),name:'Bridge Deck'});
     const pilMat=new THREE.MeshPhongMaterial({color:0x475569,shininess:30});
     const pillarGeo=new THREE.BoxGeometry(1.2,24,1.2);
-    [[-5.5,12,0],[5.5,12,0]].forEach((p,i)=>{
+    [[-30,12,-5.5],[30,12,5.5]].forEach((p,i)=>{
       const pillar=new THREE.Mesh(pillarGeo,pilMat);
       pillar.position.set(p[0],p[1],p[2]); pillar.castShadow=true; pillar.receiveShadow=true; this.scene.add(pillar);
       pillar.updateMatrixWorld(true);
       this.buildings.push({box:new THREE.Box3().setFromObject(pillar),name:`Bridge Pillar ${i+1}`});
     });
     const wireMat=new THREE.LineBasicMaterial({color:0x6366F1});
-    [[-5.5],[5.5]].forEach(x=>{
-      const pts=[new THREE.Vector3(x,4.4,-47),new THREE.Vector3(x,23.5,0),new THREE.Vector3(x,4.4,47)];
+    [[-5.5, -30],[5.5, 30]].forEach(([z, xStrut])=>{
+      const pts=[new THREE.Vector3(-47,4.4,z),new THREE.Vector3(xStrut,23.5,z),new THREE.Vector3(47,4.4,z)];
       this.scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),wireMat));
     });
 
@@ -2086,7 +2126,7 @@ class FlightSim {
     REQUIRED.forEach(cat => {
       const id = config[cat];
       if(id){
-        const mesh = buildComponentMesh(cat, id, frameId, cat === 'propellers' ? this.propGrps : null);
+        const mesh = buildComponentMesh(cat, id, frameId, cat === 'propellers' ? this.propGrps : null, config.battery);
         if(mesh) g.add(mesh);
       }
     });
@@ -2429,7 +2469,7 @@ class FlightSim {
   }
 
   _collide(agl, gndY) {
-    const minH = gndY + 0.42;
+    const minH = gndY + this.landingHeight;
     if(this.pos.y<minH){
       if(this.vel.length()>4.2) {
         if (!this.timeActive || this.timeActive > 0.5) {
@@ -2466,16 +2506,23 @@ class FlightSim {
         continue;
       }
 
-      if(b.box.intersectsSphere(sp)){ 
+      const isStartingPlatform = 
+        b.name === 'Bridge Deck' || 
+        b.name === 'CyberTower 1' || 
+        b.name === 'Floor' || 
+        b.name === 'Coffee Table';
+      
+      if (isStartingPlatform) {
+        _tempSphere.set(this.pos, this.landingHeight);
+      } else {
+        _tempSphere.set(this.pos, 0.42);
+      }
+
+      if(b.box.intersectsSphere(_tempSphere)){ 
         // Safe landing / gentle contact on runways/starting platforms/floor/coffee table
-        const isStartingPlatform = 
-          b.name === 'Bridge Deck' || 
-          b.name === 'CyberTower 1' || 
-          b.name === 'Floor' || 
-          b.name === 'Coffee Table';
-        
         if (isStartingPlatform && this.vel.length() <= 4.2) {
-          this.pos.y = b.name === 'Bridge Deck' ? 4.82 : (b.name === 'CyberTower 1' ? 40.42 : (b.name === 'Coffee Table' ? 0.82 : 0.42));
+          const surfH = b.name === 'Bridge Deck' ? 4.4 : (b.name === 'CyberTower 1' ? 40.0 : (b.name === 'Coffee Table' ? 0.4 : 0.0));
+          this.pos.y = surfH + this.landingHeight;
           this.vel.set(0,0,0);
           continue;
         }
@@ -2483,7 +2530,8 @@ class FlightSim {
         if (!this.timeActive || this.timeActive > 0.5) {
           this._crash(this.vel.length(),b.name); break; 
         } else {
-          this.pos.y = b.name === 'Bridge Deck' ? 4.82 : (b.name === 'CyberTower 1' ? 40.42 : (b.name === 'Coffee Table' ? 0.82 : 0.42));
+          const surfH = b.name === 'Bridge Deck' ? 4.4 : (b.name === 'CyberTower 1' ? 40.0 : (b.name === 'Coffee Table' ? 0.4 : 0.0));
+          this.pos.y = surfH + this.landingHeight;
           this.vel.set(0,0,0);
         }
       }
@@ -2521,7 +2569,7 @@ class FlightSim {
     this.vel.z *= 0.95;
     this.pos.addScaledVector(this.vel, dt);
     const inStartingRoof = this.env === 'cyber' && Math.abs(this.pos.x) < 12 && Math.abs(this.pos.z) < 12;
-    const fl = inStartingRoof ? 40.42 : (this.env === 'city' ? terrainY(this.pos.x, this.pos.z) + 0.42 : 0.42);
+    const fl = inStartingRoof ? (40.0 + this.landingHeight) : (this.env === 'city' ? terrainY(this.pos.x, this.pos.z) + this.landingHeight : this.landingHeight);
     if(this.pos.y<fl){this.pos.y=fl;this.vel.set(0,0,0);}
     this.drone.position.copy(this.pos); this.drone.quaternion.copy(this.quat);
 
@@ -3162,7 +3210,15 @@ document.addEventListener('DOMContentLoaded', () => {
     sc.add(new THREE.AmbientLight(0xffffff,.7));
     sc.add(new THREE.PointLight(0x6366F1,1.2,10).translateX(2).translateY(2).translateZ(2));
     const g=new THREE.Group(), mat=new THREE.MeshStandardMaterial({color:0x242426,metalness:.8});
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(.1,.02,.7),mat)); g.add(new THREE.Mesh(new THREE.BoxGeometry(.7,.02,.1),mat));
+    const arm1 = new THREE.Mesh(new THREE.BoxGeometry(.03,.02,.99),mat);
+    arm1.rotation.y = Math.PI/4;
+    g.add(arm1);
+    const arm2 = new THREE.Mesh(new THREE.BoxGeometry(.03,.02,.99),mat);
+    arm2.rotation.y = -Math.PI/4;
+    g.add(arm2);
+    const body = new THREE.Mesh(new THREE.SphereGeometry(0.08,16,16),mat);
+    body.position.y = 0.01;
+    g.add(body);
     const rotors=[];
     [[.35,.35],[-.35,.35],[.35,-.35],[-.35,-.35]].forEach(o=>{
       g.add(new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,.05,8),new THREE.MeshStandardMaterial({color:0xe5e7eb,metalness:.9})).translateX(o[0]).translateY(.03).translateZ(o[1]));
