@@ -319,6 +319,16 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
       dome.position.set(0, 0.18, 0);
       g.add(dome);
       
+      // Tail cone (tapered bottom, matte black)
+      const tailCone = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.02, 0.10, 32), redBullBlack);
+      tailCone.position.set(0, -0.20, 0);
+      g.add(tailCone);
+      
+      // Red tail warning light at the very tip
+      const tailLight = new THREE.Mesh(new THREE.SphereGeometry(0.014, 8, 8), new THREE.MeshBasicMaterial({color: 0xef4444}));
+      tailLight.position.set(0, -0.25, 0);
+      g.add(tailLight);
+      
       // Recessed angled camera port on the dome top pointing slightly forward-down
       const camPort = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.012, 16), redBullBlack);
       camPort.position.set(0, 0.23, 0.035);
@@ -373,14 +383,20 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
       
       // Red aerodynamic arms and vertical motor pods
       armConfigs.forEach(cfg => {
-        // Horizontal arm from center to motor position (extended by cfg.length)
-        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, cfg.length, 16), redBullRed);
-        arm.rotation.x = Math.PI / 2;
-        // Align arm to point in the direction of the motor
-        arm.rotation.y = cfg.angle;
-        // Position arm centered between the main body and the motor
-        arm.position.set(cfg.x, -0.02, cfg.z);
-        g.add(arm);
+        const dist = Math.hypot(cfg.x * 2, cfg.z * 2);
+        const armLen = Math.hypot(dist, 0.08);
+        
+        const armGroup = new THREE.Group();
+        armGroup.position.set(0, 0.03, 0); // start higher on body
+        armGroup.rotation.y = cfg.angle; // point to motor
+        
+        // Swept-back aerodynamic wing/fin (red)
+        const fin = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.08, armLen), redBullRed);
+        fin.rotation.x = -Math.atan2(0.08, dist);
+        fin.position.set(0, -0.04, dist / 2);
+        armGroup.add(fin);
+        
+        g.add(armGroup);
         
         // Vertical motor pod cylinder
         const pod = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.13, 16), redBullRed);
@@ -1249,7 +1265,7 @@ class AssemblyLab {
     } else if (frameId === 'fr-mavic') {
       frameLowestY = -0.005; // body bottom is at -0.005 (no landing pillars)
     } else if (frameId === 'fr-redbull') {
-      frameLowestY = -0.01; // aerodynamic body bottom is at -0.01 relative to pivot
+      frameLowestY = -0.25; // aerodynamic body bottom is at -0.25 relative to pivot (tail light tip)
     } else {
       // For Neo, Avata, FPV 5" and default frames
       const getBatteryHeight = id => {
@@ -1496,7 +1512,7 @@ class FlightSim {
       return 0.04;
     };
     const bh = batteryId ? getBatteryHeight(batteryId) : 0;
-    const baseLandingHeight = frameId === 'fr-phantom' ? 0.13 : (frameId === 'fr-inspire' ? 0.235 : (frameId === 'fr-mavic' ? 0.005 : (frameId === 'fr-redbull' ? 0.01 : 0.18)));
+    const baseLandingHeight = frameId === 'fr-phantom' ? 0.13 : (frameId === 'fr-inspire' ? 0.235 : (frameId === 'fr-mavic' ? 0.005 : (frameId === 'fr-redbull' ? 0.25 : 0.18)));
     this.landingHeight = frameId === 'fr-phantom' || frameId === 'fr-inspire' || frameId === 'fr-mavic' || frameId === 'fr-redbull' ? baseLandingHeight : Math.max(baseLandingHeight, bh + 0.006);
 
     document.getElementById('crash-overlay').classList.add('hidden');
