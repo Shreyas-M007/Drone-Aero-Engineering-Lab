@@ -3057,7 +3057,12 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   document.querySelectorAll('[data-preset]').forEach(btn => btn.addEventListener('click', () => {
-    applyPreset(btn.dataset.preset);
+    const preset = btn.dataset.preset;
+    // Highlight the clicked button immediately for zero-latency UI response
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b.dataset.preset === preset));
+    setTimeout(() => {
+      applyPreset(preset);
+    }, 10);
   }));
 
   /* ── navigation ── */
