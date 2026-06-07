@@ -309,9 +309,9 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
       const redBullYellow = new THREE.MeshStandardMaterial({color: 0xfacc15, roughness: 0.4, metalness: 0.1});
       
       // Vertical cylinder body (matte black)
-      // Bottom at y = -0.15, top at y = 0.18 (height 0.33)
-      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.33, 32), redBullBlack);
-      body.position.set(0, 0.015, 0);
+      // Bottom at y = -0.22, top at y = 0.18 (height 0.40)
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.40, 32), redBullBlack);
+      body.position.set(0, -0.02, 0);
       g.add(body);
       
       // Dome top (matte black)
@@ -339,11 +339,11 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
         g.add(stripe);
       }
       
-      // Lower vertical red stripes
+      // Lower vertical red stripes (shifted lower on the extended body)
       for(let i = -3; i <= 3; i++) {
         const angle = i * 0.18;
         const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.045, 0.001), redBullRed);
-        stripe.position.set(Math.sin(angle) * 0.066, -0.10, Math.cos(angle) * 0.066);
+        stripe.position.set(Math.sin(angle) * 0.066, -0.15, Math.cos(angle) * 0.066);
         stripe.rotation.y = angle;
         g.add(stripe);
       }
@@ -1258,7 +1258,7 @@ class AssemblyLab {
     } else if (frameId === 'fr-mavic') {
       frameLowestY = -0.005; // body bottom is at -0.005 (no landing pillars)
     } else if (frameId === 'fr-redbull') {
-      frameLowestY = -0.01; // aerodynamic body bottom is at -0.01 relative to pivot
+      frameLowestY = -0.22; // aerodynamic body bottom is at -0.22 relative to pivot
     } else {
       // For Neo, Avata, FPV 5" and default frames
       const getBatteryHeight = id => {
@@ -1506,7 +1506,7 @@ class FlightSim {
       return 0.04;
     };
     const bh = batteryId ? getBatteryHeight(batteryId) : 0;
-    const baseLandingHeight = frameId === 'fr-phantom' ? 0.13 : (frameId === 'fr-inspire' ? 0.235 : (frameId === 'fr-mavic' ? 0.005 : (frameId === 'fr-redbull' ? 0.01 : 0.18)));
+    const baseLandingHeight = frameId === 'fr-phantom' ? 0.13 : (frameId === 'fr-inspire' ? 0.235 : (frameId === 'fr-mavic' ? 0.005 : (frameId === 'fr-redbull' ? 0.22 : 0.18)));
     this.landingHeight = frameId === 'fr-phantom' || frameId === 'fr-inspire' || frameId === 'fr-mavic' || frameId === 'fr-redbull' ? baseLandingHeight : Math.max(baseLandingHeight, bh + 0.006);
 
     document.getElementById('crash-overlay').classList.add('hidden');
