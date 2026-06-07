@@ -1401,6 +1401,7 @@ class AssemblyLab {
       else if (frameId === 'fr-fpv5') maxSpan = 5.3;
       else if (frameId === 'fr-phantom') maxSpan = 9.4;
       else if (frameId === 'fr-inspire') maxSpan = 15.0;
+      else if (frameId === 'fr-redbull') maxSpan = 5.3;
       
       const propSpan = parseFloat(this.slots.propellers.sp.Span);
       if (propSpan > maxSpan && this.slots.propellers.id !== 'pr-9-4') {
@@ -3475,6 +3476,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderList() {
     const el = document.getElementById('catalog-list'); el.innerHTML = '';
     PARTS[tab].forEach(item => {
+      if (tab === 'frame' && item.id === 'fr-redbull') return; // Hide Red Bull frame from catalog UI
       const eq = lab.slots[tab]?.id === item.id;
       const card = document.createElement('div');
       card.className = 'comp-card' + (eq?' equipped':'');
