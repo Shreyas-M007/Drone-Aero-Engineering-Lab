@@ -96,16 +96,3 @@ This repository provides practical exposure to:
 - Autonomous Navigation
 - Engineering Simulations
 
-
----
-
-## ⭐ Support The Project
-
-If you find this repository helpful:
-
-- Star the repository
-- Share it with fellow engineers
-- Contribute to the project
-- Help expand the aerospace engineering knowledge base
-
-
