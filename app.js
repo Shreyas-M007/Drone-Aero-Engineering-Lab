@@ -1303,7 +1303,22 @@ class AssemblyLab {
     const twr = w>0?+(thr/w).toFixed(1):0;
     let hover=0;
     if(w>0&&cap>0){ const draw=5.5+w*.011+(twr>4.5?(twr-4.5)*1.6:0); hover=+((cap/1000/draw)*60).toFixed(1); }
-    const spd=twr>0?Math.round(twr*28):0;
+    let spd=0;
+    if(twr>0){
+      const frameId = this.slots.frame?.id;
+      let cd = 0.08;
+      if (frameId === 'fr-neo') cd = 0.078;
+      else if (frameId === 'fr-avata') cd = 0.122;
+      else if (frameId === 'fr-fpv5') cd = 0.079;
+      else if (frameId === 'fr-phantom') cd = 0.144;
+      else if (frameId === 'fr-mavic') cd = 0.106;
+      else if (frameId === 'fr-inspire') cd = 0.255;
+      else if (frameId === 'fr-redbull') cd = 0.0127;
+      
+      const thrN_sim = (thr / 1000) * 9.81 * 1.5;
+      const v_max = Math.sqrt(thrN_sim / (cd * 1.225));
+      spd = Math.round(v_max * 3.6);
+    }
 
     let propOverlapError = false;
     let errMsg = '';
@@ -2644,7 +2659,13 @@ class FlightSim {
     const grav = _tempV1.set(0, -9.81 * mass, 0);
     const thrDir = _tempV2.set(0, 1, 0).applyQuaternion(this.quat).multiplyScalar(thrForce * gef);
     const frameId = this.droneSpec.frame || 'fr-fpv5';
-    const cd = frameId === 'fr-neo' ? 0.038 : (frameId === 'fr-avata' ? 0.026 : (frameId === 'fr-inspire' ? 0.016 : (frameId === 'fr-mavic' ? 0.011 : 0.013)));
+    const cd = frameId === 'fr-neo' ? 0.078 : 
+               (frameId === 'fr-avata' ? 0.122 : 
+               (frameId === 'fr-fpv5' ? 0.079 : 
+               (frameId === 'fr-phantom' ? 0.144 : 
+               (frameId === 'fr-mavic' ? 0.106 : 
+               (frameId === 'fr-inspire' ? 0.255 : 
+               (frameId === 'fr-redbull' ? 0.0127 : 0.08))))));
     const drag = _tempV3.copy(this.vel).multiplyScalar(-cd * 1.225 * this.vel.length());
     
     let wind = _tempV4.set(0, 0, 0);
