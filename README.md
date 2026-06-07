@@ -1,7 +1,5 @@
 # 🚁 Drone Aero Engineering Lab
-
 ---
-
 ## 📖 About The Project
 
 Drone Aero Engineering Lab is a comprehensive aerospace engineering repository dedicated to the research, design, development, and analysis of Unmanned Aerial Vehicles (UAVs).
@@ -84,31 +82,6 @@ Our mission is to bridge the gap between aerospace engineering theory and practi
 
 ---
 
-## 📈 Development Workflow
-
-```mermaid
-flowchart LR
-
-A[Mission Requirements]
---> B[Concept Design]
-
-B --> C[Aerodynamic Analysis]
-
-C --> D[Structural Design]
-
-D --> E[Simulation]
-
-E --> F[Control System Development]
-
-F --> G[Prototype Development]
-
-G --> H[Flight Testing]
-
-H --> I[Performance Evaluation]
-```
-
----
-
 ## 📚 Learning Outcomes
 
 This repository provides practical exposure to:
@@ -135,12 +108,4 @@ If you find this repository helpful:
 - Contribute to the project
 - Help expand the aerospace engineering knowledge base
 
----
 
-<div align="center">
-
-### Engineering the Future of Flight 🚀
-
-**Drone Aero Engineering Lab**
-
-</div>
