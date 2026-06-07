@@ -115,8 +115,9 @@ function makeTextSprite(message) {
 }
 
 // Global helper to build a specific component mesh for a given configuration
-function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
+function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
   const g = new THREE.Group(), M = AssemblyLab.MAT;
+  const actualMotorId = motorId || (frameId === 'fr-inspire' ? 'mt-3512' : (frameId === 'fr-phantom' ? 'mt-2312' : (frameId === 'fr-mavic' ? 'mt-2008' : 'mt-2207')));
   const duct = frameId === 'fr-neo' || frameId === 'fr-avata';
   const s = frameId === 'fr-neo' ? 0.38 : frameId === 'fr-avata' ? 0.44 : (frameId === 'fr-mavic' ? 0.52 : (frameId === 'fr-phantom' ? 0.58 : (frameId === 'fr-inspire' ? 0.80 : 0.56)));
   const motorY = frameId === 'fr-inspire' ? 0.06 : (frameId === 'fr-phantom' ? 0.03 : (frameId === 'fr-mavic' ? 0.03 : 0.02));
@@ -272,7 +273,7 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
       // Heavy carbon arm tubes to motor mounts
       armConfigs.forEach(cfg => {
         const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, cfg.length, 10), M.carbon);
-        arm.rotation.z = Math.PI / 2;
+        arm.rotation.x = Math.PI / 2;
         arm.rotation.y = cfg.angle;
         arm.position.set(cfg.x, 0.06, cfg.z);
         g.add(arm);
@@ -459,7 +460,7 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
     }
   }
   else if(cat==='propellers'){
-    let h = id==='mt-1404' ? 0.045 : (id==='mt-1306' ? 0.05 : (id==='mt-2008' ? 0.055 : (id==='mt-2312'||id==='mt-2207' ? 0.08 : (id==='mt-2806' ? 0.09 : (id==='mt-3512' ? 0.12 : 0.08)))));
+    let h = actualMotorId==='mt-1404' ? 0.045 : (actualMotorId==='mt-1306' ? 0.05 : (actualMotorId==='mt-2008' ? 0.055 : (actualMotorId==='mt-2312'||actualMotorId==='mt-2207' ? 0.08 : (actualMotorId==='mt-2806' ? 0.09 : (actualMotorId==='mt-3512' ? 0.12 : 0.08)))));
     const span=id==='pr-3b'?.28:(id==='pr-3-5b'||id==='pr-5b'?.34:(id==='pr-9b'||id==='pr-9-4'?.52:(id==='pr-15b'?.72:.5)));
     const nb=id==='pr-2b'||id==='pr-9b'||id==='pr-9-4'||id==='pr-15b'?2:(id==='pr-3-5b'||id==='pr-5b'?5:3);
     const propMat = id==='pr-15b'?M.carbon:(id==='pr-9b'?M.white:M.orange);
@@ -1229,7 +1230,7 @@ class AssemblyLab {
   }
 
   _buildMesh(cat, id) {
-    return buildComponentMesh(cat, id, this.slots.frame?.id, this.props, this.slots.battery?.id);
+    return buildComponentMesh(cat, id, this.slots.frame?.id, this.props, this.slots.battery?.id, this.slots.motors?.id);
   }
 
   pct()   { return Math.round(REQUIRED.filter(k=>this.slots[k]).length/REQUIRED.length*100); }
@@ -2305,7 +2306,7 @@ class FlightSim {
     REQUIRED.forEach(cat => {
       const id = config[cat];
       if(id){
-        const mesh = buildComponentMesh(cat, id, frameId, cat === 'propellers' ? this.propGrps : null, config.battery);
+        const mesh = buildComponentMesh(cat, id, frameId, cat === 'propellers' ? this.propGrps : null, config.battery, config.motors);
         if(mesh) g.add(mesh);
       }
     });
