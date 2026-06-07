@@ -52,23 +52,6 @@ Our mission is to bridge the gap between aerospace engineering theory and practi
 
 ---
 
-## 🛠 Technologies & Tools
-
-| Category | Tools & Platforms |
-|-----------|------------------|
-| CAD Design | SolidWorks, Fusion 360, CATIA |
-| Simulation | MATLAB, Simulink, Gazebo |
-| Aerodynamics | XFLR5, OpenFOAM, ANSYS Fluent |
-| Programming | Python, C++, MATLAB |
-| Flight Controllers | PX4, ArduPilot |
-| Embedded Systems | STM32, ESP32, Arduino |
-| Data Analysis | NumPy, Pandas, Matplotlib |
-
-
-
-
----
-
 ## 🚀 Features
 
 - UAV Design Methodologies
