@@ -156,13 +156,13 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
   });
 
   const getBatteryHeight = bid => {
-    if (bid === 'bt-1s') return 0.04;
-    if (bid === 'bt-3s') return 0.08;
-    if (bid === 'bt-6s') return 0.15;
-    if (bid === 'bt-phantom') return 0.20;
-    if (bid === 'bt-mavic') return 0.16;
-    if (bid === 'bt-inspire') return 0.22;
-    return 0.12;
+    if (bid === 'bt-1s') return 0.015;
+    if (bid === 'bt-3s') return 0.03;
+    if (bid === 'bt-6s') return 0.05;
+    if (bid === 'bt-phantom') return 0.06;
+    if (bid === 'bt-mavic') return 0.05;
+    if (bid === 'bt-inspire') return 0.07;
+    return 0.04;
   };
   const bh = batteryId ? getBatteryHeight(batteryId) : 0;
 
@@ -547,9 +547,9 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
     }
   }
   else if(cat==='battery'){
-    const bw = id==='bt-3s'?.14 : id==='bt-6s'?.22 : id==='bt-phantom'?.26 : id==='bt-mavic'?.22 : id==='bt-inspire'?.30 : .18;
-    const bh = id==='bt-3s'?.08 : id==='bt-6s'?.15 : id==='bt-phantom'?.20 : id==='bt-mavic'?.16 : id==='bt-inspire'?.22 : .12;
-    const bl = id==='bt-3s'?.26 : id==='bt-6s'?.42 : id==='bt-phantom'?.50 : id==='bt-mavic'?.45 : id==='bt-inspire'?.55 : .34;
+    const bw = id==='bt-3s'?.10 : id==='bt-6s'?.14 : id==='bt-phantom'?.15 : id==='bt-mavic'?.14 : id==='bt-inspire'?.18 : .12;
+    const bh = id==='bt-3s'?.03 : id==='bt-6s'?.05 : id==='bt-phantom'?.06 : id==='bt-mavic'?.05 : id==='bt-inspire'?.07 : .04;
+    const bl = id==='bt-3s'?.18 : id==='bt-6s'?.28 : id==='bt-phantom'?.32 : id==='bt-mavic'?.28 : id==='bt-inspire'?.35 : .24;
     const yOff = -bh/2 - 0.004;
     
     // Individual layered cells (shows multi-cell LiPo structure)
@@ -1147,13 +1147,13 @@ class AssemblyLab {
     } else {
       // For Neo, Avata, FPV 5" and default frames
       const getBatteryHeight = id => {
-        if (id === 'bt-1s') return 0.04;
-        if (id === 'bt-3s') return 0.08;
-        if (id === 'bt-6s') return 0.15;
-        if (id === 'bt-phantom') return 0.20;
-        if (id === 'bt-mavic') return 0.16;
-        if (id === 'bt-inspire') return 0.22;
-        return 0.12;
+        if (id === 'bt-1s') return 0.015;
+        if (id === 'bt-3s') return 0.03;
+        if (id === 'bt-6s') return 0.05;
+        if (id === 'bt-phantom') return 0.06;
+        if (id === 'bt-mavic') return 0.05;
+        if (id === 'bt-inspire') return 0.07;
+        return 0.04;
       };
       const bh = this.slots.battery ? getBatteryHeight(this.slots.battery.id) : 0;
       const legH = Math.max(0.18, bh + 0.006);
@@ -1164,13 +1164,13 @@ class AssemblyLab {
     let batteryLowestY = 0;
     if (this.slots.battery) {
       const getBatteryHeight = id => {
-        if (id === 'bt-1s') return 0.04;
-        if (id === 'bt-3s') return 0.08;
-        if (id === 'bt-6s') return 0.15;
-        if (id === 'bt-phantom') return 0.20;
-        if (id === 'bt-mavic') return 0.16;
-        if (id === 'bt-inspire') return 0.22;
-        return 0.12;
+        if (id === 'bt-1s') return 0.015;
+        if (id === 'bt-3s') return 0.03;
+        if (id === 'bt-6s') return 0.05;
+        if (id === 'bt-phantom') return 0.06;
+        if (id === 'bt-mavic') return 0.05;
+        if (id === 'bt-inspire') return 0.07;
+        return 0.04;
       };
       const bh = getBatteryHeight(this.slots.battery.id);
       batteryLowestY = -bh - 0.008; // including strap and cables
@@ -1357,13 +1357,13 @@ class FlightSim {
     const frameId = spec?.config?.frame || 'fr-fpv5';
     const batteryId = spec?.config?.battery;
     const getBatteryHeight = bid => {
-      if (bid === 'bt-1s') return 0.04;
-      if (bid === 'bt-3s') return 0.08;
-      if (bid === 'bt-6s') return 0.15;
-      if (bid === 'bt-phantom') return 0.20;
-      if (bid === 'bt-mavic') return 0.16;
-      if (bid === 'bt-inspire') return 0.22;
-      return 0.12;
+      if (bid === 'bt-1s') return 0.015;
+      if (bid === 'bt-3s') return 0.03;
+      if (bid === 'bt-6s') return 0.05;
+      if (bid === 'bt-phantom') return 0.06;
+      if (bid === 'bt-mavic') return 0.05;
+      if (bid === 'bt-inspire') return 0.07;
+      return 0.04;
     };
     const bh = batteryId ? getBatteryHeight(batteryId) : 0;
     const baseLandingHeight = frameId === 'fr-phantom' ? 0.13 : (frameId === 'fr-inspire' ? 0.235 : (frameId === 'fr-mavic' ? 0.06 : 0.18));
