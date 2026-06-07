@@ -195,11 +195,11 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
       // Classic Phantom curved landing gear arches (two white arches)
       [-1, 1].forEach(side => {
         const legGroup = new THREE.Group();
-        legGroup.position.set(side * 0.12, -0.06, 0);
+        legGroup.position.set(side * 0.09, -0.06, 0);
         
         [-1, 1].forEach(zSide => {
-          const strut = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.15, 0.012), M.white);
-          strut.position.set(0, -0.05, zSide * 0.12);
+          const strut = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.18, 0.012), M.white);
+          strut.position.set(0, -0.03, zSide * 0.12);
           strut.rotation.z = -side * Math.PI / 10;
           strut.rotation.x = zSide * Math.PI / 12;
           legGroup.add(strut);
@@ -333,9 +333,12 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
       
       // Top carbon deck plate (elevated)
       if (id !== 'fr-neo') {
-        const topPlate = new THREE.Mesh(new THREE.BoxGeometry(duct?.2:.26, .006, duct?.32:.48), M.carbon);
+        const plateW = duct ? 0.20 : 0.26;
+        const plateD = duct ? 0.36 : 0.46;
+        const plateZ = duct ? -0.02 : 0.0;
+        const topPlate = new THREE.Mesh(new THREE.BoxGeometry(plateW, .006, plateD), M.carbon);
         topPlate.position.y = 0.22;
-        topPlate.position.z = -0.05;
+        topPlate.position.z = plateZ;
         g.add(topPlate);
       }
 
