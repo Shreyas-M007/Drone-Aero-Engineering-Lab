@@ -11,9 +11,9 @@ const PARTS = {
     { id:'fr-fpv5', name:'DJI FPV 5″ carbon',         w:115, desc:'3K carbon twill racing frame with detachable arms.',sp:{Size:'5″ Quad',Mat:'3K Carbon'}},
   ],
   motors: [
-    { id:'mt-1306', name:'1306 4000KV micro stator',   w:12, thrust:160, desc:'Tiny quiet motors for sub-250 g builds.',      sp:{KV:'4000',Lift:'160 g ea'}},
-    { id:'mt-2806', name:'2806 1300KV heavy-lift',      w:45, thrust:620, desc:'High torque for payload & wind stability.',    sp:{KV:'1300',Lift:'620 g ea'}},
-    { id:'mt-2207', name:'2207 1950KV sport racing',    w:34, thrust:440, desc:'32 000 RPM bells for agile freestyle.',        sp:{KV:'1950',Lift:'440 g ea'}},
+    { id:'mt-1306', name:'1306 4000KV micro stator',   w:12, thrust:550, desc:'Tiny quiet motors for sub-250 g builds.',      sp:{KV:'4000',Lift:'550 g ea'}},
+    { id:'mt-2806', name:'2806 1300KV heavy-lift',      w:45, thrust:2500, desc:'High torque for payload & wind stability.',    sp:{KV:'1300',Lift:'2500 g ea'}},
+    { id:'mt-2207', name:'2207 1950KV sport racing',    w:34, thrust:1850, desc:'32 000 RPM bells for agile freestyle.',        sp:{KV:'1950',Lift:'1850 g ea'}},
   ],
   esc: [
     { id:'es-20a',  name:'SpeedyBee 20A micro',  w:6,  desc:'Lightweight DShot300 controller.',             sp:{Amps:'20 A',Proto:'DShot300'}},
@@ -81,18 +81,62 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
   const armAngles = [Math.PI/4,-Math.PI/4,3*Math.PI/4,-3*Math.PI/4];
   const motorPos = [[s,.02,s],[-s,.02,s],[s,.02,-s],[-s,.02,-s]];
 
+  // Local helper materials for high-fidelity detailing
+  const yellowMat = new THREE.MeshStandardMaterial({color: 0xeab308, roughness: 0.4});
+  const goldMat = new THREE.MeshStandardMaterial({color: 0xd97706, roughness: 0.2, metalness: 0.8});
+
   if(cat==='frame'){
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(duct?.4:.5,.02,duct?.48:.8), M.carbon));
+    // Bottom carbon chassis plate
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(duct?.3:.38, .008, duct?.4:.65), M.carbon));
+    
+    // Top carbon deck plate (elevated)
+    const topPlate = new THREE.Mesh(new THREE.BoxGeometry(duct?.2:.26, .006, duct?.32:.48), M.carbon);
+    topPlate.position.y = 0.13;
+    topPlate.position.z = -0.05;
+    g.add(topPlate);
+
+    // Standoff columns (anodized aluminum spacer pillars)
+    const standoffHeight = 0.124;
+    const standoffPositions = duct ? 
+      [[0.09, 0.062, 0.14], [-0.09, 0.062, 0.14], [0.09, 0.062, -0.18], [-0.09, 0.062, -0.18]] :
+      [[0.11, 0.062, 0.2], [-0.11, 0.062, 0.2], [0.11, 0.062, -0.2], [-0.11, 0.062, -0.2], [0.09, 0.062, 0], [-0.09, 0.062, 0]];
+      
+    standoffPositions.forEach(p => {
+      // Aluminum standoff column (indigo)
+      const column = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, standoffHeight, 8), M.indigo);
+      column.position.set(p[0], p[1], p[2]);
+      g.add(column);
+      
+      // Top hex bolt (silver)
+      const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.006, 6), M.silver);
+      bolt.position.set(p[0], 0.133, p[2]);
+      g.add(bolt);
+    });
+
+    // Camera Cage side carbon plates
+    const cageZ = duct ? 0.24 : 0.32;
+    [-0.08, 0.08].forEach(x => {
+      const cagePlate = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.12, 0.15), M.carbon);
+      cagePlate.position.set(x, 0.06, cageZ);
+      g.add(cagePlate);
+    });
+
     if(id==='fr-avata'){
       [[.35,.04,.35],[-.35,.04,.35],[.35,.04,-.35],[-.35,.04,-.35]].forEach(p=>{
         g.add(new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.18,32,1,true), M.orange).translateX(p[0]).translateY(p[1]).translateZ(p[2]));
       });
     }
+    
+    // Frame arms
     armAngles.forEach(a=>{
-      const arm=new THREE.Mesh(new THREE.BoxGeometry(.04,.02,duct?.5:.9),M.carbon);
+      const arm=new THREE.Mesh(new THREE.BoxGeometry(.04,.016,duct?.5:.9),M.carbon);
       arm.rotation.y=a; arm.position.set(Math.sin(a)*s*.7,0,Math.cos(a)*s*.7); g.add(arm);
     });
-    if(duct){ const pod=new THREE.Mesh(new THREE.SphereGeometry(.1,16,16),M.indigo); pod.scale.set(1,.6,1.3); pod.position.y=.05; g.add(pod); }
+    
+    if(duct){ 
+      const pod=new THREE.Mesh(new THREE.SphereGeometry(.1,16,16),M.indigo); 
+      pod.scale.set(1,.6,1.3); pod.position.y=.05; g.add(pod); 
+    }
     else {
       [[.1,.08,.2],[-.1,.08,.2],[.1,.08,-.2],[-.1,.08,-.2]].forEach(p=>{
         g.add(new THREE.Mesh(new THREE.CylinderGeometry(.01,.01,.15,8),M.indigo).translateX(p[0]).translateY(p[1]).translateZ(p[2]));
@@ -103,28 +147,100 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
     let r=id==='mt-1306'?.045:id==='mt-2806'?.095:.07, h=id==='mt-1306'?.05:id==='mt-2806'?.09:.08;
     motorPos.forEach(p=>{
       const mg=new THREE.Group(); mg.position.set(p[0],p[1],p[2]);
-      mg.add(new THREE.Mesh(new THREE.CylinderGeometry(r-.008,r-.008,h*.75,12),M.copper));
-      const bell=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,16),M.silver); bell.position.y=h*.1;
-      bell.add(new THREE.Mesh(new THREE.CylinderGeometry(r+.002,r+.002,h*.15,16),id==='mt-2806'?M.indigo:M.silver).translateY(h*.5));
-      bell.add(new THREE.Mesh(new THREE.CylinderGeometry(.01,.01,h*1.3,8),M.carbon).translateY(h*.55));
-      mg.add(bell); g.add(mg);
+      
+      // Motor base (black)
+      mg.add(new THREE.Mesh(new THREE.CylinderGeometry(r-.004,r,h*.2,12),M.dark));
+      
+      // Stator block with visible copper coils inside
+      const stator = new THREE.Mesh(new THREE.CylinderGeometry(r-.01,r-.01,h*.6,12),M.dark);
+      stator.position.y = h*.3;
+      // 6 Copper coil windings inside
+      for(let i=0; i<6; i++) {
+        const angle = i * Math.PI / 3;
+        const coil = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, h*.5, 6), M.copper);
+        coil.position.set(Math.sin(angle)*(r*0.5), 0, Math.cos(angle)*(r*0.5));
+        stator.add(coil);
+      }
+      mg.add(stator);
+      
+      // Outer rotor bell (silver/blue anodized aluminum)
+      const bellHeight = h*.7;
+      const bell=new THREE.Mesh(new THREE.CylinderGeometry(r,r,bellHeight,16),M.silver); 
+      bell.position.y=h*.55;
+      
+      // Bell top color accent ring
+      const accent = new THREE.Mesh(new THREE.CylinderGeometry(r+.002,r+.002,bellHeight*.15,16), id==='mt-2806'?M.indigo:goldMat);
+      accent.position.y = bellHeight*.45;
+      bell.add(accent);
+      
+      // Motor shaft (carbon steel)
+      bell.add(new THREE.Mesh(new THREE.CylinderGeometry(.008,.008,h*1.3,8),M.dark).translateY(bellHeight*.1));
+      mg.add(bell); 
+      g.add(mg);
+
+      // Silicon Motor Wires running along carbon arm
+      const wireLen = Math.hypot(p[0], p[2]) - 0.05;
+      const wireAngle = Math.atan2(p[0], p[2]);
+      const wiresGroup = new THREE.Group();
+      wiresGroup.position.set(p[0]/2, 0.012, p[2]/2);
+      wiresGroup.rotation.y = wireAngle;
+      
+      [-0.008, 0, 0.008].forEach((offset, idx) => {
+        const wireMat = idx === 0 ? M.copper : idx === 1 ? M.white : M.dark;
+        const wire = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, wireLen, 6), wireMat);
+        wire.rotation.x = Math.PI / 2;
+        wire.position.x = offset;
+        wiresGroup.add(wire);
+      });
+      g.add(wiresGroup);
     });
   }
   else if(cat==='esc'){
     const w=id==='es-70a'?.26:.18;
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.015,w),id==='es-70a'?M.silver:M.carbon).translateY(.02).translateZ(-.02));
-    for(let i=0;i<(id==='es-20a'?2:4);i++)
-      g.add(new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.065,8),M.silver).translateX((i%2?-1:1)*w*.3).translateY(.045).translateZ(-.02+(i>1?.04:-.04)));
+    // Main double-sided PCB board
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.012,w),M.dark).translateY(.015).translateZ(-.02));
+    
+    // Metal heatsink shell on top
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(w*0.88,.008,w*0.88),id==='es-70a'?M.silver:M.indigo).translateY(.024).translateZ(-.02));
+    
+    // Cylindrical capacitors
+    for(let i=0;i<(id==='es-20a'?2:4);i++) {
+      const cap = new THREE.Mesh(new THREE.CylinderGeometry(.018,.018,.055,8),M.dark);
+      cap.position.set((i%2?-1:1)*w*.36, .04, -.02+(i>1?.035:-.035));
+      cap.rotation.x = Math.PI / 2;
+      // Silver strip on capacitor
+      cap.add(new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.055, 0.018), M.silver).translateX(0.012));
+      g.add(cap);
+    }
   }
   else if(cat==='propellers'){
     const span=id==='pr-3b'?.28:id==='pr-5b'?.34:.5, nb=id==='pr-2b'?2:id==='pr-5b'?5:3;
     if (propsArray) propsArray.length = 0;
     motorPos.forEach(p=>{
-      const pg=new THREE.Group(); pg.position.set(p[0],.1,p[2]);
-      pg.add(new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,.025,10),M.silver));
+      const pg=new THREE.Group(); pg.position.set(p[0],.08,p[2]);
+      
+      // Central propeller hub assembly
+      pg.add(new THREE.Mesh(new THREE.CylinderGeometry(.032,.032,.022,10),M.dark));
+      pg.add(new THREE.Mesh(new THREE.CylinderGeometry(.016,.016,.01,10),M.silver).translateY(0.011)); // locknut
+      
+      // Aerodynamic pitched propeller blades
       for(let i=0;i<nb;i++){
-        const bg=new THREE.BoxGeometry(.028,.005,span); bg.translate(0,0,span/2);
-        const b=new THREE.Mesh(bg,M.orange); b.rotation.y=i*2*Math.PI/nb; b.rotation.x=.06; pg.add(b);
+        const bladeGroup = new THREE.Group();
+        bladeGroup.rotation.y = i * 2 * Math.PI / nb;
+        
+        // Inner blade segment (tapered and pitched)
+        const innerBlade = new THREE.Mesh(new THREE.BoxGeometry(0.024, 0.004, span/2), M.orange);
+        innerBlade.position.set(0, 0.002, span/4);
+        innerBlade.rotation.x = 0.12; // pitch angle
+        bladeGroup.add(innerBlade);
+        
+        // Outer blade segment (thinned and twisted)
+        const outerBlade = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.003, span/2), M.orange);
+        outerBlade.position.set(0, 0.006, span * 0.7);
+        outerBlade.rotation.x = 0.06; // reduced twist pitch
+        bladeGroup.add(outerBlade);
+        
+        pg.add(bladeGroup);
       }
       g.add(pg);
       if(propsArray) propsArray.push(pg);
@@ -132,21 +248,128 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
   }
   else if(cat==='flight_controller'){
     const w=id==='fc-o3'?.22:.16;
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.015,w),id==='fc-f7'?M.indigo:M.carbon).translateY(.055).translateZ(-.02));
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(.06,.01,.06),M.silver).translateY(.065));
+    // Stacked FC Board (mounted higher on stack pins)
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.012,w),id==='fc-f7'?M.indigo:M.dark).translateY(.075).translateZ(-.02));
+    
+    // USB-C port metal bracket
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(.03,.015,.04),M.silver).position.set(w/2 - 0.01, .082, 0));
+    
+    // Tiny colored status LEDs
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(.008,.004,.008),new THREE.MeshBasicMaterial({color:0x22c55e})).position.set(-w/4, .082, w/4));
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(.008,.004,.008),new THREE.MeshBasicMaterial({color:0xef4444})).position.set(-w/4 + 0.015, .082, w/4));
+
+    // Wiring Harness ribbon connecting FC to ESC below
+    const ribbon = new THREE.Mesh(new THREE.BoxGeometry(w*0.4, 0.04, 0.01), M.white);
+    ribbon.position.set(0, 0.045, -w/3);
+    g.add(ribbon);
+
+    // GPS Mast & Module puck
+    const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.16, 8), M.carbon);
+    mast.position.set(0, 0.13, -0.15);
+    g.add(mast);
+    const puck = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.015, 0.06), M.dark);
+    puck.position.set(0, 0.21, -0.15);
+    puck.add(new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.002, 0.045), M.white).translateY(0.008));
+    g.add(puck);
   }
   else if(cat==='battery'){
     const bw=id==='bt-3s'?.2:id==='bt-6s'?.35:.28, bh=id==='bt-3s'?.11:id==='bt-6s'?.24:.18, bl=id==='bt-3s'?.42:id==='bt-6s'?.7:.58;
     const yOff=duct?.32:.2;
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(bw,bh,bl),id==='bt-6s'?M.white:M.carbon).translateY(yOff).translateZ(-.02));
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(bw+.01,bh+.01,.08),M.dark).translateY(yOff).translateZ(-.02));
+    
+    // Individual layered cells (shows multi-cell LiPo structure)
+    const numCells = id==='bt-6s'?6:id==='bt-3s'?3:4;
+    const cellH = bh / numCells;
+    const battGroup = new THREE.Group();
+    battGroup.position.set(0, yOff, -0.02);
+    
+    for(let i=0; i<numCells; i++) {
+      const cy = -bh/2 + cellH/2 + i*cellH;
+      // Cell wrapper (silver metal look inside wrapper)
+      const cell = new THREE.Mesh(new THREE.BoxGeometry(bw-0.008, cellH-0.002, bl-0.008), M.silver);
+      cell.position.y = cy;
+      battGroup.add(cell);
+    }
+    
+    // Outer plastic shrinkwrap shell (black/yellow/white)
+    const wrapper = new THREE.Mesh(new THREE.BoxGeometry(bw,bh,bl), id==='bt-6s'?M.white:id==='bt-3s'?goldMat:M.dark);
+    wrapper.position.y = 0;
+    battGroup.add(wrapper);
+    g.add(battGroup);
+    
+    // Velcro Battery Strap wrapping around frame
+    const strap = new THREE.Mesh(new THREE.BoxGeometry(bw + 0.012, bh + 0.012, 0.06), M.dark);
+    strap.position.set(0, yOff, -0.02);
+    g.add(strap);
+    const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.03, 0.04), M.silver);
+    buckle.position.set(bw/2 + 0.006, yOff, -0.02);
+    g.add(buckle);
+
+    // Thick Power Cables (Red & Black) with Yellow XT60 plug
+    const cableRed = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.18, 8), M.orange);
+    cableRed.position.set(0.015, yOff, -bl/2 - 0.05);
+    cableRed.rotation.x = Math.PI/3;
+    g.add(cableRed);
+    const cableBlack = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.18, 8), M.dark);
+    cableBlack.position.set(-0.015, yOff, -bl/2 - 0.05);
+    cableBlack.rotation.x = Math.PI/3;
+    g.add(cableBlack);
+    const xt60 = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.022, 0.04), yellowMat);
+    xt60.position.set(0, yOff - 0.04, -bl/2 - 0.1);
+    xt60.rotation.x = Math.PI/6;
+    g.add(xt60);
+    
+    // White JST-XH Balance charging lead (highly realistic detail!)
+    const balCable = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.09, 6), M.white);
+    balCable.position.set(-bw/3, yOff, bl/2 + 0.03);
+    balCable.rotation.z = Math.PI/4;
+    g.add(balCable);
+    const jstPlug = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.008, 0.018), M.white);
+    jstPlug.position.set(-bw/3 - 0.03, yOff + 0.03, bl/2 + 0.045);
+    g.add(jstPlug);
   }
   else if(cat==='camera'){
-    [.1,-.1].forEach(x=>g.add(new THREE.Mesh(new THREE.BoxGeometry(.015,.15,.18),M.carbon).translateX(x).translateY(.07).translateZ(.36)));
-    const r2=id==='cm-4k'?.095:.065;
-    const cam=new THREE.Mesh(new THREE.CylinderGeometry(r2,r2,.14,16),M.white); cam.rotation.x=Math.PI/2; cam.position.set(0,.07,.36);
-    cam.add(new THREE.Mesh(new THREE.CylinderGeometry(r2-.01,r2-.01,.01,16),new THREE.MeshBasicMaterial({color:0x111827})).translateY(.071));
-    g.add(cam);
+    // Metal FPV Camera mount plates
+    [-0.08, 0.08].forEach(x => {
+      const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.1, 0.12), M.silver);
+      bracket.position.set(x, 0.06, 0.36);
+      bracket.rotation.x = -Math.PI / 8;
+      g.add(bracket);
+    });
+    
+    // Camera module housing (black shell)
+    const cameraHousing = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.09, 0.09), M.dark);
+    cameraHousing.position.set(0, 0.06, 0.38);
+    cameraHousing.rotation.x = -Math.PI / 8;
+    
+    // Photorealistic Lens cylinder with glass element
+    const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.038, 0.05, 16), M.silver);
+    lens.rotation.x = Math.PI / 2;
+    lens.position.set(0, 0, 0.05);
+    const glass = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.004, 16), new THREE.MeshBasicMaterial({color: 0x111827}));
+    glass.position.y = 0.024;
+    lens.add(glass);
+    cameraHousing.add(lens);
+    g.add(cameraHousing);
+
+    // GoPro Action Camera on Top-Front if premium camera is selected
+    if (id === 'cm-4k') {
+      const topY = duct ? 0.32 + 0.18 : 0.2 + 0.18;
+      const mount = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.05, 0.08), M.orange);
+      mount.position.set(0, topY + 0.02, 0.08);
+      mount.rotation.x = -Math.PI/12;
+      g.add(mount);
+      const gopro = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.06), M.dark);
+      gopro.position.set(0, topY + 0.06, 0.09);
+      gopro.rotation.x = -Math.PI/12;
+      const gpLens = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.015, 16), M.silver);
+      gpLens.rotation.x = Math.PI/2;
+      gpLens.position.set(0.025, 0.01, 0.03);
+      gopro.add(gpLens);
+      const gpScreen = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.025, 0.002), M.indigo);
+      gpScreen.position.set(-0.025, -0.01, 0.031);
+      gopro.add(gpScreen);
+      g.add(gopro);
+    }
   }
   else if(cat==='transmitter'){
     g.add(new THREE.Mesh(new THREE.BoxGeometry(.1,.015,.1),M.carbon).translateY(.035).translateZ(-.32));
@@ -161,6 +384,30 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
       const w=new THREE.Mesh(new THREE.CylinderGeometry(.005,.005,.2,8),M.white);
       w.position.set(0,.07,-.38); w.rotation.x=-Math.PI/4; g.add(w);
     }
+
+    // Video Transmitter (VTX) metallic silver box with heating fin ridges
+    const vtxBox = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.045, 0.15), M.silver);
+    vtxBox.position.set(0, 0.06, -0.2);
+    // Cool metal fin ridges
+    for(let i=-2; i<=2; i++) {
+      const fin = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.008, 0.015), M.dark);
+      fin.position.set(0, 0.024, i*0.03);
+      vtxBox.add(fin);
+    }
+    g.add(vtxBox);
+
+    // VTX black ribbon cable running along carbon bottom plate
+    const vtxRibbon = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.002, 0.32), M.dark);
+    vtxRibbon.position.set(0, 0.01, 0.06);
+    g.add(vtxRibbon);
+
+    // LED Orientation Strip at the rear
+    const ledMount = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.018, 0.018), M.dark);
+    ledMount.position.set(0, 0.035, -0.35);
+    g.add(ledMount);
+    const ledStrip = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.01, 0.004), new THREE.MeshBasicMaterial({color: id === 'tx-o3' ? 0x06b6d4 : 0x8b5cf6}));
+    ledStrip.position.set(0, 0.035, -0.36);
+    g.add(ledStrip);
   }
 
   g.traverse(n=>{ if(n.isMesh){ n.castShadow=true; n.receiveShadow=true; }});
@@ -362,6 +609,13 @@ class AssemblyLab {
       };
       requestAnimationFrame(anim);
     }
+    if (cat === 'frame') {
+      Object.keys(this.slots).forEach(k => {
+        if (k !== 'frame' && this.slots[k]) {
+          this.equip(k, this.slots[k].id);
+        }
+      });
+    }
     this._calc();
   }
 
@@ -393,8 +647,8 @@ class AssemblyLab {
   specs() {
     return {
       wg: Object.values(this.slots).reduce((s,v)=>s+(v? v.w*(v.id?.startsWith('mt')||v.id?.startsWith('pr')?4:1) :0),0),
-      thrN: ((this.slots.motors?.thrust*4||1200)/1000)*9.81*.62,
-      cells: this.slots.battery?.sp.V.includes('6S')?6:this.slots.battery?.sp.V.includes('3S')?3:4,
+      thrN: ((this.slots.motors?.thrust*4||1200)/1000)*9.81*1.5,
+      cells: this.slots.battery?.sp?.V ? (this.slots.battery.sp.V.includes('6S')?6:this.slots.battery.sp.V.includes('3S')?3:4) : 4,
       frame: this.slots.frame?.id||'fr-fpv5',
       cap: this.slots.battery ? parseInt(this.slots.battery.sp.Cap) : 2000,
       config: Object.fromEntries(Object.entries(this.slots).map(([cat, item]) => [cat, item ? item.id : null]))
@@ -457,6 +711,8 @@ class FlightSim {
         gateVal.previousElementSibling.innerText = 'OBSTACLES';
       } else if (env === 'cyber') {
         gateVal.previousElementSibling.innerText = 'FLIGHT';
+      } else if (env === 'ar') {
+        gateVal.previousElementSibling.innerText = 'ROOM';
       } else {
         gateVal.previousElementSibling.innerText = 'GATE';
       }
@@ -479,7 +735,12 @@ class FlightSim {
     this.arPoints = null;
     this.holoGridTexture = null;
 
-    this.pos.set(0, env==='ar'?0.85:(env==='cyber'?40.42:6), env==='ar'?0:(env==='cyber'?0:15));
+    this.timeActive = 0;
+    this._gamepadActive = false;
+    this._gamepadFpvThrottle = false;
+    const spawnY = env==='ar' ? 0.42 : (env==='cyber' ? 40.42 : (env==='city' ? 4.82 : 0.42));
+    const spawnZ = env==='ar' ? 1.2 : (env==='cyber' ? 0 : (env==='city' ? 15 : 10));
+    this.pos.set(0, spawnY, spawnZ);
     this.vel.set(0,0,0);
     this.quat.identity();
 
@@ -593,6 +854,7 @@ class FlightSim {
       const ty=terrainY(c[0],c[2]);
       const t=new THREE.Mesh(new THREE.BoxGeometry(22,c[1],22),tMat);
       t.position.set(c[0],ty+c[1]/2-2,c[2]); t.castShadow=true; t.receiveShadow=true; this.scene.add(t);
+      t.updateMatrixWorld(true);
       this.buildings.push({box:new THREE.Box3().setFromObject(t),name:`Tower ${i+1}`});
     });
 
@@ -612,11 +874,13 @@ class FlightSim {
     /* bridge */
     const road=new THREE.Mesh(new THREE.BoxGeometry(12,.8,95),new THREE.MeshStandardMaterial({color:0x334155,roughness:.8}));
     road.position.set(0,4,0); road.receiveShadow=true; this.scene.add(road);
+    road.updateMatrixWorld(true);
     this.buildings.push({box:new THREE.Box3().setFromObject(road),name:'Bridge Deck'});
     const pilMat=new THREE.MeshStandardMaterial({color:0x475569,metalness:.6});
     [[-5.5,12,0],[5.5,12,0]].forEach((p,i)=>{
       const pillar=new THREE.Mesh(new THREE.BoxGeometry(1.2,24,1.2),pilMat);
       pillar.position.set(p[0],p[1],p[2]); pillar.castShadow=true; pillar.receiveShadow=true; this.scene.add(pillar);
+      pillar.updateMatrixWorld(true);
       this.buildings.push({box:new THREE.Box3().setFromObject(pillar),name:`Bridge Pillar ${i+1}`});
     });
     const wireMat=new THREE.LineBasicMaterial({color:0x6366F1});
@@ -693,6 +957,7 @@ class FlightSim {
       pole.castShadow = true;
       pole.receiveShadow = true;
       this.scene.add(pole);
+      pole.updateMatrixWorld(true);
       this.trainingObstacles.push({box: new THREE.Box3().setFromObject(pole), name: p[2]});
     });
 
@@ -1044,6 +1309,7 @@ class FlightSim {
       wireframe.position.copy(tMesh.position);
       this.scene.add(wireframe);
 
+      tMesh.updateMatrixWorld(true);
       const box = new THREE.Box3().setFromObject(tMesh);
       this.cyberTowers.push({
         mesh: tMesh,
@@ -1137,18 +1403,21 @@ class FlightSim {
 
     this.arMode = 'hologram';
 
+    const triggerARFallback = () => {
+      this.scene.background = new THREE.Color(0x05080c);
+      this.scene.fog = new THREE.FogExp2(0x05080c, 0.04);
+      
+      const fallbackGrid = new THREE.GridHelper(20, 20, 0x10b981, 0x112233);
+      fallbackGrid.position.y = 0.01;
+      this.scene.add(fallbackGrid);
+    };
+
     if (navigator.mediaDevices?.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
         .then(s => { this.vid.srcObject = s; })
-        .catch(() => {
-          // Fallback Grid Chamber background if camera fails
-          this.scene.background = new THREE.Color(0x05080c);
-          this.scene.fog = new THREE.FogExp2(0x05080c, 0.04);
-          
-          const fallbackGrid = new THREE.GridHelper(20, 20, 0x10b981, 0x112233);
-          fallbackGrid.position.y = 0.01;
-          this.scene.add(fallbackGrid);
-        });
+        .catch(() => { triggerARFallback(); });
+    } else {
+      triggerARFallback();
     }
 
     const sampleBoxSurface = (w, h, d, x, y, z) => {
@@ -1208,6 +1477,7 @@ class FlightSim {
       wireframe.position.copy(mesh.position);
       this.scene.add(wireframe);
 
+      mesh.updateMatrixWorld(true);
       const box = new THREE.Box3().setFromObject(mesh);
       this.arBoxes.push({
         box: box,
@@ -1393,38 +1663,173 @@ class FlightSim {
     this.keys={};
     window.addEventListener('keydown',e=>{
       this.keys[e.key]=true;
+      this._gamepadActive = false;
       if(e.key==='c'||e.key==='C'){ const o=['chase','fpv','orbit']; this.camMode=o[(o.indexOf(this.camMode)+1)%3]; document.getElementById('btn-cam').innerText='📷 '+this.camMode.charAt(0).toUpperCase()+this.camMode.slice(1); }
       if(e.key==='f'||e.key==='F'){ this.mode=this.mode==='level'?'acro':'level'; document.getElementById('btn-mode').innerText='⚙️ '+this.mode.charAt(0).toUpperCase()+this.mode.slice(1); }
       if(e.key==='r'||e.key==='R') this.resetPos();
     });
     window.addEventListener('keyup',e=>this.keys[e.key]=false);
 
+    window.addEventListener('gamepadconnected', () => {
+      const btn = document.getElementById('btn-gamepad');
+      if (btn) {
+        btn.innerText = '🎮 GP: Connected';
+        btn.classList.add('val-cyan');
+      }
+      this._updateControlsHint(true);
+    });
+    window.addEventListener('gamepaddisconnected', () => {
+      const btn = document.getElementById('btn-gamepad');
+      if (btn) {
+        btn.innerText = '🎮 Keyboard';
+        btn.classList.remove('val-cyan');
+      }
+      this._updateControlsHint(false);
+    });
+
     /* joysticks */
     ['joy-l','joy-r'].forEach((zid,zi)=>{
       const zone=document.getElementById(zid); if(!zone) return;
       const handle=zone.querySelector('.joystick-stick');
       let rect=null, tid=null;
-      zone.addEventListener('touchstart',e=>{ e.preventDefault(); rect=zone.getBoundingClientRect(); tid=e.changedTouches[0].identifier; },{passive:false});
+      zone.addEventListener('touchstart',e=>{ e.preventDefault(); rect=zone.getBoundingClientRect(); tid=e.changedTouches[0].identifier; this._gamepadActive = false; },{passive:false});
       window.addEventListener('touchmove',e=>{
         if(rect===null) return;
+        this._gamepadActive = false;
         for(const t of e.changedTouches) if(t.identifier===tid){
           let dx=t.clientX-rect.left-rect.width/2, dy=t.clientY-rect.top-rect.height/2;
           const max=rect.width/2-20, dist=Math.hypot(dx,dy);
           if(dist>max){ dx=dx/dist*max; dy=dy/dist*max; }
           handle.style.transform=`translate(${dx}px,${dy}px)`;
           const nx=dx/max, ny=-dy/max;
-          if(zi===0){ this.yaw=nx; this.thr=Math.max(0,(ny+1)/2); } else { this.rol=nx; this.pit=ny; }
+          if(zi===0){ this.yaw=nx; this.thr=ny > 0 ? ny : 0; } else { this.rol=nx; this.pit=ny; }
         }
       });
-      const end=()=>{ handle.style.transform='translate(0,0)'; rect=null; if(zi===1){this.rol=0;this.pit=0;} else this.yaw=0; };
+      const end=()=>{ handle.style.transform='translate(0,0)'; rect=null; if(zi===1){this.rol=0;this.pit=0;} else {this.yaw=0; this.thr=0;} };
       window.addEventListener('touchend',e=>{ for(const t of e.changedTouches) if(t.identifier===tid) end(); });
     });
   }
 
+  _updateControlsHint(isGamepad) {
+    const hintDiv = document.querySelector('.keyboard-controls-hint');
+    if (!hintDiv) return;
+    if (isGamepad) {
+      if (this._hintMode === 'gamepad') return;
+      this._hintMode = 'gamepad';
+      hintDiv.innerHTML = `
+        <div class="hint-cell"><span class="hint-title">Throttle / Yaw</span><span>Left Stick</span></div>
+        <div class="hint-cell"><span class="hint-title">Pitch / Roll</span><span>Right Stick</span></div>
+        <div class="hint-cell"><span class="hint-title">Gamepad Buttons</span><span><kbd>A</kbd> Reset · <kbd>B</kbd> Cam · <kbd>X</kbd> Mode</span></div>
+      `;
+    } else {
+      if (this._hintMode === 'keyboard') return;
+      this._hintMode = 'keyboard';
+      hintDiv.innerHTML = `
+        <div class="hint-cell"><span class="hint-title">Throttle / Yaw</span><span><kbd>W</kbd><kbd>S</kbd> <kbd>A</kbd><kbd>D</kbd></span></div>
+        <div class="hint-cell"><span class="hint-title">Pitch / Roll</span><span><kbd>▲</kbd><kbd>▼</kbd> <kbd>◀</kbd><kbd>▶</kbd></span></div>
+        <div class="hint-cell"><span class="hint-title">Misc</span><span><kbd>C</kbd> cam · <kbd>F</kbd> mode · <kbd>R</kbd> reset</span></div>
+      `;
+    }
+  }
+
+  _readGamepad() {
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    let gp = null;
+    for (let i = 0; i < gamepads.length; i++) {
+      if (gamepads[i]) {
+        gp = gamepads[i];
+        break;
+      }
+    }
+    const btn = document.getElementById('btn-gamepad');
+    if (gp) {
+      this._gamepadConnected = true;
+      // Check for active gamepad interaction to prevent phantom/idle inputs
+      const buttonPressed = gp.buttons.some(b => b.pressed);
+      const stickMoved = gp.axes.some(a => Math.abs(a) > 0.15);
+      if (buttonPressed || stickMoved) {
+        this._gamepadActive = true;
+      }
+
+      if (!this._gamepadActive) {
+        if (btn) {
+          btn.innerText = '🎮 Keyboard';
+          btn.classList.remove('val-cyan');
+        }
+        this._updateControlsHint(false);
+        return false;
+      }
+
+      if (btn) {
+        btn.innerText = this._gamepadFpvThrottle ? '🎮 GP: FPV Pro' : '🎮 GP: Spring';
+        btn.classList.add('val-cyan');
+      }
+      this._updateControlsHint(true);
+
+      const deadzone = 0.05;
+      const applyDeadzone = (val) => {
+        if (Math.abs(val) < deadzone) return 0;
+        return (val - Math.sign(val) * deadzone) / (1 - deadzone);
+      };
+
+      const yawVal = applyDeadzone(gp.axes[0] || 0);
+      const thrVal = gp.axes[1] || 0;
+      const rolVal = applyDeadzone(gp.axes[2] || 0);
+      const pitVal = applyDeadzone(gp.axes[3] || 0);
+
+      this.yaw = yawVal * 0.75;
+      
+      // Throttle mapping based on the active mode (manually toggled via HUD button)
+      if (this._gamepadFpvThrottle) {
+        // Full range FPV mode: -1 (up) is 1.0, 1 (down) is 0.0
+        this.thr = Math.max(0, Math.min(1, (1 - thrVal) / 2));
+      } else {
+        // Spring-centered casual mode: -1 (up) is 1.0, 0 (center) is 0.0, >0 (down) is 0.0
+        this.thr = thrVal < 0 ? -thrVal : 0;
+      }
+
+      this.rol = rolVal * 0.65;
+      this.pit = -pitVal * 0.65;
+
+      if (gp.buttons[0]?.pressed && !this._lastGpBtn0) {
+        this.resetPos();
+      }
+      this._lastGpBtn0 = gp.buttons[0]?.pressed;
+
+      if (gp.buttons[1]?.pressed && !this._lastGpBtn1) {
+        const o = ['chase', 'fpv', 'orbit'];
+        this.camMode = o[(o.indexOf(this.camMode) + 1) % 3];
+        const camBtn = document.getElementById('btn-cam');
+        if (camBtn) camBtn.innerText = '📷 ' + this.camMode.charAt(0).toUpperCase() + this.camMode.slice(1);
+      }
+      this._lastGpBtn1 = gp.buttons[1]?.pressed;
+
+      if (gp.buttons[2]?.pressed && !this._lastGpBtn2) {
+        this.mode = this.mode === 'level' ? 'acro' : 'level';
+        const modeBtn = document.getElementById('btn-mode');
+        if (modeBtn) modeBtn.innerText = '⚙️ ' + this.mode.charAt(0).toUpperCase() + this.mode.slice(1);
+      }
+      this._lastGpBtn2 = gp.buttons[2]?.pressed;
+
+      return true;
+    } else {
+      this._gamepadConnected = false;
+      this._gamepadActive = false;
+      if (btn) {
+        btn.innerText = '🎮 Keyboard';
+        btn.classList.remove('val-cyan');
+      }
+      this._updateControlsHint(false);
+      return false;
+    }
+  }
+
   _readKeys(dt) {
-    // Decreased thrust sensitivity: increment/decrement rate is time-scaled and smoother (0.8 units per second)
-    if(this.keys['w']||this.keys['W']) this.thr=Math.min(this.thr + 0.8 * dt, 1);
-    else if(this.keys['s']||this.keys['S']) this.thr=Math.max(this.thr - 0.8 * dt, 0);
+    if (this._readGamepad()) return;
+    // Keyboard Throttle: Press W to increase, S to decrease, otherwise decay back to 0
+    if(this.keys['w']||this.keys['W']) this.thr=Math.min(this.thr + 1.2 * dt, 1);
+    else if(this.keys['s']||this.keys['S']) this.thr=Math.max(this.thr - 1.2 * dt, 0);
+    else this.thr=Math.max(this.thr - 0.8 * dt, 0);
     this.yaw=(this.keys['a']||this.keys['A'])?-.75:(this.keys['d']||this.keys['D'])?.75:0;
     this.pit=(this.keys['ArrowUp'])?.65:(this.keys['ArrowDown'])?-.65:0;
     this.rol=(this.keys['ArrowLeft'])?-.65:(this.keys['ArrowRight'])?.65:0;
@@ -1435,6 +1840,7 @@ class FlightSim {
     if(!this.alive) return;
     requestAnimationFrame(()=>this._loop());
     const now=performance.now(), dt=Math.min((now-this.prevT)/1000,.1); this.prevT=now;
+    this.timeActive = (this.timeActive || 0) + dt;
     this._readKeys(dt);
     if(!this.crashed) this._physics(dt); else this._tumble(dt);
     if(this.env==='city' || this.env==='training') this._checkGates();
@@ -1473,7 +1879,9 @@ class FlightSim {
     const mass=this.droneSpec.wg/1000;
     const grav=new THREE.Vector3(0,-9.81*mass,0);
     const thrDir=new THREE.Vector3(0,1,0).applyQuaternion(this.quat).multiplyScalar(thrForce*gef);
-    const drag=this.vel.clone().multiplyScalar(-.18*1.225*this.vel.length());
+    const frameId = this.droneSpec.frame || 'fr-fpv5';
+    const cd = frameId === 'fr-neo' ? 0.038 : (frameId === 'fr-avata' ? 0.026 : 0.013);
+    const drag=this.vel.clone().multiplyScalar(-cd*1.225*this.vel.length());
     const wind=this.env==='city'?new THREE.Vector3(Math.sin(performance.now()*.001)*4.5*.06,0,Math.cos(performance.now()*.001)*4.5*.04):new THREE.Vector3();
     const acc=new THREE.Vector3().add(grav).add(thrDir).add(drag).add(wind).divideScalar(mass);
     this.vel.add(acc.clone().multiplyScalar(dt));
@@ -1502,9 +1910,9 @@ class FlightSim {
     const eu=new THREE.Euler().setFromQuaternion(this.quat,'YXZ');
     if(this.mode==='level'){
       const tPit=this.pit*.45, tRol=-this.rol*.45;
-      eu.x+=(tPit-eu.x)*8*dt; eu.z+=(tRol-eu.z)*8*dt; eu.y+=-this.yaw*2.8*dt;
+      eu.x+=(tPit-eu.x)*8*dt; eu.z+=(tRol-eu.z)*8*dt; eu.y+=-this.yaw*4.5*dt;
     } else {
-      eu.x+=this.pit*3.5*dt; eu.z+=-this.rol*3.5*dt; eu.y+=-this.yaw*2.8*dt;
+      eu.x+=this.pit*6.0*dt; eu.z+=-this.rol*6.0*dt; eu.y+=-this.yaw*4.5*dt;
     }
     this.quat.setFromEuler(eu);
     this.drone.position.copy(this.pos); this.drone.quaternion.copy(this.quat);
@@ -1518,15 +1926,41 @@ class FlightSim {
   }
 
   _collide(agl, gndY) {
-    const minH=this.env==='ar'?.05:gndY+.42;
+    const minH = gndY + 0.42;
     if(this.pos.y<minH){
-      if(this.vel.length()>4.2) this._crash(this.vel.length(),'Ground');
+      if(this.vel.length()>4.2) {
+        if (!this.timeActive || this.timeActive > 0.5) {
+          this._crash(this.vel.length(),'Ground');
+        } else {
+          this.pos.y=minH; this.vel.set(0,0,0);
+        }
+      }
       else { this.pos.y=minH; this.vel.set(0,0,0); }
       return;
     }
     const sp=new THREE.Sphere(this.pos,.42);
     const list=this.env==='city'?this.buildings:(this.env==='training'?this.trainingObstacles:(this.env==='cyber'?this.cyberTowers:this.arBoxes));
-    for(const b of list) if(b.box.intersectsSphere(sp)){ this._crash(this.vel.length(),b.name); break; }
+    for(const b of list) if(b.box.intersectsSphere(sp)){ 
+      // Safe landing / gentle contact on runways/starting platforms/floor/coffee table
+      const isStartingPlatform = 
+        b.name === 'Bridge Deck' || 
+        b.name === 'CyberTower 1' || 
+        b.name === 'Floor' || 
+        b.name === 'Coffee Table';
+      
+      if (isStartingPlatform && this.vel.length() <= 4.2) {
+        this.pos.y = b.name === 'Bridge Deck' ? 4.82 : (b.name === 'CyberTower 1' ? 40.42 : (b.name === 'Coffee Table' ? 0.82 : 0.42));
+        this.vel.set(0,0,0);
+        continue;
+      }
+      
+      if (!this.timeActive || this.timeActive > 0.5) {
+        this._crash(this.vel.length(),b.name); break; 
+      } else {
+        this.pos.y = b.name === 'Bridge Deck' ? 4.82 : (b.name === 'CyberTower 1' ? 40.42 : (b.name === 'Coffee Table' ? 0.82 : 0.42));
+        this.vel.set(0,0,0);
+      }
+    }
   }
 
   _crash(v, what) {
@@ -1711,7 +2145,8 @@ class FlightSim {
     } else if(this.camMode==='fpv'){
       const off=new THREE.Vector3(0,.06,.35).applyQuaternion(this.quat);
       this.cam3.position.copy(this.pos.clone().add(off));
-      this.cam3.lookAt(this.pos.clone().add(new THREE.Vector3(0,0,12).applyQuaternion(this.quat)));
+      // Tilted up by 25 degrees (vector components: y = 12 * sin(25°) = 5.07, z = 12 * cos(25°) = 10.88)
+      this.cam3.lookAt(this.pos.clone().add(new THREE.Vector3(0,5.07,10.88).applyQuaternion(this.quat)));
     } else {
       this.cam3.position.lerp(new THREE.Vector3(0,16,-28),.1);
       this.cam3.lookAt(this.pos);
@@ -1727,14 +2162,19 @@ class FlightSim {
     const spd=Math.round(this.vel.length()*3.6), alt=Math.max(0,this.pos.y);
     this.onHud({
       thr:Math.round(this.thr*100),bat:Math.round(this.bat),spd:spd+' km/h',alt:alt.toFixed(1)+' m',
-      gates:this.env==='cyber'?'FREE':(this.env==='training'?this.obstaclesClearedCount:this.cleared.size+'/8'),mode:this.mode.toUpperCase(),
+      gates:this.env==='cyber'?'FREE':(this.env==='training'?this.obstaclesClearedCount:(this.env==='ar'?'N/A':this.cleared.size+'/8')),mode:this.mode.toUpperCase(),
       drag:(this._tDrag||'0')+' N',lift:(this._tLift||'0')+' N',rho:'1.225',gef:(this._tGef||'1.00')+'×',
       g:(1+this.vel.length()/9.81*.08).toFixed(1)+' G'
     });
   }
 
   resetPos() {
-    this.pos.set(0, this.env==='ar'?0.85:(this.env==='cyber'?40.42:6), this.env==='ar'?0:(this.env==='cyber'?0:15));
+    this.timeActive = 0;
+    this._gamepadActive = false;
+    this._gamepadFpvThrottle = false;
+    const spawnY = this.env==='ar' ? 0.42 : (this.env==='cyber' ? 40.42 : (this.env==='city' ? 4.82 : 0.42));
+    const spawnZ = this.env==='ar' ? 1.2 : (this.env==='cyber' ? 0 : (this.env==='city' ? 15 : 10));
+    this.pos.set(0, spawnY, spawnZ);
     this.vel.set(0,0,0); this.quat.identity();
     this.crashed=false; this.cutoff=false; this.bat=100;
     document.body.classList.remove('glitch-active');
@@ -1879,7 +2319,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sfx.snap();
     show('sim');
     sim = new FlightSim('sim-canvas','cam-feed', hudUpdate);
-    sim.launch({wg:610,thrN:25.1,cells:6,frame:'fr-avata'},'city');
+    sim.launch({wg:610,thrN:85.5,cells:6,frame:'fr-avata'},'city');
     document.getElementById('hud').classList.remove('hidden');
   });
 
@@ -1913,6 +2353,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sim && sim.env === 'cyber') {
       sfx.snap();
       sim.randomiseCyber();
+    }
+  });
+  document.getElementById('btn-gamepad').addEventListener('click', () => {
+    sfx.snap();
+    if (sim && sim._gamepadConnected) {
+      sim._gamepadFpvThrottle = !sim._gamepadFpvThrottle;
+      const btn = document.getElementById('btn-gamepad');
+      if (btn) {
+        btn.innerText = sim._gamepadFpvThrottle ? '🎮 GP: FPV Pro' : '🎮 GP: Spring';
+      }
+      sim._updateControlsHint(true);
     }
   });
   document.getElementById('btn-ar-mode').addEventListener('click', () => {
