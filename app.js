@@ -564,16 +564,27 @@ class AssemblyLab {
     this.scene.add(sun);
     this.scene.add(new THREE.DirectionalLight(0x6366F1,.4).translateX(-6).translateY(2).translateZ(-6));
 
-    /* floor */
+    /* rotating workbench turntable */
+    this.workbenchGroup = new THREE.Group();
+    this.scene.add(this.workbenchGroup);
+
+    /* floor board */
     const fm = new THREE.MeshStandardMaterial({color:0xffffff,roughness:.25,metalness:.1,side:THREE.DoubleSide});
     const fl = new THREE.Mesh(new THREE.RingGeometry(.01,1.8,64), fm);
     fl.rotation.x=-Math.PI/2; fl.position.y=-.42; fl.receiveShadow=true;
-    this.scene.add(fl);
+    this.workbenchGroup.add(fl);
+    
     const rim = new THREE.Mesh(new THREE.RingGeometry(1.78,1.8,64), new THREE.MeshBasicMaterial({color:0x6366F1,transparent:true,opacity:.75}));
-    rim.rotation.x=-Math.PI/2; rim.position.y=-.41; this.scene.add(rim);
+    rim.rotation.x=-Math.PI/2; rim.position.y=-.41;
+    this.workbenchGroup.add(rim);
+    
     this.scene.add(new THREE.GridHelper(10,20,0x6366F1,0xE0DDD6));
 
-    this.pivot = new THREE.Group(); this.scene.add(this.pivot);
+    // Initialize drone pivot resting on the board (Avata is default frame, offset = 0.05)
+    this.pivot = new THREE.Group();
+    this.pivot.position.y = -0.37;
+    this.workbenchGroup.add(this.pivot);
+    
     this._tick();
     window.addEventListener('resize', ()=>{
       const b=this.cv.parentElement.getBoundingClientRect();
@@ -616,6 +627,12 @@ class AssemblyLab {
         }
       });
     }
+
+    // Dynamic height adjustment: Rest bottom of drone frame flat on tabletop (Y = -0.42)
+    const frameId = this.slots.frame?.id;
+    const offset = frameId === 'fr-avata' ? 0.05 : 0.01;
+    this.pivot.position.y = -0.42 + offset;
+
     this._calc();
   }
 
@@ -658,8 +675,10 @@ class AssemblyLab {
   _tick() {
     requestAnimationFrame(()=>this._tick());
     const t=performance.now()*.001;
-    this.pivot.position.y = Math.sin(t*1.6)*.035;
-    this.pivot.rotation.y = t*.12;
+    // Rotate the parent workbench group (turntable + drone pivot) together for turntable display effect
+    if (this.workbenchGroup) {
+      this.workbenchGroup.rotation.y = t * 0.12;
+    }
     this.props.forEach((p,i)=>{ p.rotation.y+=.06*(i%2?-1:1); });
     this.ctrl.update();
     this.ren.render(this.scene, this.cam);
