@@ -3087,10 +3087,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-quick-fly').addEventListener('click', () => {
     sfx.snap();
     show('sim');
-    if (sim) { sim.stop(); sim = null; }
-    sim = new FlightSim('sim-canvas','cam-feed', hudUpdate);
-    sim.launch({wg:610,thrN:85.5,cells:6,frame:'fr-avata'},'city');
-    document.getElementById('hud').classList.remove('hidden');
+    setTimeout(() => {
+      if (sim) { sim.stop(); sim = null; }
+      sim = new FlightSim('sim-canvas','cam-feed', hudUpdate);
+      sim.launch({wg:610,thrN:85.5,cells:6,frame:'fr-avata'},'city');
+      document.getElementById('hud').classList.remove('hidden');
+    }, 20);
   });
 
   /* builder → env */
@@ -3103,10 +3105,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const env = btn.dataset.launch;
     sfx.snap();
     show('sim');
-    if (sim) { sim.stop(); sim = null; }
-    sim = new FlightSim('sim-canvas','cam-feed', hudUpdate);
-    sim.launch(lab.specs(), env);
-    document.getElementById('hud').classList.remove('hidden');
+    setTimeout(() => {
+      if (sim) { sim.stop(); sim = null; }
+      sim = new FlightSim('sim-canvas','cam-feed', hudUpdate);
+      sim.launch(lab.specs(), env);
+      document.getElementById('hud').classList.remove('hidden');
+    }, 20);
   }));
 
   /* env card highlight */
