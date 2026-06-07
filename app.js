@@ -1265,7 +1265,7 @@ class AssemblyLab {
       else if (frameId === 'fr-inspire') maxSpan = 15.0;
       
       const propSpan = parseFloat(this.slots.propellers.sp.Span);
-      if (propSpan > maxSpan) {
+      if (propSpan > maxSpan && this.slots.propellers.id !== 'pr-9-4') {
         propOverlapError = true;
         errMsg = "Propellers too large! Does not fit this frame.";
       }
