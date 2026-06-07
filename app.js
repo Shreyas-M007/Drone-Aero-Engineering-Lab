@@ -9,43 +9,84 @@ const PARTS = {
     { id:'fr-neo',  name:'DJI Neo 3″ ducted micro',   w:48,  desc:'Polycarbonate whoop guard. Safe indoor flights.', sp:{Size:'3″ Whoop',Mat:'Elastomer'}},
     { id:'fr-avata',name:'DJI Avata 3.5″ ducted',     w:165, desc:'Aerodynamic ducts shield propellers from impact.', sp:{Size:'3.5″ Duct',Mat:'Polyamide'}},
     { id:'fr-fpv5', name:'DJI FPV 5″ carbon',         w:115, desc:'3K carbon twill racing frame with detachable arms.',sp:{Size:'5″ Quad',Mat:'3K Carbon'}},
+    { id:'fr-phantom', name:'DJI Phantom 6″ unibody',  w:220, desc:'Classic white aerodynamic unibody shell. Highly stable.', sp:{Size:'6″ Quad',Mat:'ABS Unibody'}},
+    { id:'fr-mavic', name:'DJI Mavic 3 folding shell', w:175, desc:'Foldable carbon-composite frame with low aerodynamic drag.', sp:{Size:'5″ Fold',Mat:'Carbon Composite'}},
+    { id:'fr-inspire', name:'DJI Inspire 3 carbon T-frame', w:340, desc:'Professional dual-boom CineCore frame with retractable landing gear.', sp:{Size:'7″ Cine',Mat:'Carbon Weave'}},
   ],
   motors: [
-    { id:'mt-1306', name:'1306 4000KV micro stator',   w:12, thrust:550, desc:'Tiny quiet motors for sub-250 g builds.',      sp:{KV:'4000',Lift:'550 g ea'}},
-    { id:'mt-2806', name:'2806 1300KV heavy-lift',      w:45, thrust:2500, desc:'High torque for payload & wind stability.',    sp:{KV:'1300',Lift:'2500 g ea'}},
+    { id:'mt-1404', name:'1404 2900KV micro bell',     w:9,  thrust:420,  desc:'Lightweight high-efficiency motors for micro quads.', sp:{KV:'2900',Lift:'420 g ea'}},
+    { id:'mt-1306', name:'1306 4000KV micro stator',   w:12, thrust:550,  desc:'Tiny quiet motors for sub-250 g builds.',      sp:{KV:'4000',Lift:'550 g ea'}},
     { id:'mt-2207', name:'2207 1950KV sport racing',    w:34, thrust:1850, desc:'32 000 RPM bells for agile freestyle.',        sp:{KV:'1950',Lift:'1850 g ea'}},
+    { id:'mt-2806', name:'2806 1300KV heavy-lift',      w:45, thrust:2500, desc:'High torque for payload & wind stability.',    sp:{KV:'1300',Lift:'2500 g ea'}},
+    { id:'mt-2312', name:'2312 960KV classic bell',     w:55, thrust:1200, desc:'Reliable brushless motor for stable video platforms.', sp:{KV:'960',Lift:'1200 g ea'}},
+    { id:'mt-2008', name:'DJI Mavic 2008 1400KV stator', w:22, thrust:980, desc:'Highly optimized flat stator design for long endurance.', sp:{KV:'1400',Lift:'980 g ea'}},
+    { id:'mt-3512', name:'DJI Inspire 3512 800KV power', w:110, thrust:3600, desc:'Heavy-lift motor for cinema payloads.', sp:{KV:'800',Lift:'3600 g ea'}},
   ],
   esc: [
+    { id:'es-15a',  name:'DJI Neo 15A ESC',      w:4,  desc:'Ultra-efficient micro ESC.',             sp:{Amps:'15 A',Proto:'DShot300'}},
     { id:'es-20a',  name:'SpeedyBee 20A micro',  w:6,  desc:'Lightweight DShot300 controller.',             sp:{Amps:'20 A',Proto:'DShot300'}},
+    { id:'es-30a',  name:'DJI Phantom 30A ESC',  w:10, desc:'Classic reliable ESC.', sp:{Amps:'30 A',Proto:'PWM'}},
     { id:'es-50a',  name:'DJI FPV 50A board',    w:14, desc:'High-current MOS layout running DShot600.',    sp:{Amps:'50 A',Proto:'DShot600'}},
     { id:'es-70a',  name:'Fettec 70A heat-sink',  w:19, desc:'Metal shell dissipates heat at full throttle.',sp:{Amps:'70 A',Proto:'DShot1200'}},
+    { id:'es-40a',  name:'DJI Mavic 40A smart ESC', w:12, desc:'Sine-wave drive ESC for smooth velocity control.', sp:{Amps:'40 A',Proto:'Smart Link'}},
+    { id:'es-80a',  name:'DJI Inspire 80A dual ESC', w:32, desc:'Dual-redundancy heavy power controller.', sp:{Amps:'80 A',Proto:'Dual Bus'}},
   ],
   propellers: [
     { id:'pr-3b',   name:'Gemfan 3″ tri-blade ducted', w:3, desc:'Short high-pitch blades for duct compression lift.',sp:{Blades:'3-Blade',Span:'3.0″'}},
+    { id:'pr-3-5b', name:'DJI Avata 3.5″ 5-blade',   w:6, desc:'Custom-pitched quiet props.', sp:{Blades:'5-Blade',Span:'3.5″'}},
     { id:'pr-5b',   name:'DJI Avata 5-blade ducted',   w:6, desc:'Max static thrust for altitude hold.',              sp:{Blades:'5-Blade',Span:'3.5″'}},
     { id:'pr-2b',   name:'DJI FPV 5.3″ dual-blade',    w:5, desc:'Low drag for top-end speed.',                       sp:{Blades:'2-Blade',Span:'5.3″'}},
+    { id:'pr-9b',   name:'DJI Phantom 9.4″ props', w:12, desc:'Classic high-efficiency propellers.', sp:{Blades:'2-Blade',Span:'9.4″'}},
+    { id:'pr-9-4',  name:'DJI Mavic 9.4″ folding props', w:8, desc:'Quiet-designed folding prop blades.', sp:{Blades:'2-Blade',Span:'9.4″'}},
+    { id:'pr-15b',  name:'DJI Inspire 15″ carbon prop', w:24, desc:'Stiff carbon weave props for massive thrust.', sp:{Blades:'2-Blade',Span:'15.0″'}},
   ],
   flight_controller: [
+    { id:'fc-neo',  name:'DJI Neo Flight Core',   w:5,  desc:'Ultra-miniature sensor suite.', sp:{CPU:'M4',Gyro:'ICM42688'}},
     { id:'fc-f4',   name:'Betaflight F405',       w:6,  desc:'Reliable MPU6000 gyro. Smooth hover.',  sp:{CPU:'F405',Gyro:'MPU6000'}},
     { id:'fc-f7',   name:'KISS Ultra F722',       w:8,  desc:'8 kHz loop rate, ultra-responsive.',     sp:{CPU:'F722',Gyro:'BMI270'}},
     { id:'fc-o3',   name:'DJI O3 Flight Core',    w:12, desc:'Auto altitude-lock and GPS brakes.',     sp:{CPU:'H7 Dual',Gyro:'ICM42688'}},
+    { id:'fc-naza', name:'DJI Naza-M V2',         w:25, desc:'Classic flight controller with stable GPS damping.', sp:{CPU:'STM32F4',Gyro:'MPU6050'}},
+    { id:'fc-mavic',name:'DJI Mavic AP Core V3',  w:15, desc:'Obstacle avoidance and vision computing module.', sp:{CPU:'H7 Dual',Gyro:'Dual ICM42688'}},
+    { id:'fc-inspire', name:'DJI Inspire CineCore 3.0', w:48, desc:'Integrated image processing and flight control system.', sp:{CPU:'CineCore 3',Gyro:'Redundant'}},
   ],
   battery: [
-    { id:'bt-3s',   name:'3S 1435 mAh LiPo',  w:85,  desc:'Lightweight agile pack, shorter range.',  sp:{Cap:'1435 mAh',V:'11.1 V (3S)'}},
-    { id:'bt-4s',   name:'4S 2420 mAh LiPo',  w:180, desc:'Balanced energy for cinematic ops.',       sp:{Cap:'2420 mAh',V:'14.8 V (4S)'}},
-    { id:'bt-6s',   name:'6S 2000 mAh HV',    w:295, desc:'Peak discharge for sprint acceleration.',  sp:{Cap:'2000 mAh',V:'22.2 V (6S)'}},
+    { id:'bt-1s',   name:'1S 1435 mAh Li-ion',    w:45,  desc:'High energy density cell for micro drones.', sp:{Cap:'1435 mAh',V:'3.8 V (1S)'}},
+    { id:'bt-3s',   name:'3S 1435 mAh LiPo',      w:85,  desc:'Lightweight agile pack, shorter range.',  sp:{Cap:'1435 mAh',V:'11.1 V (3S)'}},
+    { id:'bt-4s',   name:'4S 2420 mAh LiPo',      w:180, desc:'Balanced energy for cinematic ops.',       sp:{Cap:'2420 mAh',V:'14.8 V (4S)'}},
+    { id:'bt-6s',   name:'6S 2000 mAh HV',        w:295, desc:'Peak discharge for sprint acceleration.',  sp:{Cap:'2000 mAh',V:'22.2 V (6S)'}},
+    { id:'bt-phantom', name:'DJI Phantom 4S 4480 mAh', w:365, desc:'Aerodynamic slide-in smart battery.', sp:{Cap:'4480 mAh',V:'15.2 V (4S)'}},
+    { id:'bt-mavic', name:'DJI Mavic 4S 5000 mAh', w:335, desc:'Compact high-density smart battery.', sp:{Cap:'5000 mAh',V:'15.4 V (4S)'}},
+    { id:'bt-inspire', name:'DJI Inspire 6S 4280 mAh dual', w:710, desc:'Dual self-heating cinema battery system.', sp:{Cap:'8560 mAh',V:'22.8 V (6S)'}},
   ],
   camera: [
-    { id:'cm-ana',  name:'Caddx Ratel 2 analog', w:6,  desc:'Low-latency analog feed, 8 ms delay.',   sp:{Sensor:'1200 TVL',Delay:'8 ms'}},
-    { id:'cm-4k',   name:'DJI O3 4K gimbal cam', w:28, desc:'48 MP, single-axis stabiliser, 4K/60.',   sp:{Sensor:'4K/60 HDR',Delay:'28 ms'}},
+    { id:'cm-neo',  name:'DJI Neo 4K recessed',   w:10,  desc:'1-axis single-sensor stabilizer.', sp:{Sensor:'4K/30 HDR',Delay:'30 ms'}},
+    { id:'cm-ana',  name:'Caddx Ratel 2 analog',  w:6,   desc:'Low-latency analog feed, 8 ms delay.',   sp:{Sensor:'1200 TVL',Delay:'8 ms'}},
+    { id:'cm-4k',   name:'DJI O3 4K gimbal cam',  w:28,  desc:'48 MP, single-axis stabiliser, 4K/60.',   sp:{Sensor:'4K/60 HDR',Delay:'28 ms'}},
+    { id:'cm-phantom', name:'DJI Phantom 3-axis cam', w:55, desc:'4K 12 MP camera with integrated brushless gimbal.', sp:{Sensor:'4K/30',Delay:'35 ms'}},
+    { id:'cm-mavic', name:'DJI Mavic Hasselblad triple-cam', w:65, desc:'Hasselblad 4/3 CMOS plus dual telephoto lenses.', sp:{Sensor:'5.1K Cine',Delay:'32 ms'}},
+    { id:'cm-inspire', name:'DJI Zenmuse X9-8K Cinema', w:320, desc:'Full-frame 8K cinema gimbal with interchangeable lens.', sp:{Sensor:'8K ProRes',Delay:'20 ms'}},
   ],
   transmitter: [
-    { id:'tx-elrs', name:'ELRS 2.4 GHz whip',     w:4,  desc:'Linear antenna, 2 km LOS.',            sp:{Band:'2.4 GHz',Range:'2 km'}},
-    { id:'tx-o3',   name:'DJI O3 dual-link',       w:18, desc:'Dual encrypted link, 10 km range.',    sp:{Band:'2.4/5.8 G',Range:'10 km'}},
+    { id:'tx-neo',  name:'DJI Neo controller link', w:2,  desc:'Integrated Wi-Fi / O3 link.', sp:{Band:'2.4/5.8 G',Range:'0.1-6 km'}},
+    { id:'tx-elrs', name:'ELRS 2.4 GHz whip',     w:4,   desc:'Linear antenna, 2 km LOS.',            sp:{Band:'2.4 GHz',Range:'2 km'}},
+    { id:'tx-o3',   name:'DJI O3 dual-link',       w:18,  desc:'Dual encrypted link, 10 km range.',    sp:{Band:'2.4/5.8 G',Range:'10 km'}},
+    { id:'tx-phantom', name:'DJI Phantom 5.8 GHz whip', w:6, desc:'Classic video receiver link.', sp:{Band:'5.8 GHz',Range:'3 km'}},
+    { id:'tx-mavic', name:'DJI O3+ transmission system', w:14, desc:'High-definition low-latency video link.', sp:{Band:'O3+ Dual',Range:'15 km'}},
+    { id:'tx-inspire', name:'DJI O3 Pro Cinema link', w:30,  desc:'Independent pilot/gimbal operator dual-link.', sp:{Band:'O3 Pro',Range:'20 km'}},
   ]
 };
 
 const REQUIRED = ['frame','motors','esc','propellers','flight_controller','battery','camera','transmitter'];
+
+// Reusable temporary variables to prevent GC allocations in loops
+const _tempV1 = new THREE.Vector3();
+const _tempV2 = new THREE.Vector3();
+const _tempV3 = new THREE.Vector3();
+const _tempV4 = new THREE.Vector3();
+const _tempV5 = new THREE.Vector3();
+const _tempQuat = new THREE.Quaternion();
+const _tempEuler = new THREE.Euler();
+const _tempSphere = new THREE.Sphere();
 
 /* helper — terrain height at world (x,z) */
 function terrainY(x, z) {
@@ -77,74 +118,216 @@ function makeTextSprite(message) {
 function buildComponentMesh(cat, id, frameId, propsArray) {
   const g = new THREE.Group(), M = AssemblyLab.MAT;
   const duct = frameId === 'fr-neo' || frameId === 'fr-avata';
-  const s = frameId === 'fr-neo' ? 0.3 : frameId === 'fr-avata' ? 0.35 : 0.45;
+  const s = frameId === 'fr-neo' ? 0.3 : frameId === 'fr-avata' ? 0.35 : (frameId === 'fr-mavic' ? 0.42 : (frameId === 'fr-phantom' ? 0.48 : (frameId === 'fr-inspire' ? 0.65 : 0.45)));
   const armAngles = [Math.PI/4,-Math.PI/4,3*Math.PI/4,-3*Math.PI/4];
-  const motorPos = [[s,.02,s],[-s,.02,s],[s,.02,-s],[-s,.02,-s]];
+  const motorY = frameId === 'fr-inspire' ? 0.06 : (frameId === 'fr-phantom' ? 0.03 : (frameId === 'fr-mavic' ? 0.03 : 0.02));
+  const motorPos = [[s,motorY,s],[-s,motorY,s],[s,motorY,-s],[-s,motorY,-s]];
 
   // Local helper materials for high-fidelity detailing
   const yellowMat = new THREE.MeshStandardMaterial({color: 0xeab308, roughness: 0.4});
   const goldMat = new THREE.MeshStandardMaterial({color: 0xd97706, roughness: 0.2, metalness: 0.8});
 
   if(cat==='frame'){
-    // Bottom carbon chassis plate
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(duct?.3:.38, .008, duct?.4:.65), M.carbon));
-    
-    // Top carbon deck plate (elevated)
-    const topPlate = new THREE.Mesh(new THREE.BoxGeometry(duct?.2:.26, .006, duct?.32:.48), M.carbon);
-    topPlate.position.y = 0.13;
-    topPlate.position.z = -0.05;
-    g.add(topPlate);
-
-    // Standoff columns (anodized aluminum spacer pillars)
-    const standoffHeight = 0.124;
-    const standoffPositions = duct ? 
-      [[0.09, 0.062, 0.14], [-0.09, 0.062, 0.14], [0.09, 0.062, -0.18], [-0.09, 0.062, -0.18]] :
-      [[0.11, 0.062, 0.2], [-0.11, 0.062, 0.2], [0.11, 0.062, -0.2], [-0.11, 0.062, -0.2], [0.09, 0.062, 0], [-0.09, 0.062, 0]];
+    if(id==='fr-phantom'){
+      // White unibody shell
+      const body = new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 16), M.white);
+      body.scale.set(1.2, 0.6, 1.6);
+      body.position.y = 0.06;
+      g.add(body);
       
-    standoffPositions.forEach(p => {
-      // Aluminum standoff column (indigo)
-      const column = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, standoffHeight, 8), M.indigo);
-      column.position.set(p[0], p[1], p[2]);
-      g.add(column);
+      // White arms
+      armAngles.forEach(a=>{
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.03, s * 0.9), M.white);
+        arm.rotation.y = a;
+        arm.position.set(Math.sin(a)*s*0.45, 0.03, Math.cos(a)*s*0.45);
+        g.add(arm);
+        
+        // Motor mounts
+        const mount = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.04, 12), M.white);
+        mount.position.set(Math.sin(a)*s, 0.03, Math.cos(a)*s);
+        g.add(mount);
+      });
       
-      // Top hex bolt (silver)
-      const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.006, 6), M.silver);
-      bolt.position.set(p[0], 0.133, p[2]);
-      g.add(bolt);
-    });
-
-    // Camera Cage side carbon plates
-    const cageZ = duct ? 0.24 : 0.32;
-    [-0.08, 0.08].forEach(x => {
-      const cagePlate = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.12, 0.15), M.carbon);
-      cagePlate.position.set(x, 0.06, cageZ);
-      g.add(cagePlate);
-    });
-
-    if(id==='fr-avata'){
-      [[.35,.04,.35],[-.35,.04,.35],[.35,.04,-.35],[-.35,.04,-.35]].forEach(p=>{
-        g.add(new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.18,32,1,true), M.orange).translateX(p[0]).translateY(p[1]).translateZ(p[2]));
+      // Classic Phantom curved landing gear arches (two white arches)
+      [-1, 1].forEach(side => {
+        const legGroup = new THREE.Group();
+        legGroup.position.set(side * 0.12, -0.06, 0);
+        
+        [-1, 1].forEach(zSide => {
+          const strut = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.15, 0.012), M.white);
+          strut.position.set(0, -0.05, zSide * 0.12);
+          strut.rotation.z = -side * Math.PI / 10;
+          strut.rotation.x = zSide * Math.PI / 12;
+          legGroup.add(strut);
+        });
+        
+        const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.35, 8), M.white);
+        foot.rotation.x = Math.PI/2;
+        foot.position.set(-side * 0.02, -0.12, 0);
+        legGroup.add(foot);
+        
+        g.add(legGroup);
       });
     }
-    
-    // Frame arms
-    armAngles.forEach(a=>{
-      const arm=new THREE.Mesh(new THREE.BoxGeometry(.04,.016,duct?.5:.9),M.carbon);
-      arm.rotation.y=a; arm.position.set(Math.sin(a)*s*.7,0,Math.cos(a)*s*.7); g.add(arm);
-    });
-    
-    if(duct){ 
-      const pod=new THREE.Mesh(new THREE.SphereGeometry(.1,16,16),M.indigo); 
-      pod.scale.set(1,.6,1.3); pod.position.y=.05; g.add(pod); 
+    else if(id==='fr-mavic'){
+      // Sleek dark grey fuselage body
+      const body = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.09, 0.46), M.dark);
+      body.position.y = 0.04;
+      body.position.z = -0.02;
+      g.add(body);
+      
+      // Orange highlights/lines
+      const accent = new THREE.Mesh(new THREE.BoxGeometry(0.142, 0.006, 0.22), M.orange);
+      accent.position.set(0, 0.065, 0.04);
+      g.add(accent);
+      
+      // Thin folding arms
+      armAngles.forEach((a, idx) => {
+        const isFront = idx < 2;
+        const armL = isFront ? s * 0.95 : s * 0.85;
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.026, 0.022, armL), M.carbon);
+        arm.rotation.y = a;
+        arm.position.set(Math.sin(a)*armL*0.45, 0.03, Math.cos(a)*armL*0.45);
+        g.add(arm);
+        
+        // Motor pods
+        const pod = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.03, 10), M.dark);
+        pod.position.set(Math.sin(a)*armL, 0.03, Math.cos(a)*armL);
+        g.add(pod);
+        
+        // Small landing pegs under the front motor pods
+        if (isFront) {
+          const peg = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.004, 0.05, 6), M.dark);
+          peg.position.set(Math.sin(a)*armL, -0.01, Math.cos(a)*armL);
+          g.add(peg);
+        }
+      });
+    }
+    else if(id==='fr-inspire'){
+      // Aerodynamic white fuselage cockpit
+      const cockpit = new THREE.Mesh(new THREE.SphereGeometry(0.16, 16, 16), M.white);
+      cockpit.scale.set(1.1, 0.7, 1.8);
+      cockpit.position.set(0, 0.08, 0);
+      g.add(cockpit);
+      
+      // Dual parallel side carbon booms (horizontal tubes)
+      [-0.15, 0.15].forEach(x => {
+        const boom = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.65, 12), M.carbon);
+        boom.rotation.x = Math.PI / 2;
+        boom.position.set(x, 0.06, -0.05);
+        g.add(boom);
+        
+        const strut = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.012, 0.012), M.carbon);
+        strut.position.set(x/2, 0.06, 0.2);
+        g.add(strut);
+        
+        const strutBack = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.012, 0.012), M.carbon);
+        strutBack.position.set(x/2, 0.06, -0.2);
+        g.add(strutBack);
+      });
+      
+      // Heavy carbon arm tubes to motor mounts
+      armAngles.forEach(a => {
+        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, s * 0.9, 10), M.carbon);
+        arm.rotation.z = Math.PI / 2;
+        arm.rotation.y = a;
+        arm.position.set(Math.sin(a)*s*0.45, 0.06, Math.cos(a)*s*0.45);
+        g.add(arm);
+        
+        // Large motor mounts
+        const mount = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.04, 12), M.dark);
+        mount.position.set(Math.sin(a)*s, 0.06, Math.cos(a)*s);
+        g.add(mount);
+      });
+      
+      // Retractable carbon landing gear struts (raised for flight, down on bench)
+      [-0.18, 0.18].forEach(x => {
+        const legGroup = new THREE.Group();
+        legGroup.position.set(x, 0.04, 0);
+        
+        // Vertical landing gear strut
+        const strut = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.22, 10), M.carbon);
+        strut.position.set(0, -0.11, 0);
+        legGroup.add(strut);
+        
+        // Foot pad horizontal tube
+        const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.48, 10), M.carbon);
+        foot.rotation.x = Math.PI / 2;
+        foot.position.set(0, -0.22, 0);
+        legGroup.add(foot);
+        
+        // White foot caps
+        [-0.24, 0.24].forEach(z => {
+          const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.017, 0.017, 0.02, 10), M.white);
+          cap.rotation.x = Math.PI / 2;
+          cap.position.set(0, -0.22, z);
+          legGroup.add(cap);
+        });
+        
+        g.add(legGroup);
+      });
     }
     else {
-      [[.1,.08,.2],[-.1,.08,.2],[.1,.08,-.2],[-.1,.08,-.2]].forEach(p=>{
-        g.add(new THREE.Mesh(new THREE.CylinderGeometry(.01,.01,.15,8),M.indigo).translateX(p[0]).translateY(p[1]).translateZ(p[2]));
+      // DEFAULT Frame (Avata, FPV 5", Neo, etc. fallbacks)
+      // Bottom carbon chassis plate
+      g.add(new THREE.Mesh(new THREE.BoxGeometry(duct?.3:.38, .008, duct?.4:.65), M.carbon));
+      
+      // Top carbon deck plate (elevated)
+      const topPlate = new THREE.Mesh(new THREE.BoxGeometry(duct?.2:.26, .006, duct?.32:.48), M.carbon);
+      topPlate.position.y = 0.13;
+      topPlate.position.z = -0.05;
+      g.add(topPlate);
+
+      // Standoff columns
+      const standoffHeight = 0.124;
+      const standoffPositions = duct ? 
+        [[0.09, 0.062, 0.14], [-0.09, 0.062, 0.14], [0.09, 0.062, -0.18], [-0.09, 0.062, -0.18]] :
+        [[0.11, 0.062, 0.2], [-0.11, 0.062, 0.2], [0.11, 0.062, -0.2], [-0.11, 0.062, -0.2], [0.09, 0.062, 0], [-0.09, 0.062, 0]];
+        
+      standoffPositions.forEach(p => {
+        const column = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, standoffHeight, 8), M.indigo);
+        column.position.set(p[0], p[1], p[2]);
+        g.add(column);
+        
+        const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.006, 6), M.silver);
+        bolt.position.set(p[0], 0.133, p[2]);
+        g.add(bolt);
       });
+
+      // Camera Cage side carbon plates
+      const cageZ = duct ? 0.24 : 0.32;
+      [-0.08, 0.08].forEach(x => {
+        const cagePlate = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.12, 0.15), M.carbon);
+        cagePlate.position.set(x, 0.06, cageZ);
+        g.add(cagePlate);
+      });
+
+      if(id==='fr-avata'){
+        [[.35,.04,.35],[-.35,.04,.35],[.35,.04,-.35],[-.35,.04,-.35]].forEach(p=>{
+          g.add(new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.18,32,1,true), M.orange).translateX(p[0]).translateY(p[1]).translateZ(p[2]));
+        });
+      }
+      
+      // Frame arms
+      armAngles.forEach(a=>{
+        const arm=new THREE.Mesh(new THREE.BoxGeometry(.04,.016,duct?.5:.9),M.carbon);
+        arm.rotation.y=a; arm.position.set(Math.sin(a)*s*.7,0,Math.cos(a)*s*.7); g.add(arm);
+      });
+      
+      if(duct){ 
+        const pod=new THREE.Mesh(new THREE.SphereGeometry(.1,16,16),M.indigo); 
+        pod.scale.set(1,.6,1.3); pod.position.y=.05; g.add(pod); 
+      }
+      else {
+        [[.1,.08,.2],[-.1,.08,.2],[.1,.08,-.2],[-.1,.08,-.2]].forEach(p=>{
+          g.add(new THREE.Mesh(new THREE.CylinderGeometry(.01,.01,.15,8),M.indigo).translateX(p[0]).translateY(p[1]).translateZ(p[2]));
+        });
+      }
     }
   }
   else if(cat==='motors'){
-    let r=id==='mt-1306'?.045:id==='mt-2806'?.095:.07, h=id==='mt-1306'?.05:id==='mt-2806'?.09:.08;
+    let r = id==='mt-1404'||id==='mt-1306' ? 0.045 : (id==='mt-2008' ? 0.075 : (id==='mt-2312' ? 0.085 : (id==='mt-2806' ? 0.095 : (id==='mt-3512' ? 0.115 : 0.07))));
+    let h = id==='mt-1404' ? 0.045 : (id==='mt-1306' ? 0.05 : (id==='mt-2008' ? 0.055 : (id==='mt-2312'||id==='mt-2207' ? 0.08 : (id==='mt-2806' ? 0.09 : (id==='mt-3512' ? 0.12 : 0.08)))));
     motorPos.forEach(p=>{
       const mg=new THREE.Group(); mg.position.set(p[0],p[1],p[2]);
       
@@ -169,7 +352,8 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
       bell.position.y=h*.55;
       
       // Bell top color accent ring
-      const accent = new THREE.Mesh(new THREE.CylinderGeometry(r+.002,r+.002,bellHeight*.15,16), id==='mt-2806'?M.indigo:goldMat);
+      const accentMat = id==='mt-2806'?M.indigo:(id==='mt-3512'?goldMat:(id==='mt-2008'?M.silver:goldMat));
+      const accent = new THREE.Mesh(new THREE.CylinderGeometry(r+.002,r+.002,bellHeight*.15,16), accentMat);
       accent.position.y = bellHeight*.45;
       bell.add(accent);
       
@@ -182,7 +366,7 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
       const wireLen = Math.hypot(p[0], p[2]) - 0.05;
       const wireAngle = Math.atan2(p[0], p[2]);
       const wiresGroup = new THREE.Group();
-      wiresGroup.position.set(p[0]/2, 0.012, p[2]/2);
+      wiresGroup.position.set(p[0]/2, p[1] - 0.008, p[2]/2);
       wiresGroup.rotation.y = wireAngle;
       
       [-0.008, 0, 0.008].forEach((offset, idx) => {
@@ -196,15 +380,17 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
     });
   }
   else if(cat==='esc'){
-    const w=id==='es-70a'?.26:.18;
+    const w=id==='es-70a'||id==='es-80a'?.26:id==='es-15a'?.12:id==='es-30a'?.16:id==='es-40a'?.20:.18;
     // Main double-sided PCB board
     g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.012,w),M.dark).translateY(.015).translateZ(-.02));
     
     // Metal heatsink shell on top
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(w*0.88,.008,w*0.88),id==='es-70a'?M.silver:M.indigo).translateY(.024).translateZ(-.02));
+    const heatsinkMat = id==='es-80a'?M.silver:(id==='es-40a'?M.orange:(id==='es-70a'?M.silver:M.indigo));
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(w*0.88,.008,w*0.88),heatsinkMat).translateY(.024).translateZ(-.02));
     
     // Cylindrical capacitors
-    for(let i=0;i<(id==='es-20a'?2:4);i++) {
+    const numCaps = id==='es-15a'||id==='es-20a'?2:4;
+    for(let i=0;i<numCaps;i++) {
       const cap = new THREE.Mesh(new THREE.CylinderGeometry(.018,.018,.055,8),M.dark);
       cap.position.set((i%2?-1:1)*w*.36, .04, -.02+(i>1?.035:-.035));
       cap.rotation.x = Math.PI / 2;
@@ -214,35 +400,60 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
     }
   }
   else if(cat==='propellers'){
-    const span=id==='pr-3b'?.28:id==='pr-5b'?.34:.5, nb=id==='pr-2b'?2:id==='pr-5b'?5:3;
+    let h = id==='mt-1404' ? 0.045 : (id==='mt-1306' ? 0.05 : (id==='mt-2008' ? 0.055 : (id==='mt-2312'||id==='mt-2207' ? 0.08 : (id==='mt-2806' ? 0.09 : (id==='mt-3512' ? 0.12 : 0.08)))));
+    const span=id==='pr-3b'?.28:(id==='pr-3-5b'||id==='pr-5b'?.34:(id==='pr-9b'||id==='pr-9-4'?.52:(id==='pr-15b'?.72:.5)));
+    const nb=id==='pr-2b'||id==='pr-9b'||id==='pr-9-4'||id==='pr-15b'?2:(id==='pr-3-5b'||id==='pr-5b'?5:3);
+    const propMat = id==='pr-15b'?M.carbon:(id==='pr-9b'?M.white:M.orange);
+
     if (propsArray) propsArray.length = 0;
     motorPos.forEach(p=>{
-      const pg=new THREE.Group(); pg.position.set(p[0],.08,p[2]);
+      const pg=new THREE.Group(); pg.position.set(p[0],p[1]+h*0.9,p[2]);
       
       // Central propeller hub assembly
       pg.add(new THREE.Mesh(new THREE.CylinderGeometry(.032,.032,.022,10),M.dark));
       pg.add(new THREE.Mesh(new THREE.CylinderGeometry(.016,.016,.01,10),M.silver).translateY(0.011)); // locknut
       
-      for(let i=0;i<nb;i++){
-        const bladeGroup = new THREE.Group();
-        bladeGroup.rotation.y = i * 2 * Math.PI / nb;
+      if (id === 'pr-9-4') {
+        // Folding propeller hub (central metal bar)
+        pg.add(new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.015, 0.024), M.dark));
         
-        // Single continuous straight blade
-        const blade = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.003, span * 0.95), M.orange);
-        blade.position.set(0, 0.003, span * 0.475);
-        blade.rotation.x = 0.08; // pitch angle
-        bladeGroup.add(blade);
-        
-        pg.add(bladeGroup);
+        // Two blades hinging off pins
+        [-1, 1].forEach(side => {
+          const bladeGroup = new THREE.Group();
+          bladeGroup.position.set(0, 0.008, side * 0.025);
+          bladeGroup.rotation.y = (side === 1 ? 0 : Math.PI) + 0.08;
+          
+          bladeGroup.add(new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.015, 6), M.silver));
+          
+          const blade = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.002, span * 0.45), propMat);
+          blade.position.set(0, 0.002, span * 0.225);
+          blade.rotation.x = 0.08; // pitch angle
+          bladeGroup.add(blade);
+          
+          pg.add(bladeGroup);
+        });
+      } else {
+        for(let i=0;i<nb;i++){
+          const bladeGroup = new THREE.Group();
+          bladeGroup.rotation.y = i * 2 * Math.PI / nb;
+          
+          // Single continuous blade
+          const blade = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.003, span * 0.95), propMat);
+          blade.position.set(0, 0.003, span * 0.475);
+          blade.rotation.x = 0.08; // pitch angle
+          bladeGroup.add(blade);
+          
+          pg.add(bladeGroup);
+        }
       }
       g.add(pg);
       if(propsArray) propsArray.push(pg);
     });
   }
   else if(cat==='flight_controller'){
-    const w=id==='fc-o3'?.22:.16;
+    const w=id==='fc-o3'?.22:id==='fc-inspire'?.28:id==='fc-mavic'?.22:.16;
     // Stacked FC Board (mounted higher on stack pins)
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.012,w),id==='fc-f7'?M.indigo:M.dark).translateY(.075).translateZ(-.02));
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.012,w),id==='fc-f7'?M.indigo:(id==='fc-inspire'?M.silver:(id==='fc-mavic'?M.orange:M.dark))).translateY(.075).translateZ(-.02));
     
     // USB-C port metal bracket
     g.add(new THREE.Mesh(new THREE.BoxGeometry(.03,.015,.04),M.silver).position.set(w/2 - 0.01, .082, 0));
@@ -250,6 +461,15 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
     // Tiny colored status LEDs
     g.add(new THREE.Mesh(new THREE.BoxGeometry(.008,.004,.008),new THREE.MeshBasicMaterial({color:0x22c55e})).position.set(-w/4, .082, w/4));
     g.add(new THREE.Mesh(new THREE.BoxGeometry(.008,.004,.008),new THREE.MeshBasicMaterial({color:0xef4444})).position.set(-w/4 + 0.015, .082, w/4));
+
+    if (id === 'fc-inspire') {
+      // White/silver image processor box on top of FC stack
+      g.add(new THREE.Mesh(new THREE.BoxGeometry(w*0.9, .026, w*0.9), M.white).translateY(.094).translateZ(-.02));
+      g.add(new THREE.Mesh(new THREE.BoxGeometry(w*0.6, .002, w*0.4), goldMat).translateY(.108).translateZ(-.02));
+    } else if (id === 'fc-mavic') {
+      // Second stacked plate
+      g.add(new THREE.Mesh(new THREE.BoxGeometry(w*0.8, .01, w*0.8), M.dark).translateY(.086).translateZ(-.02));
+    }
 
     // Wiring Harness ribbon connecting FC to ESC below
     const ribbon = new THREE.Mesh(new THREE.BoxGeometry(w*0.4, 0.04, 0.01), M.white);
@@ -266,27 +486,65 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
     g.add(puck);
   }
   else if(cat==='battery'){
-    const bw=id==='bt-3s'?.14:id==='bt-6s'?.22:.18, bh=id==='bt-3s'?.08:id==='bt-6s'?.15:.12, bl=id==='bt-3s'?.26:id==='bt-6s'?.42:.34;
+    const bw = id==='bt-3s'?.14 : id==='bt-6s'?.22 : id==='bt-phantom'?.26 : id==='bt-mavic'?.22 : id==='bt-inspire'?.30 : .18;
+    const bh = id==='bt-3s'?.08 : id==='bt-6s'?.15 : id==='bt-phantom'?.20 : id==='bt-mavic'?.16 : id==='bt-inspire'?.22 : .12;
+    const bl = id==='bt-3s'?.26 : id==='bt-6s'?.42 : id==='bt-phantom'?.50 : id==='bt-mavic'?.45 : id==='bt-inspire'?.55 : .34;
     const yOff = -bh/2 - 0.004;
     
     // Individual layered cells (shows multi-cell LiPo structure)
-    const numCells = id==='bt-6s'?6:id==='bt-3s'?3:4;
+    const numCells = id==='bt-6s'||id==='bt-inspire'?6:id==='bt-3s'?3:4;
     const cellH = bh / numCells;
     const battGroup = new THREE.Group();
     battGroup.position.set(0, yOff, -0.02);
     
-    for(let i=0; i<numCells; i++) {
-      const cy = -bh/2 + cellH/2 + i*cellH;
-      // Cell wrapper (silver metal look inside wrapper)
-      const cell = new THREE.Mesh(new THREE.BoxGeometry(bw-0.006, cellH-0.002, bl-0.006), M.silver);
-      cell.position.y = cy;
-      battGroup.add(cell);
+    if (id === 'bt-inspire') {
+      // Render two side-by-side packs for Inspire dual battery setup
+      const bW = bw * 0.45;
+      [-1, 1].forEach(side => {
+        const subBatt = new THREE.Mesh(new THREE.BoxGeometry(bW, bh, bl), M.dark);
+        subBatt.position.set(side * bw * 0.25, 0, 0);
+        battGroup.add(subBatt);
+        
+        // Add individual cell details inside each pack
+        for(let i=0; i<6; i++) {
+          const cy = -bh/2 + cellH/2 + i*cellH;
+          const cell = new THREE.Mesh(new THREE.BoxGeometry(bW-0.006, cellH-0.002, bl-0.006), M.silver);
+          cell.position.set(side * bw * 0.25, cy, 0);
+          battGroup.add(cell);
+        }
+        
+        // Render battery capacity LEDs on the back of each pack
+        for(let i=0; i<4; i++) {
+          const led = new THREE.Mesh(new THREE.SphereGeometry(0.006, 8, 8), new THREE.MeshBasicMaterial({color: 0x22c55e}));
+          led.position.set(side * bw * 0.25 - 0.02 + i*0.013, 0, bl/2 + 0.002);
+          battGroup.add(led);
+        }
+      });
+    } else {
+      for(let i=0; i<numCells; i++) {
+        const cy = -bh/2 + cellH/2 + i*cellH;
+        // Cell wrapper (silver metal look inside wrapper)
+        const cell = new THREE.Mesh(new THREE.BoxGeometry(bw-0.006, cellH-0.002, bl-0.006), M.silver);
+        cell.position.y = cy;
+        battGroup.add(cell);
+      }
+      
+      // Outer plastic shrinkwrap shell (black/yellow/white)
+      const wrapperMat = id==='bt-6s'||id==='bt-mavic'?M.white:id==='bt-3s'?goldMat:M.dark;
+      const wrapper = new THREE.Mesh(new THREE.BoxGeometry(bw,bh,bl), wrapperMat);
+      wrapper.position.y = 0;
+      battGroup.add(wrapper);
+      
+      if (id === 'bt-mavic') {
+        // Render battery capacity indicator LEDs on Mavic pack
+        for(let i=0; i<4; i++) {
+          const led = new THREE.Mesh(new THREE.SphereGeometry(0.008, 8, 8), new THREE.MeshBasicMaterial({color: 0x22c55e}));
+          led.position.set(-0.04 + i*0.026, 0, bl/2 + 0.002);
+          battGroup.add(led);
+        }
+      }
     }
     
-    // Outer plastic shrinkwrap shell (black/yellow/white)
-    const wrapper = new THREE.Mesh(new THREE.BoxGeometry(bw,bh,bl), id==='bt-6s'?M.white:id==='bt-3s'?goldMat:M.dark);
-    wrapper.position.y = 0;
-    battGroup.add(wrapper);
     g.add(battGroup);
     
     // Velcro Battery Strap wrapping around frame
@@ -323,47 +581,134 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
     g.add(jstPlug);
   }
   else if(cat==='camera'){
-    // Metal FPV Camera mount plates
-    [-0.08, 0.08].forEach(x => {
-      const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.1, 0.12), M.silver);
-      bracket.position.set(x, 0.06, 0.36);
-      bracket.rotation.x = -Math.PI / 8;
-      g.add(bracket);
-    });
-    
-    // Camera module housing (black shell)
-    const cameraHousing = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.09, 0.09), M.dark);
-    cameraHousing.position.set(0, 0.06, 0.38);
-    cameraHousing.rotation.x = -Math.PI / 8;
-    
-    // Photorealistic Lens cylinder with glass element
-    const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.038, 0.05, 16), M.silver);
-    lens.rotation.x = Math.PI / 2;
-    lens.position.set(0, 0, 0.05);
-    const glass = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.004, 16), new THREE.MeshBasicMaterial({color: 0x111827}));
-    glass.position.y = 0.024;
-    lens.add(glass);
-    cameraHousing.add(lens);
-    g.add(cameraHousing);
-
-    // GoPro Action Camera on Top-Front if premium camera is selected
-    if (id === 'cm-4k') {
-      const topY = 0.13;
-      const mount = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.05, 0.08), M.orange);
-      mount.position.set(0, topY + 0.02, 0.08);
-      mount.rotation.x = -Math.PI/12;
+    if (id === 'cm-neo') {
+      // Micro Whoop recessed camera
+      const cameraHousing = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.06, 0.06), M.dark);
+      cameraHousing.position.set(0, 0.06, 0.22);
+      const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.02, 12), M.silver);
+      lens.rotation.x = Math.PI / 2;
+      lens.position.set(0, 0, 0.025);
+      cameraHousing.add(lens);
+      g.add(cameraHousing);
+    }
+    else if (id === 'cm-phantom') {
+      // 3-axis gimbal mount arm
+      const mount = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.08, 0.04), M.white);
+      mount.position.set(0, -0.02, 0.15);
       g.add(mount);
-      const gopro = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.06), M.dark);
-      gopro.position.set(0, topY + 0.06, 0.09);
-      gopro.rotation.x = -Math.PI/12;
-      const gpLens = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.015, 16), M.silver);
-      gpLens.rotation.x = Math.PI/2;
-      gpLens.position.set(0.025, 0.01, 0.03);
-      gopro.add(gpLens);
-      const gpScreen = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.025, 0.002), M.indigo);
-      gpScreen.position.set(-0.025, -0.01, 0.031);
-      gopro.add(gpScreen);
-      g.add(gopro);
+      
+      // Yaw/Roll gimbal motors (small cylinders)
+      const yawMotor = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.02, 8), M.silver);
+      yawMotor.position.set(0, -0.06, 0.15);
+      g.add(yawMotor);
+      
+      // Sphere camera body
+      const camBall = new THREE.Mesh(new THREE.SphereGeometry(0.045, 12, 12), M.white);
+      camBall.position.set(0, -0.09, 0.17);
+      
+      // Silver lens
+      const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.03, 12), M.silver);
+      lens.rotation.x = Math.PI / 2;
+      lens.position.set(0, 0, 0.03);
+      camBall.add(lens);
+      g.add(camBall);
+    }
+    else if (id === 'cm-mavic') {
+      // Gimbal arm
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.05, 0.03), M.dark);
+      arm.position.set(0, -0.02, 0.22);
+      g.add(arm);
+      
+      // Squared camera body
+      const cameraBox = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.07, 0.06), M.dark);
+      cameraBox.position.set(0, -0.05, 0.25);
+      
+      // 3 lenses on front face
+      const mainLens = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.01, 10), M.silver);
+      mainLens.rotation.x = Math.PI / 2;
+      mainLens.position.set(0, -0.015, 0.03);
+      cameraBox.add(mainLens);
+      
+      const tele1 = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.01, 10), M.silver);
+      tele1.rotation.x = Math.PI / 2;
+      tele1.position.set(-0.016, 0.016, 0.03);
+      cameraBox.add(tele1);
+      
+      const tele2 = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.01, 10), M.silver);
+      tele2.rotation.x = Math.PI / 2;
+      tele2.position.set(0.016, 0.016, 0.03);
+      cameraBox.add(tele2);
+      
+      g.add(cameraBox);
+    }
+    else if (id === 'cm-inspire') {
+      // Large white gimbal arm
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.12, 0.04), M.white);
+      arm.position.set(0, -0.04, 0.18);
+      g.add(arm);
+      
+      // Circular gimbal ring/pitch housing
+      const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.03, 16), M.dark);
+      ring.rotation.z = Math.PI/2;
+      ring.position.set(-0.02, -0.10, 0.20);
+      g.add(ring);
+      
+      // Large camera body (drum shape)
+      const camBody = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.08, 16), M.dark);
+      camBody.rotation.x = Math.PI/2;
+      camBody.position.set(0, -0.10, 0.22);
+      
+      // Large silver prime lens
+      const primeLens = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.05, 16), M.silver);
+      primeLens.rotation.x = Math.PI/2;
+      primeLens.position.set(0, 0, 0.04);
+      camBody.add(primeLens);
+      
+      g.add(camBody);
+    }
+    else {
+      // Metal FPV Camera mount plates
+      [-0.08, 0.08].forEach(x => {
+        const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.1, 0.12), M.silver);
+        bracket.position.set(x, 0.06, 0.36);
+        bracket.rotation.x = -Math.PI / 8;
+        g.add(bracket);
+      });
+      
+      // Camera module housing (black shell)
+      const cameraHousing = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.09, 0.09), M.dark);
+      cameraHousing.position.set(0, 0.06, 0.38);
+      cameraHousing.rotation.x = -Math.PI / 8;
+      
+      // Photorealistic Lens cylinder with glass element
+      const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.038, 0.05, 16), M.silver);
+      lens.rotation.x = Math.PI / 2;
+      lens.position.set(0, 0, 0.05);
+      const glass = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.004, 16), new THREE.MeshBasicMaterial({color: 0x111827}));
+      glass.position.y = 0.024;
+      lens.add(glass);
+      cameraHousing.add(lens);
+      g.add(cameraHousing);
+
+      // GoPro Action Camera on Top-Front if premium camera is selected
+      if (id === 'cm-4k') {
+        const topY = 0.13;
+        const mount = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.05, 0.08), M.orange);
+        mount.position.set(0, topY + 0.02, 0.08);
+        mount.rotation.x = -Math.PI/12;
+        g.add(mount);
+        const gopro = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.06), M.dark);
+        gopro.position.set(0, topY + 0.06, 0.09);
+        gopro.rotation.x = -Math.PI/12;
+        const gpLens = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.015, 16), M.silver);
+        gpLens.rotation.x = Math.PI/2;
+        gpLens.position.set(0.025, 0.01, 0.03);
+        gopro.add(gpLens);
+        const gpScreen = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.025, 0.002), M.indigo);
+        gpScreen.position.set(-0.025, -0.01, 0.031);
+        gopro.add(gpScreen);
+        g.add(gopro);
+      }
     }
   }
   else if(cat==='transmitter'){
@@ -374,6 +719,25 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
         a.position.set(x,.07,-.38); a.rotation.z=x>.0?Math.PI/8:-Math.PI/8;
         a.add(new THREE.Mesh(new THREE.CylinderGeometry(.014,.014,.04,8),M.copper).translateY(.11));
         g.add(a);
+      });
+    } else if (id === 'tx-mavic') {
+      [-0.04, 0.04].forEach(x => {
+        const a = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.18, 6), M.dark);
+        a.position.set(x, 0.08, -0.34);
+        a.rotation.z = x > 0 ? -Math.PI/6 : Math.PI/6;
+        a.rotation.x = -Math.PI/6;
+        g.add(a);
+      });
+    } else if (id === 'tx-inspire') {
+      [-0.06, 0.06].forEach(x => {
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.015, 8), goldMat);
+        base.position.set(x, 0.045, -0.32);
+        g.add(base);
+        
+        const panel = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.16, 0.015), M.white);
+        panel.position.set(x, 0.12, -0.32);
+        panel.rotation.y = x > 0 ? -Math.PI/12 : Math.PI/12;
+        g.add(panel);
       });
     } else {
       const w=new THREE.Mesh(new THREE.CylinderGeometry(.005,.005,.2,8),M.white);
@@ -541,7 +905,7 @@ class AssemblyLab {
 
     this.ren = new THREE.WebGLRenderer({canvas:this.cv, antialias:true});
     this.ren.setSize(r.width, r.height);
-    this.ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+    this.ren.setPixelRatio(Math.min(devicePixelRatio, 1.5));
     this.ren.shadowMap.enabled = true;
     this.ren.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -578,11 +942,20 @@ class AssemblyLab {
     grid.position.y = -0.42;
     this.scene.add(grid);
 
-    // Initialize drone pivot resting on the tabletop board (Avata is default frame, offset = 0.05)
+    // Initialize drone pivot resting on the tabletop board
     this.pivot = new THREE.Group();
     const frameId = this.slots.frame?.id;
-    const offset = frameId === 'fr-avata' ? 0.05 : 0.01;
-    const bh = this.slots.battery ? (this.slots.battery.id === 'bt-3s' ? 0.08 : this.slots.battery.id === 'bt-6s' ? 0.15 : 0.12) : 0;
+    const offset = frameId === 'fr-avata' ? 0.05 : (frameId === 'fr-phantom' ? 0.135 : (frameId === 'fr-inspire' ? 0.18 : (frameId === 'fr-mavic' ? 0.02 : 0.01)));
+    const getBatteryHeight = id => {
+      if (id === 'bt-1s') return 0.04;
+      if (id === 'bt-3s') return 0.08;
+      if (id === 'bt-6s') return 0.15;
+      if (id === 'bt-phantom') return 0.20;
+      if (id === 'bt-mavic') return 0.16;
+      if (id === 'bt-inspire') return 0.22;
+      return 0.12;
+    };
+    const bh = this.slots.battery ? getBatteryHeight(this.slots.battery.id) : 0;
     this.pivot.position.y = Math.max(offset, bh + 0.006);
     this.workbenchGroup.add(this.pivot);
     
@@ -631,8 +1004,17 @@ class AssemblyLab {
 
     // Dynamic height adjustment: Rest bottom of drone frame/battery flat on tabletop (Y = 0)
     const frameId = this.slots.frame?.id;
-    const offset = frameId === 'fr-avata' ? 0.05 : 0.01;
-    const bh = this.slots.battery ? (this.slots.battery.id === 'bt-3s' ? 0.08 : this.slots.battery.id === 'bt-6s' ? 0.15 : 0.12) : 0;
+    const offset = frameId === 'fr-avata' ? 0.05 : (frameId === 'fr-phantom' ? 0.135 : (frameId === 'fr-inspire' ? 0.18 : (frameId === 'fr-mavic' ? 0.02 : 0.01)));
+    const getBatteryHeight = id => {
+      if (id === 'bt-1s') return 0.04;
+      if (id === 'bt-3s') return 0.08;
+      if (id === 'bt-6s') return 0.15;
+      if (id === 'bt-phantom') return 0.20;
+      if (id === 'bt-mavic') return 0.16;
+      if (id === 'bt-inspire') return 0.22;
+      return 0.12;
+    };
+    const bh = this.slots.battery ? getBatteryHeight(this.slots.battery.id) : 0;
     this.pivot.position.y = Math.max(offset, bh + 0.006);
 
     this._calc();
@@ -653,7 +1035,7 @@ class AssemblyLab {
     if(this.slots.esc)              w+=this.slots.esc.w;
     if(this.slots.propellers)       w+=this.slots.propellers.w*4;
     if(this.slots.flight_controller)w+=this.slots.flight_controller.w;
-    if(this.slots.battery)        { w+=this.slots.battery.w; cap=parseInt(this.slots.battery.sp.Cap); cells=this.slots.battery.sp.V.includes('6S')?6:this.slots.battery.sp.V.includes('3S')?3:4; }
+    if(this.slots.battery)        { w+=this.slots.battery.w; cap=parseInt(this.slots.battery.sp.Cap); cells=this.slots.battery.sp.V.includes('6S')?6:(this.slots.battery.sp.V.includes('3S')?3:(this.slots.battery.sp.V.includes('1S')?1:4)); }
     if(this.slots.camera)         { w+=this.slots.camera.w; cam=this.slots.camera.sp.Sensor; }
     if(this.slots.transmitter)    { w+=this.slots.transmitter.w; rng=this.slots.transmitter.sp.Range; }
     const twr = w>0?+(thr/w).toFixed(1):0;
@@ -667,7 +1049,7 @@ class AssemblyLab {
     return {
       wg: Object.values(this.slots).reduce((s,v)=>s+(v? v.w*(v.id?.startsWith('mt')||v.id?.startsWith('pr')?4:1) :0),0),
       thrN: ((this.slots.motors?.thrust*4||1200)/1000)*9.81*1.5,
-      cells: this.slots.battery?.sp?.V ? (this.slots.battery.sp.V.includes('6S')?6:this.slots.battery.sp.V.includes('3S')?3:4) : 4,
+      cells: this.slots.battery?.sp?.V ? (this.slots.battery.sp.V.includes('6S')?6:(this.slots.battery.sp.V.includes('3S')?3:(this.slots.battery.sp.V.includes('1S')?1:4))) : 4,
       frame: this.slots.frame?.id||'fr-fpv5',
       cap: this.slots.battery ? parseInt(this.slots.battery.sp.Cap) : 2000,
       config: Object.fromEntries(Object.entries(this.slots).map(([cat, item]) => [cat, item ? item.id : null]))
@@ -709,6 +1091,30 @@ class FlightSim {
     this.arMode = 'hologram';
     this.arPoints = null;
     this.holoGridTexture = null;
+
+    // Cached materials for gate checkpoints to prevent allocations/memory leaks
+    this.matClearedGate = new THREE.MeshPhongMaterial({
+      color: 0x10b981,
+      emissive: 0x10b981,
+      emissiveIntensity: 0.9,
+      shininess: 30
+    });
+    this.matActiveTrainingGate = new THREE.MeshPhongMaterial({
+      color: 0xf59e0b,
+      emissive: 0xf59e0b,
+      emissiveIntensity: 1.2,
+      shininess: 30
+    });
+    this.matInactiveGate = new THREE.MeshPhongMaterial({
+      color: 0x334155,
+      shininess: 30
+    });
+    this.matActiveCityGate = new THREE.MeshPhongMaterial({
+      color: 0x8b5cf6,
+      emissive: 0x8b5cf6,
+      emissiveIntensity: 1.5,
+      shininess: 30
+    });
 
     this._initKeys();
   }
@@ -814,27 +1220,25 @@ class FlightSim {
     const r=this.cv.getBoundingClientRect();
     this.cam3 = new THREE.PerspectiveCamera(60,r.width/r.height,.1,800);
     this.ren = new THREE.WebGLRenderer({canvas:this.cv,antialias:true,alpha:!opaque});
-    this.ren.setSize(r.width,r.height); this.ren.setPixelRatio(Math.min(devicePixelRatio,2));
-    if(opaque){ this.ren.shadowMap.enabled=true; this.ren.shadowMap.type=THREE.PCFSoftShadowMap; }
+    this.ren.setSize(r.width,r.height); this.ren.setPixelRatio(Math.min(devicePixelRatio,1.5));
+    if(opaque){ this.ren.shadowMap.enabled=true; this.ren.shadowMap.type=THREE.PCFShadowMap; }
 
     this.scene.add(new THREE.AmbientLight(0xffffff,isCity?.65:isTraining?.4:(isCyber?.45:.9)));
     if(isCity){
       const sun=new THREE.DirectionalLight(0xfffaed,1.5); sun.position.set(150,300,100); sun.castShadow=true;
-      sun.shadow.mapSize.set(1024,1024); sun.shadow.camera.near=.5; sun.shadow.camera.far=700;
-      const d=180; sun.shadow.camera.left=-d; sun.shadow.camera.right=d; sun.shadow.camera.top=d; sun.shadow.camera.bottom=-d;
-      sun.shadow.bias=-.0007; this.scene.add(sun);
+      sun.shadow.mapSize.set(1024,1024); sun.shadow.camera.near=.5; sun.shadow.camera.far=500;
+      const d=120; sun.shadow.camera.left=-d; sun.shadow.camera.right=d; sun.shadow.camera.top=d; sun.shadow.camera.bottom=-d;
+      sun.shadow.bias=-.0005; this.scene.add(sun);
       this._buildCity();
     } else if(isTraining){
       const sun=new THREE.DirectionalLight(0xffffff,1.2); sun.position.set(50,150,50); sun.castShadow=true;
-      sun.shadow.mapSize.set(1024,1024); sun.shadow.camera.near=.5; sun.shadow.camera.far=400;
-      const d=100; sun.shadow.camera.left=-d; sun.shadow.camera.right=d; sun.shadow.camera.top=d; sun.shadow.camera.bottom=-d;
-      sun.shadow.bias=-.0007; this.scene.add(sun);
+      sun.shadow.mapSize.set(1024,1024); sun.shadow.camera.near=.5; sun.shadow.camera.far=300;
+      const d=60; sun.shadow.camera.left=-d; sun.shadow.camera.right=d; sun.shadow.camera.top=d; sun.shadow.camera.bottom=-d;
+      sun.shadow.bias=-.0005; this.scene.add(sun);
       this._buildTraining();
     } else if(isCyber){
-      const l1=new THREE.DirectionalLight(0x8b5cf6,1.2); l1.position.set(100,150,50); this.scene.add(l1);
-      const l2=new THREE.DirectionalLight(0x06b6d4,1.0); l2.position.set(-100,150,-50); this.scene.add(l2);
-      const l3=new THREE.DirectionalLight(0x10b981,1.0); l3.position.set(50,150,100); this.scene.add(l3);
-      const l4=new THREE.DirectionalLight(0xeab308,0.8); l4.position.set(-50,150,-100); this.scene.add(l4);
+      const l1=new THREE.DirectionalLight(0x8b5cf6,1.5); l1.position.set(100,150,50); this.scene.add(l1);
+      const l2=new THREE.DirectionalLight(0x06b6d4,1.2); l2.position.set(-100,150,-50); this.scene.add(l2);
       this._buildCyber();
     } else {
       const pl=new THREE.PointLight(0xffffff,1,30); pl.position.set(0,6,0); this.scene.add(pl);
@@ -842,11 +1246,16 @@ class FlightSim {
 
     this.drone = this._droneMesh(); this.scene.add(this.drone);
 
-    window.addEventListener('resize',()=>{
-      const b=this.cv.getBoundingClientRect();
-      this.cam3.aspect=b.width/b.height; this.cam3.updateProjectionMatrix();
-      this.ren.setSize(b.width,b.height);
-    },{once:false});
+    if (this._resizeHandler) {
+      window.removeEventListener('resize', this._resizeHandler);
+    }
+    this._resizeHandler = () => {
+      const b = this.cv.getBoundingClientRect();
+      this.cam3.aspect = b.width / b.height;
+      this.cam3.updateProjectionMatrix();
+      this.ren.setSize(b.width, b.height);
+    };
+    window.addEventListener('resize', this._resizeHandler);
   }
 
   /* ── City World ── */
@@ -854,19 +1263,19 @@ class FlightSim {
     this.buildings=[]; this.gates=[];
 
     /* terrain */
-    const tGeo=new THREE.PlaneGeometry(600,600,64,64), tv=tGeo.attributes.position;
+    const tGeo=new THREE.PlaneGeometry(600,600,128,128), tv=tGeo.attributes.position;
     for(let i=0;i<tv.count;i++) tv.setZ(i, terrainY(tv.getX(i), tv.getY(i)));
     tGeo.computeVertexNormals();
-    const terrain=new THREE.Mesh(tGeo, new THREE.MeshStandardMaterial({color:0x8a9a86,roughness:.92,metalness:.05}));
+    const terrain=new THREE.Mesh(tGeo, new THREE.MeshLambertMaterial({color:0x8a9a86}));
     terrain.rotation.x=-Math.PI/2; terrain.receiveShadow=true; this.scene.add(terrain);
 
     /* river */
     const rGeo=new THREE.PlaneGeometry(60,600,1,32);
-    this.riverMesh=new THREE.Mesh(rGeo, new THREE.MeshStandardMaterial({color:0x22d3ee,roughness:.1,metalness:.9,transparent:true,opacity:.85}));
+    this.riverMesh=new THREE.Mesh(rGeo, new THREE.MeshPhongMaterial({color:0x22d3ee,shininess:80,transparent:true,opacity:.85}));
     this.riverMesh.rotation.x=-Math.PI/2; this.riverMesh.position.y=-6.8; this.scene.add(this.riverMesh);
 
     /* towers */
-    const tMat=new THREE.MeshStandardMaterial({color:0xe2e8f0,roughness:.1,metalness:.9,flatShading:true});
+    const tMat=new THREE.MeshPhongMaterial({color:0xe2e8f0,shininess:70,flatShading:true});
     [
       [42,28,42],[-42,36,-55],[-75,42,60],[60,48,-75],[30,24,110],[-38,32,130],[-70,52,-110],[75,45,95],
       [-90,40,-40],[90,30,-30],[-30,25,-90],[30,35,-130],[-80,45,10],[80,28,20],[-110,50,80],[110,42,-90],
@@ -880,26 +1289,31 @@ class FlightSim {
     });
 
     /* trees */
-    const trunkMat=new THREE.MeshStandardMaterial({color:0x78350f,roughness:.9});
-    const leafMat=new THREE.MeshStandardMaterial({color:0x14532d,roughness:.85});
+    const trunkMat=new THREE.MeshLambertMaterial({color:0x78350f});
+    const leafMat=new THREE.MeshLambertMaterial({color:0x14532d});
+    const trunkGeo=new THREE.CylinderGeometry(.2,.4,2.8,6);
+    trunkGeo.translate(0, 1.4, 0);
+    const leafGeo=new THREE.ConeGeometry(1.6,5,6);
+    leafGeo.translate(0, 4.2, 0);
     for(let i=0;i<90;i++){
       const side=Math.random()>.5?1:-1, tx=(35+Math.random()*120)*side, tz=(Math.random()-.5)*320;
       const ty=terrainY(tx,tz);
       const tree=new THREE.Group();
-      tree.add(new THREE.Mesh(new THREE.CylinderGeometry(.2,.4,2.8,6),trunkMat).translateY(1.4));
-      tree.add(new THREE.Mesh(new THREE.ConeGeometry(1.6,5,6),leafMat).translateY(4.2));
+      tree.add(new THREE.Mesh(trunkGeo,trunkMat));
+      tree.add(new THREE.Mesh(leafGeo,leafMat));
       const sc=.7+Math.random()*.6; tree.scale.setScalar(sc);
       tree.position.set(tx,ty-.2,tz); this.scene.add(tree);
     }
 
     /* bridge */
-    const road=new THREE.Mesh(new THREE.BoxGeometry(12,.8,95),new THREE.MeshStandardMaterial({color:0x334155,roughness:.8}));
+    const road=new THREE.Mesh(new THREE.BoxGeometry(12,.8,95),new THREE.MeshLambertMaterial({color:0x334155}));
     road.position.set(0,4,0); road.receiveShadow=true; this.scene.add(road);
     road.updateMatrixWorld(true);
     this.buildings.push({box:new THREE.Box3().setFromObject(road),name:'Bridge Deck'});
-    const pilMat=new THREE.MeshStandardMaterial({color:0x475569,metalness:.6});
+    const pilMat=new THREE.MeshPhongMaterial({color:0x475569,shininess:30});
+    const pillarGeo=new THREE.BoxGeometry(1.2,24,1.2);
     [[-5.5,12,0],[5.5,12,0]].forEach((p,i)=>{
-      const pillar=new THREE.Mesh(new THREE.BoxGeometry(1.2,24,1.2),pilMat);
+      const pillar=new THREE.Mesh(pillarGeo,pilMat);
       pillar.position.set(p[0],p[1],p[2]); pillar.castShadow=true; pillar.receiveShadow=true; this.scene.add(pillar);
       pillar.updateMatrixWorld(true);
       this.buildings.push({box:new THREE.Box3().setFromObject(pillar),name:`Bridge Pillar ${i+1}`});
@@ -911,12 +1325,11 @@ class FlightSim {
     });
 
     /* checkpoint gates */
-    const activeCityGateMat = new THREE.MeshStandardMaterial({color:0x8b5cf6,emissive:0x8b5cf6,emissiveIntensity:1.5,roughness:.2});
-    const inactiveCityGateMat = new THREE.MeshStandardMaterial({color:0x334155,roughness:.8,metalness:.2});
     const cityGates = [[0,10,-25,0],[42,22,-22,.8],[60,32,30,1.6],[0,8,80,-.5],[-55,25,60,1],[-42,18,-20,0],[0,15,-90,-1.6],[0,18,-160,0]];
+    const gateGeo = new THREE.TorusGeometry(3.6,.4,8,24);
     cityGates.forEach((c,i)=>{
       const isTarget = i === 0;
-      const ring=new THREE.Mesh(new THREE.TorusGeometry(3.6,.4,8,24), isTarget ? activeCityGateMat : inactiveCityGateMat);
+      const ring=new THREE.Mesh(gateGeo, isTarget ? this.matActiveCityGate : this.matInactiveGate);
       ring.position.set(c[0],c[1],c[2]); ring.rotation.y=c[3]; this.scene.add(ring);
       this.gates.push({mesh:ring,idx:i,sphere:new THREE.Sphere(ring.position,4)});
 
@@ -948,7 +1361,7 @@ class FlightSim {
     this.gates = [];
 
     /* floor */
-    const fMat = new THREE.MeshStandardMaterial({color: 0x0f172a, roughness: 0.8, metalness: 0.3});
+    const fMat = new THREE.MeshLambertMaterial({color: 0x0f172a});
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), fMat);
     floor.rotation.x = -Math.PI/2;
     floor.receiveShadow = true;
@@ -960,8 +1373,8 @@ class FlightSim {
     this.scene.add(grid);
 
     /* obstacle materials */
-    const poleMat = new THREE.MeshStandardMaterial({color: 0xf59e0b, metalness: 0.5, roughness: 0.2});
-    const archMat = new THREE.MeshStandardMaterial({color: 0x475569, metalness: 0.7, roughness: 0.1});
+    const poleMat = new THREE.MeshPhongMaterial({color: 0xf59e0b, shininess: 40});
+    const archMat = new THREE.MeshPhongMaterial({color: 0x475569, shininess: 40});
 
     /* Slalom Poles (Vertical Cylinders for winding turns) */
     const poles = [
@@ -971,8 +1384,8 @@ class FlightSim {
       [30, 5, "Slalom Pole 4"],
       [42, 20, "Slalom Pole 5"]
     ];
+    const poleGeo = new THREE.CylinderGeometry(0.4, 0.4, 12, 16);
     poles.forEach(p => {
-      const poleGeo = new THREE.CylinderGeometry(0.4, 0.4, 12, 16);
       const pole = new THREE.Mesh(poleGeo, poleMat);
       pole.position.set(p[0], 6, p[1]);
       pole.castShadow = true;
@@ -983,13 +1396,15 @@ class FlightSim {
     });
 
     /* Arches / Tunnels (low clearance obstacles) */
+    const archPillarGeo = new THREE.BoxGeometry(0.8, 5, 0.8);
+    const archBarGeo = new THREE.BoxGeometry(7.8, 0.8, 0.8);
     const makeArch = (x, z, rotY, name) => {
       const g = new THREE.Group();
-      const p1 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 5, 0.8), archMat);
+      const p1 = new THREE.Mesh(archPillarGeo, archMat);
       p1.position.set(-3.5, 2.5, 0);
-      const p2 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 5, 0.8), archMat);
+      const p2 = new THREE.Mesh(archPillarGeo, archMat);
       p2.position.set(3.5, 2.5, 0);
-      const bar = new THREE.Mesh(new THREE.BoxGeometry(7.8, 0.8, 0.8), archMat);
+      const bar = new THREE.Mesh(archBarGeo, archMat);
       bar.position.set(0, 4.6, 0);
       
       g.add(p1, p2, bar);
@@ -1025,14 +1440,11 @@ class FlightSim {
       [-25, 4, 25, -Math.PI / 4]  // Gate 11 (Loop return)
     ];
 
-
-
-    const activeGateMat = new THREE.MeshStandardMaterial({color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 1.2, roughness: 0.2});
-    const inactiveGateMat = new THREE.MeshStandardMaterial({color: 0x334155, roughness: 0.8, metalness: 0.2});
+    const gateGeo = new THREE.TorusGeometry(3.6, 0.4, 8, 24);
 
     trainingGates.forEach((c, i) => {
       const isTarget = i === 0;
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(3.6, 0.4, 8, 24), isTarget ? activeGateMat : inactiveGateMat);
+      const ring = new THREE.Mesh(gateGeo, isTarget ? this.matActiveTrainingGate : this.matInactiveGate);
       ring.position.set(c[0], c[1], c[2]);
       ring.rotation.y = c[3];
       this.scene.add(ring);
@@ -1052,29 +1464,19 @@ class FlightSim {
         if (t.mesh) {
           this.scene.remove(t.mesh);
           if (t.mesh.geometry) t.mesh.geometry.dispose();
-          if (t.mesh.material) {
-            const mats = Array.isArray(t.mesh.material) ? t.mesh.material : [t.mesh.material];
-            const uniqueMats = [...new Set(mats)];
-            for (const m of uniqueMats) {
-              if (m.map) m.map.dispose();
-              if (m.emissiveMap) m.emissiveMap.dispose();
-              m.dispose();
-            }
-          }
         }
         if (t.wireframe) {
           this.scene.remove(t.wireframe);
           if (t.wireframe.geometry) t.wireframe.geometry.dispose();
-          if (t.wireframe.material) t.wireframe.material.dispose();
         }
       }
     }
 
-    // Helper to generate glowing neon window textures custom-fit to a building face's dimensions
-    const makeCustomNeonWindowTexture = (faceWidth, faceHeight, neonColorStr, style) => {
+    // Helper to generate glowing neon window textures of standard size
+    const makeCustomNeonWindowTexture = (neonColorStr, style) => {
       const canvas = document.createElement('canvas');
-      const canvasW = Math.max(64, Math.round(faceWidth * 8));
-      const canvasH = Math.max(128, Math.round(faceHeight * 8));
+      const canvasW = 128;
+      const canvasH = 256;
       canvas.width = canvasW;
       canvas.height = canvasH;
       const ctx = canvas.getContext('2d');
@@ -1091,7 +1493,6 @@ class FlightSim {
         const gapX = 12;
         const gapY = 16;
         for (let x = 8; x <= canvasW - winW - 8; x += gapX) {
-          if (Math.random() < 0.1) continue;
           for (let y = 8; y <= canvasH - winH - 8; y += gapY) {
             if (Math.random() < 0.2) continue;
             ctx.shadowBlur = 6;
@@ -1107,7 +1508,6 @@ class FlightSim {
         const barW = 4;
         const gapX = 20;
         for (let x = 10; x <= canvasW - barW - 10; x += gapX) {
-          if (Math.random() < 0.2) continue;
           ctx.shadowBlur = 8;
           ctx.fillStyle = neonColorStr;
           ctx.fillRect(x, 0, barW, canvasH);
@@ -1120,7 +1520,6 @@ class FlightSim {
         const bandH = 3;
         const gapY = 24;
         for (let y = 12; y <= canvasH - bandH - 12; y += gapY) {
-          if (Math.random() < 0.25) continue;
           ctx.shadowBlur = 8;
           ctx.fillStyle = neonColorStr;
           ctx.fillRect(0, y, canvasW, bandH);
@@ -1145,7 +1544,10 @@ class FlightSim {
           }
         }
       }
-      return new THREE.CanvasTexture(canvas);
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      return tex;
     };
 
     // Helper to generate a glowing landing pad texture for starting tower rooftop
@@ -1194,8 +1596,6 @@ class FlightSim {
       return new THREE.CanvasTexture(canvas);
     };
 
-    this.cyberTowers = [];
-
     if (!randomise) {
       /* floor canvas texture */
       const canvas = document.createElement('canvas');
@@ -1234,10 +1634,9 @@ class FlightSim {
       texture.wrapT = THREE.RepeatWrapping;
       texture.repeat.set(15, 15);
 
-      const gMat = new THREE.MeshStandardMaterial({
+      const gMat = new THREE.MeshPhongMaterial({
         map: texture,
-        roughness: 0.6,
-        metalness: 0.4
+        shininess: 10
       });
 
       const floor = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), gMat);
@@ -1246,15 +1645,61 @@ class FlightSim {
     }
 
     // Shared roof material without window markings
-    const roofMat = new THREE.MeshStandardMaterial({
+    const roofMat = new THREE.MeshPhongMaterial({
       color: 0x050508,
-      roughness: 0.4,
-      metalness: 0.6
+      shininess: 30
     });
+
+    // Initialize shared materials if not already created
+    if (!this.cyberSharedMats) {
+      this.cyberSharedMats = {};
+      this.cyberSharedLineMats = {};
+      this.cyberSharedStartPadMats = {};
+      this.cyberSharedTextures = [];
+
+      const neonConfigs = [
+        { color: 0x8b5cf6, cssColor: '#a78bfa' }, // purple
+        { color: 0x06b6d4, cssColor: '#22d3ee' }, // cyan
+        { color: 0x10b981, cssColor: '#34d399' }, // green
+        { color: 0xfacc15, cssColor: '#fbbf24' }  // yellow
+      ];
+      const styles = ['grid', 'stripes', 'bands', 'dots'];
+
+      neonConfigs.forEach(config => {
+        this.cyberSharedLineMats[config.color] = new THREE.LineBasicMaterial({color: config.color});
+        
+        // Pre-generate custom landing pad rooftop material/texture for this color
+        const startPadTex = makeRooftopLandingPadTexture(24, 24, config.cssColor);
+        this.cyberSharedTextures.push(startPadTex);
+        this.cyberSharedStartPadMats[config.color] = new THREE.MeshPhongMaterial({
+          color: 0x08080c,
+          map: startPadTex,
+          emissiveMap: startPadTex,
+          emissive: config.color,
+          emissiveIntensity: 1.5,
+          shininess: 40
+        });
+
+        styles.forEach(style => {
+          const tex = makeCustomNeonWindowTexture(config.cssColor, style);
+          this.cyberSharedTextures.push(tex);
+          
+          this.cyberSharedMats[`${config.color}_${style}`] = new THREE.MeshPhongMaterial({
+            color: 0x0a0a10,
+            map: tex,
+            emissiveMap: tex,
+            emissive: config.color,
+            emissiveIntensity: 1.5,
+            shininess: 60
+          });
+        });
+      });
+    }
+
+    this.cyberTowers = [];
 
     const spawnTower = (x, z, w, h, d, yPos = null) => {
       const hSegs = Math.max(1, Math.round(h / 15));
-      // Divide width and depth into 2 segments to get glowing neon window/face center lines!
       const geom = new THREE.BoxGeometry(w, h, d, 2, hSegs, 2);
       
       const neonConfigs = [
@@ -1267,55 +1712,22 @@ class FlightSim {
       const config = neonConfigs[Math.floor(Math.random() * neonConfigs.length)];
       const style = ['grid', 'stripes', 'bands', 'dots'][Math.floor(Math.random() * 4)];
       
-      // Generate custom-fit window textures for X sides (depth d) and Z sides (width w)
-      const texX = makeCustomNeonWindowTexture(d, h, config.cssColor, style);
-      const texZ = makeCustomNeonWindowTexture(w, h, config.cssColor, style);
-
-      // Glossy face material mapping glowing windows for X sides
-      const towerMatX = new THREE.MeshStandardMaterial({
-        color: 0x0a0a10,
-        map: texX,
-        emissiveMap: texX,
-        emissive: config.color,
-        emissiveIntensity: 1.5,
-        roughness: 0.15,
-        metalness: 0.85
-      });
-
-      // Glossy face material mapping glowing windows for Z sides
-      const towerMatZ = new THREE.MeshStandardMaterial({
-        color: 0x0a0a10,
-        map: texZ,
-        emissiveMap: texZ,
-        emissive: config.color,
-        emissiveIntensity: 1.5,
-        roughness: 0.15,
-        metalness: 0.85
-      });
+      const towerMat = this.cyberSharedMats[`${config.color}_${style}`];
 
       // Starting tower gets a custom landing pad rooftop
       let currentRoofMat = roofMat;
       if (x === 0 && z === 0) {
-        const startPadTex = makeRooftopLandingPadTexture(w, d, config.cssColor);
-        currentRoofMat = new THREE.MeshStandardMaterial({
-          color: 0x08080c,
-          map: startPadTex,
-          emissiveMap: startPadTex,
-          emissive: config.color,
-          emissiveIntensity: 1.5,
-          roughness: 0.3,
-          metalness: 0.7
-        });
+        currentRoofMat = this.cyberSharedStartPadMats[config.color];
       }
 
       // Apply materials to vertical sides and top/bottom
       const materials = [
-        towerMatX, // +X
-        towerMatX, // -X
+        towerMat, // +X
+        towerMat, // -X
         currentRoofMat,  // +Y (Roof)
         roofMat,  // -Y (Bottom)
-        towerMatZ, // +Z
-        towerMatZ  // -Z
+        towerMat, // +Z
+        towerMat  // -Z
       ];
 
       const tMesh = new THREE.Mesh(geom, materials);
@@ -1324,8 +1736,7 @@ class FlightSim {
       this.scene.add(tMesh);
 
       const edges = new THREE.EdgesGeometry(geom);
-      // Make neon wireframe outline color match window color config!
-      const lineMat = new THREE.LineBasicMaterial({color: config.color});
+      const lineMat = this.cyberSharedLineMats[config.color];
       const wireframe = new THREE.LineSegments(edges, lineMat);
       wireframe.position.copy(tMesh.position);
       this.scene.add(wireframe);
@@ -1343,8 +1754,8 @@ class FlightSim {
     // Spawn the central starting tower for rooftop takeoff (height 40m)
     spawnTower(0, 0, 24, 40, 24);
 
-    // Block centers for X and Z spaced every 40 units
-    const blockCoords = [-280, -240, -200, -160, -120, -80, -40, 0, 40, 80, 120, 160, 200, 240, 280];
+    // Block centers for X and Z spaced every 60 units (9x9 grid coordinates)
+    const blockCoords = [-240, -180, -120, -60, 0, 60, 120, 180, 240];
 
     for (const bx of blockCoords) {
       for (const bz of blockCoords) {
@@ -1354,18 +1765,13 @@ class FlightSim {
         // 85% chance to populate this block with skyscrapers
         if (Math.random() > 0.85) continue;
 
-        // Choose block sub-layout:
-        // 1: Single massive skyscraper
-        // 2: Two tall slender skyscrapers side-by-side (X-axis split + sky bridge)
-        // 3: Two tall slender skyscrapers side-by-side (Z-axis split + sky bridge)
-        // 4: Three tightly grouped buildings (cramped valley!)
+        // Choose block sub-layout
         const layout = Math.random();
 
         if (layout < 0.3) {
           // Single large skyscraper
           const w = 18 + Math.random() * 8; // 18 to 26 width
           const d = 18 + Math.random() * 8; // 18 to 26 depth
-          // 15% chance of super-tall mega-tower
           const isMega = Math.random() < 0.15;
           const h = isMega ? (180 + Math.random() * 100) : (60 + Math.random() * 80);
           spawnTower(bx, bz, w, h, d);
@@ -1851,9 +2257,16 @@ class FlightSim {
     if(this.keys['w']||this.keys['W']) this.thr=Math.min(this.thr + 1.2 * dt, 1);
     else if(this.keys['s']||this.keys['S']) this.thr=Math.max(this.thr - 1.2 * dt, 0);
     else this.thr=Math.max(this.thr - 0.8 * dt, 0);
-    this.yaw=(this.keys['a']||this.keys['A'])?-.75:(this.keys['d']||this.keys['D'])?.75:0;
-    this.pit=(this.keys['ArrowUp'])?.65:(this.keys['ArrowDown'])?-.65:0;
-    this.rol=(this.keys['ArrowLeft'])?-.65:(this.keys['ArrowRight'])?.65:0;
+    
+    const targetYaw = (this.keys['a']||this.keys['A'])?-.75:(this.keys['d']||this.keys['D'])?.75:0;
+    const targetPit = (this.keys['ArrowUp'])?.65:(this.keys['ArrowDown'])?-.65:0;
+    const targetRol = (this.keys['ArrowLeft'])?-.65:(this.keys['ArrowRight'])?.65:0;
+
+    // Smoothly interpolate keyboard inputs to prevent snap rotation torque instabilities
+    const factor = 1 - Math.exp(-12 * dt);
+    this.yaw += (targetYaw - this.yaw) * factor;
+    this.pit += (targetPit - this.pit) * factor;
+    this.rol += (targetRol - this.rol) * factor;
   }
 
   /* ── main loop ── */
@@ -1866,8 +2279,14 @@ class FlightSim {
     if(!this.crashed) this._physics(dt); else this._tumble(dt);
     if(this.env==='city' || this.env==='training') this._checkGates();
     this._ambient(now);
-    this._camera();
-    this._hud();
+    this._camera(dt);
+    
+    // Throttle HUD telemetry updates to ~15 Hz to reduce DOM reflow latency
+    if (now - (this.lastHudUpdateT || 0) > 66) {
+      this._hud();
+      this.lastHudUpdateT = now;
+    }
+    
     this.ren.render(this.scene,this.cam3);
   }
 
@@ -1896,17 +2315,50 @@ class FlightSim {
     /* ground effect */
     let gef=1; if(agl>0&&agl<1.2) gef=1+.22*(1.2-agl);
 
+    /* Auto-hover assist in LEVEL mode */
+    if (this.mode === 'level') {
+      const mass_kg = this.droneSpec.wg / 1000;
+      const thrN = this.droneSpec.thrN;
+      const hoverThr = (thrN > 0) ? Math.min((mass_kg * 9.81) / (thrN * gef * batScale), 0.95) : 0;
+      const noThrottleKey = !(this.keys['w'] || this.keys['W'] || this.keys['s'] || this.keys['S']);
+      const noGamepadThrottle = !this._gamepadActive;
+
+      if (noThrottleKey && noGamepadThrottle) {
+        // Smoothly interpolate throttle to hover point
+        const hoverFactor = 1 - Math.exp(-3.5 * dt);
+        this.thr += (hoverThr - this.thr) * hoverFactor;
+        // Damp vertical velocity to zero for altitude hold
+        const vDamp = 1 - Math.exp(-4.0 * dt);
+        this.vel.y *= (1 - vDamp);
+      }
+
+      // Active position-hold brake: damp horizontal velocity when no directional keys
+      const noPitchRoll = !(this.keys['ArrowUp'] || this.keys['ArrowDown'] || this.keys['ArrowLeft'] || this.keys['ArrowRight']);
+      const noYaw = !(this.keys['a'] || this.keys['A'] || this.keys['d'] || this.keys['D']);
+      if (noPitchRoll && noYaw && !this._gamepadActive) {
+        const brakeFactor = 1 - Math.exp(-1.8 * dt);
+        this.vel.x *= (1 - brakeFactor);
+        this.vel.z *= (1 - brakeFactor);
+      }
+    }
+
     /* forces */
     const mass=this.droneSpec.wg/1000;
-    const grav=new THREE.Vector3(0,-9.81*mass,0);
-    const thrDir=new THREE.Vector3(0,1,0).applyQuaternion(this.quat).multiplyScalar(thrForce*gef);
+    const grav = _tempV1.set(0, -9.81 * mass, 0);
+    const thrDir = _tempV2.set(0, 1, 0).applyQuaternion(this.quat).multiplyScalar(thrForce * gef);
     const frameId = this.droneSpec.frame || 'fr-fpv5';
-    const cd = frameId === 'fr-neo' ? 0.038 : (frameId === 'fr-avata' ? 0.026 : 0.013);
-    const drag=this.vel.clone().multiplyScalar(-cd*1.225*this.vel.length());
-    const wind=this.env==='city'?new THREE.Vector3(Math.sin(performance.now()*.001)*4.5*.06,0,Math.cos(performance.now()*.001)*4.5*.04):new THREE.Vector3();
-    const acc=new THREE.Vector3().add(grav).add(thrDir).add(drag).add(wind).divideScalar(mass);
-    this.vel.add(acc.clone().multiplyScalar(dt));
-    this.pos.add(this.vel.clone().multiplyScalar(dt));
+    const cd = frameId === 'fr-neo' ? 0.038 : (frameId === 'fr-avata' ? 0.026 : (frameId === 'fr-inspire' ? 0.016 : (frameId === 'fr-mavic' ? 0.011 : 0.013)));
+    const drag = _tempV3.copy(this.vel).multiplyScalar(-cd * 1.225 * this.vel.length());
+    
+    let wind = _tempV4.set(0, 0, 0);
+    if (this.env === 'city') {
+      const t = performance.now() * 0.001;
+      wind = _tempV4.set(Math.sin(t) * 4.5 * 0.06, 0, Math.cos(t) * 4.5 * 0.04);
+    }
+    
+    const acc = _tempV5.copy(grav).add(thrDir).add(drag).add(wind).divideScalar(mass);
+    this.vel.addScaledVector(acc, dt);
+    this.pos.addScaledVector(this.vel, dt);
 
     if (this.env === 'cyber') {
       const boundary = 300;
@@ -1928,12 +2380,18 @@ class FlightSim {
     }
 
     /* rotation */
-    const eu=new THREE.Euler().setFromQuaternion(this.quat,'YXZ');
+    const eu = _tempEuler.setFromQuaternion(this.quat, 'YXZ');
     if(this.mode==='level'){
-      const tPit=this.pit*.45, tRol=-this.rol*.45;
-      eu.x+=(tPit-eu.x)*8*dt; eu.z+=(tRol-eu.z)*8*dt; eu.y+=-this.yaw*4.5*dt;
+      const tPit = this.pit * 0.45;
+      const tRol = -this.rol * 0.45;
+      const factor = 1 - Math.exp(-8 * dt);
+      eu.x += (tPit - eu.x) * factor;
+      eu.z += (tRol - eu.z) * factor;
+      eu.y += -this.yaw * 4.5 * dt;
     } else {
-      eu.x+=this.pit*6.0*dt; eu.z+=-this.rol*6.0*dt; eu.y+=-this.yaw*4.5*dt;
+      eu.x += this.pit * 6.0 * dt;
+      eu.z += -this.rol * 6.0 * dt;
+      eu.y += -this.yaw * 4.5 * dt;
     }
     this.quat.setFromEuler(eu);
     this.drone.position.copy(this.pos); this.drone.quaternion.copy(this.quat);
@@ -1959,27 +2417,51 @@ class FlightSim {
       else { this.pos.y=minH; this.vel.set(0,0,0); }
       return;
     }
-    const sp=new THREE.Sphere(this.pos,.42);
+    const sp = _tempSphere.set(this.pos, 0.42);
     const list=this.env==='city'?this.buildings:(this.env==='training'?this.trainingObstacles:(this.env==='cyber'?this.cyberTowers:this.arBoxes));
-    for(const b of list) if(b.box.intersectsSphere(sp)){ 
-      // Safe landing / gentle contact on runways/starting platforms/floor/coffee table
-      const isStartingPlatform = 
-        b.name === 'Bridge Deck' || 
-        b.name === 'CyberTower 1' || 
-        b.name === 'Floor' || 
-        b.name === 'Coffee Table';
+    
+    const droneX = this.pos.x;
+    const droneY = this.pos.y;
+    const droneZ = this.pos.z;
+
+    for(const b of list) {
+      // Broad-phase collision filter: skip obstacles that are too far away in any axis.
+      // We check X, Y, Z coordinate difference against the box half-dimensions + drone radius + padding.
+      const halfW = (b.box.max.x - b.box.min.x) * 0.5;
+      const halfH = (b.box.max.y - b.box.min.y) * 0.5;
+      const halfD = (b.box.max.z - b.box.min.z) * 0.5;
       
-      if (isStartingPlatform && this.vel.length() <= 4.2) {
-        this.pos.y = b.name === 'Bridge Deck' ? 4.82 : (b.name === 'CyberTower 1' ? 40.42 : (b.name === 'Coffee Table' ? 0.82 : 0.42));
-        this.vel.set(0,0,0);
+      const centerX = b.box.min.x + halfW;
+      const centerY = b.box.min.y + halfH;
+      const centerZ = b.box.min.z + halfD;
+      
+      // If the drone is further than (half-size + 2.0m padding) from the center, it's impossible to collide.
+      if (Math.abs(droneX - centerX) > halfW + 2.0 || 
+          Math.abs(droneY - centerY) > halfH + 2.0 || 
+          Math.abs(droneZ - centerZ) > halfD + 2.0) {
         continue;
       }
-      
-      if (!this.timeActive || this.timeActive > 0.5) {
-        this._crash(this.vel.length(),b.name); break; 
-      } else {
-        this.pos.y = b.name === 'Bridge Deck' ? 4.82 : (b.name === 'CyberTower 1' ? 40.42 : (b.name === 'Coffee Table' ? 0.82 : 0.42));
-        this.vel.set(0,0,0);
+
+      if(b.box.intersectsSphere(sp)){ 
+        // Safe landing / gentle contact on runways/starting platforms/floor/coffee table
+        const isStartingPlatform = 
+          b.name === 'Bridge Deck' || 
+          b.name === 'CyberTower 1' || 
+          b.name === 'Floor' || 
+          b.name === 'Coffee Table';
+        
+        if (isStartingPlatform && this.vel.length() <= 4.2) {
+          this.pos.y = b.name === 'Bridge Deck' ? 4.82 : (b.name === 'CyberTower 1' ? 40.42 : (b.name === 'Coffee Table' ? 0.82 : 0.42));
+          this.vel.set(0,0,0);
+          continue;
+        }
+        
+        if (!this.timeActive || this.timeActive > 0.5) {
+          this._crash(this.vel.length(),b.name); break; 
+        } else {
+          this.pos.y = b.name === 'Bridge Deck' ? 4.82 : (b.name === 'CyberTower 1' ? 40.42 : (b.name === 'Coffee Table' ? 0.82 : 0.42));
+          this.vel.set(0,0,0);
+        }
       }
     }
   }
@@ -2007,9 +2489,13 @@ class FlightSim {
   }
 
   _tumble(dt) {
-    this.quat.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,.5,.2).normalize(),12*dt));
-    this.vel.y=Math.max(-15,this.vel.y-9.81*dt); this.vel.x*=.95; this.vel.z*=.95;
-    this.pos.add(this.vel.clone().multiplyScalar(dt));
+    const tumbleAxis = _tempV1.set(1, 0.5, 0.2).normalize();
+    const tumbleRot = _tempQuat.setFromAxisAngle(tumbleAxis, 12 * dt);
+    this.quat.multiply(tumbleRot);
+    this.vel.y = Math.max(-15, this.vel.y - 9.81 * dt);
+    this.vel.x *= 0.95;
+    this.vel.z *= 0.95;
+    this.pos.addScaledVector(this.vel, dt);
     const inStartingRoof = this.env === 'cyber' && Math.abs(this.pos.x) < 12 && Math.abs(this.pos.z) < 12;
     const fl = inStartingRoof ? 40.42 : (this.env === 'city' ? terrainY(this.pos.x, this.pos.z) + 0.42 : 0.42);
     if(this.pos.y<fl){this.pos.y=fl;this.vel.set(0,0,0);}
@@ -2045,24 +2531,14 @@ class FlightSim {
         this.obstaclesClearedCount++;
         
         // Turn cleared gate green
-        targetGate.mesh.material = new THREE.MeshStandardMaterial({
-          color: 0x10b981,
-          emissive: 0x10b981,
-          emissiveIntensity: 0.9,
-          roughness: 0.2
-        });
+        targetGate.mesh.material = this.matClearedGate;
 
         this.targetGateIdx = (this.targetGateIdx + 1) % this.gates.length;
         
         // Light up the next target gate orange
         const nextGate = this.gates[this.targetGateIdx];
         if (nextGate && this.targetGateIdx !== 0) {
-          nextGate.mesh.material = new THREE.MeshStandardMaterial({
-            color: 0xf59e0b,
-            emissive: 0xf59e0b,
-            emissiveIntensity: 1.2,
-            roughness: 0.2
-          });
+          nextGate.mesh.material = this.matActiveTrainingGate;
         }
         
         this._toast(`Obstacles: ${this.obstaclesClearedCount}`);
@@ -2070,10 +2546,8 @@ class FlightSim {
         if (this.targetGateIdx === 0) {
           setTimeout(() => {
             if (this.env !== 'training') return;
-            const activeGateMat = new THREE.MeshStandardMaterial({color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 1.2, roughness: 0.2});
-            const inactiveGateMat = new THREE.MeshStandardMaterial({color: 0x334155, roughness: 0.8, metalness: 0.2});
             this.gates.forEach((g, i) => {
-              g.mesh.material = i === 0 ? activeGateMat : inactiveGateMat;
+              g.mesh.material = i === 0 ? this.matActiveTrainingGate : this.matInactiveGate;
             });
           }, 1000);
         }
@@ -2085,24 +2559,14 @@ class FlightSim {
         this.cleared.add(targetGate.idx);
         
         // Turn cleared gate green
-        targetGate.mesh.material = new THREE.MeshStandardMaterial({
-          color: 0x10b981,
-          emissive: 0x10b981,
-          emissiveIntensity: 0.9,
-          roughness: 0.2
-        });
+        targetGate.mesh.material = this.matClearedGate;
 
         this.targetGateIdx = (this.targetGateIdx + 1) % this.gates.length;
         
         // Light up the next target gate neon purple
         const nextGate = this.gates[this.targetGateIdx];
         if (nextGate && this.targetGateIdx !== 0) {
-          nextGate.mesh.material = new THREE.MeshStandardMaterial({
-            color: 0x8b5cf6,
-            emissive: 0x8b5cf6,
-            emissiveIntensity: 1.5,
-            roughness: 0.2
-          });
+          nextGate.mesh.material = this.matActiveCityGate;
           if (this.beacon) {
             this.beacon.position.copy(nextGate.mesh.position);
           }
@@ -2114,19 +2578,8 @@ class FlightSim {
           setTimeout(() => {
             if (this.env !== 'city') return;
             this.cleared.clear();
-            const activeCityGateMat = new THREE.MeshStandardMaterial({
-              color: 0x8b5cf6,
-              emissive: 0x8b5cf6,
-              emissiveIntensity: 1.5,
-              roughness: 0.2
-            });
-            const inactiveCityGateMat = new THREE.MeshStandardMaterial({
-              color: 0x334155,
-              roughness: 0.8,
-              metalness: 0.2
-            });
             this.gates.forEach((g, i) => {
-              g.mesh.material = i === 0 ? activeCityGateMat : inactiveCityGateMat;
+              g.mesh.material = i === 0 ? this.matActiveCityGate : this.matInactiveGate;
             });
             if (!this.beacon) {
               const beaconGeo = new THREE.CylinderGeometry(0.05, 1.5, 400, 16, 1, true);
@@ -2156,24 +2609,64 @@ class FlightSim {
       for(let i=0;i<rv.count;i++) rv.setZ(i,Math.sin(rv.getX(i)*.15+t)*Math.cos(rv.getY(i)*.15+t)*.4);
       rv.needsUpdate=true;
     }
+    
+    // Distance Culling (LOD) Optimization for Cyberscape City — throttled to 10 Hz
+    if (this.env === 'cyber' && this.cyberTowers) {
+      if (now - (this._lastCullT || 0) > 100) {
+        this._lastCullT = now;
+        const droneX = this.pos.x;
+        const droneZ = this.pos.z;
+        for (const t of this.cyberTowers) {
+          const dx = t.mesh.position.x - droneX;
+          const dz = t.mesh.position.z - droneZ;
+          const distSq = dx * dx + dz * dz;
+          // 180m threshold -> 180 * 180 = 32400
+          const isNear = distSq < 32400;
+          t.mesh.visible = isNear;
+          t.wireframe.visible = isNear;
+        }
+      }
+    }
   }
 
-  _camera() {
+  _camera(dt) {
     if(this.camMode==='chase'){
-      const off=new THREE.Vector3(0,1.3,-4.5).applyQuaternion(this.quat);
-      this.cam3.position.lerp(this.pos.clone().add(off),.15);
-      this.cam3.lookAt(this.pos.clone().add(new THREE.Vector3(0,.4,0)));
+      // Decouple camera position offset from the drone's pitch and roll.
+      // We extract only the yaw (heading) angle to keep the camera horizontally aligned.
+      const eu = _tempEuler.setFromQuaternion(this.quat, 'YXZ');
+      const yawAngle = eu.y;
+      
+      // Rotate the camera offset only by the yaw angle around the Y-axis
+      const upVec = _tempV4.set(0, 1, 0);
+      const off = _tempV1.set(0, 1.3, -4.5).applyAxisAngle(upVec, yawAngle);
+      const targetCamPos = _tempV2.copy(this.pos).add(off);
+      
+      // Frame-rate independent lerping
+      const factor = 1 - Math.exp(-9 * dt);
+      this.cam3.position.lerp(targetCamPos, factor);
+      
+      const lookTarget = _tempV3.copy(this.pos).add(_tempV4.set(0, .4, 0));
+      this.cam3.lookAt(lookTarget);
     } else if(this.camMode==='fpv'){
-      const off=new THREE.Vector3(0,.06,.35).applyQuaternion(this.quat);
-      this.cam3.position.copy(this.pos.clone().add(off));
-      // Tilted up by 25 degrees (vector components: y = 12 * sin(25°) = 5.07, z = 12 * cos(25°) = 10.88)
-      this.cam3.lookAt(this.pos.clone().add(new THREE.Vector3(0,5.07,10.88).applyQuaternion(this.quat)));
+      const off = _tempV1.set(0, 0.06, 0.35).applyQuaternion(this.quat);
+      this.cam3.position.copy(this.pos).add(off);
+      
+      const lookOffset = _tempV2.set(0, 5.07, 10.88).applyQuaternion(this.quat);
+      const lookTarget = _tempV3.copy(this.pos).add(lookOffset);
+      this.cam3.lookAt(lookTarget);
     } else {
-      this.cam3.position.lerp(new THREE.Vector3(0,16,-28),.1);
+      const orbitTargetPos = _tempV1.set(0, 16, -28);
+      const factor = 1 - Math.exp(-6 * dt);
+      this.cam3.position.lerp(orbitTargetPos, factor);
       this.cam3.lookAt(this.pos);
     }
     if(this.shakeT>0){
-      this.cam3.position.add(new THREE.Vector3((Math.random()-.5)*this.shakeF,(Math.random()-.5)*this.shakeF,(Math.random()-.5)*this.shakeF));
+      const shakeVec = _tempV1.set(
+        (Math.random() - 0.5) * this.shakeF,
+        (Math.random() - 0.5) * this.shakeF,
+        (Math.random() - 0.5) * this.shakeF
+      );
+      this.cam3.position.add(shakeVec);
       this.shakeT-=.016;
     }
   }
@@ -2252,8 +2745,83 @@ class FlightSim {
   }
 
   stop() {
-    this.alive=false; sfx.stopMotors(); document.body.classList.remove('glitch-active');
-    if(this.vid.srcObject){ this.vid.srcObject.getTracks().forEach(t=>t.stop()); this.vid.srcObject=null; }
+    this.alive = false;
+    sfx.stopMotors();
+    document.body.classList.remove('glitch-active');
+    if (this.vid.srcObject) {
+      this.vid.srcObject.getTracks().forEach(t => t.stop());
+      this.vid.srcObject = null;
+    }
+    
+    // Remove resize handler
+    if (this._resizeHandler) {
+      window.removeEventListener('resize', this._resizeHandler);
+      this._resizeHandler = null;
+    }
+    
+    // Dispose of Three.js objects to prevent WebGL memory leaks
+    if (this.scene) {
+      const geometries = new Set();
+      const materials = new Set();
+      const textures = new Set();
+
+      this.scene.traverse((obj) => {
+        if (obj.geometry) geometries.add(obj.geometry);
+        if (obj.material) {
+          if (Array.isArray(obj.material)) {
+            obj.material.forEach(m => {
+              if (m) materials.add(m);
+            });
+          } else {
+            materials.add(obj.material);
+          }
+        }
+      });
+
+      materials.forEach(m => {
+        if (m.map) textures.add(m.map);
+        if (m.emissiveMap) textures.add(m.emissiveMap);
+        m.dispose();
+      });
+
+      geometries.forEach(g => g.dispose());
+      textures.forEach(t => t.dispose());
+      
+      this.scene = null;
+    }
+
+    if (this.ren) {
+      this.ren.dispose();
+      this.ren = null;
+    }
+
+    // Clean up cached gate materials
+    if (this.matClearedGate) { this.matClearedGate.dispose(); this.matClearedGate = null; }
+    if (this.matActiveTrainingGate) { this.matActiveTrainingGate.dispose(); this.matActiveTrainingGate = null; }
+    if (this.matInactiveGate) { this.matInactiveGate.dispose(); this.matInactiveGate = null; }
+    if (this.matActiveCityGate) { this.matActiveCityGate.dispose(); this.matActiveCityGate = null; }
+
+    // Clean up Cyber shared materials and textures
+    if (this.cyberSharedTextures) {
+      this.cyberSharedTextures.forEach(t => t.dispose());
+      this.cyberSharedTextures = null;
+    }
+    if (this.cyberSharedMats) {
+      Object.values(this.cyberSharedMats).forEach(m => m.dispose());
+      this.cyberSharedMats = null;
+    }
+    if (this.cyberSharedLineMats) {
+      Object.values(this.cyberSharedLineMats).forEach(m => m.dispose());
+      this.cyberSharedLineMats = null;
+    }
+    if (this.cyberSharedStartPadMats) {
+      Object.values(this.cyberSharedStartPadMats).forEach(m => m.dispose());
+      this.cyberSharedStartPadMats = null;
+    }
+    if (this.holoGridTexture) {
+      this.holoGridTexture.dispose();
+      this.holoGridTexture = null;
+    }
   }
 
   _toast(msg) {
@@ -2269,21 +2837,21 @@ document.addEventListener('DOMContentLoaded', () => {
   let lab = null, sim = null, tab = 'frame';
 
   const PRESETS = {
-    micro: {
+    neo: {
       frame: 'fr-neo',
-      motors: 'mt-1306',
-      esc: 'es-20a',
+      motors: 'mt-1404',
+      esc: 'es-15a',
       propellers: 'pr-3b',
-      flight_controller: 'fc-f4',
-      battery: 'bt-3s',
-      camera: 'cm-ana',
-      transmitter: 'tx-elrs'
+      flight_controller: 'fc-neo',
+      battery: 'bt-1s',
+      camera: 'cm-neo',
+      transmitter: 'tx-neo'
     },
     avata: {
       frame: 'fr-avata',
       motors: 'mt-2207',
       esc: 'es-50a',
-      propellers: 'pr-5b',
+      propellers: 'pr-3-5b',
       flight_controller: 'fc-o3',
       battery: 'bt-4s',
       camera: 'cm-4k',
@@ -2297,7 +2865,37 @@ document.addEventListener('DOMContentLoaded', () => {
       flight_controller: 'fc-f7',
       battery: 'bt-6s',
       camera: 'cm-ana',
-      transmitter: 'tx-elrs'
+      transmitter: 'tx-o3'
+    },
+    phantom: {
+      frame: 'fr-phantom',
+      motors: 'mt-2312',
+      esc: 'es-30a',
+      propellers: 'pr-9b',
+      flight_controller: 'fc-naza',
+      battery: 'bt-phantom',
+      camera: 'cm-phantom',
+      transmitter: 'tx-phantom'
+    },
+    mavic: {
+      frame: 'fr-mavic',
+      motors: 'mt-2008',
+      esc: 'es-40a',
+      propellers: 'pr-9-4',
+      flight_controller: 'fc-mavic',
+      battery: 'bt-mavic',
+      camera: 'cm-mavic',
+      transmitter: 'tx-mavic'
+    },
+    inspire: {
+      frame: 'fr-inspire',
+      motors: 'mt-3512',
+      esc: 'es-80a',
+      propellers: 'pr-15b',
+      flight_controller: 'fc-inspire',
+      battery: 'bt-inspire',
+      camera: 'cm-inspire',
+      transmitter: 'tx-inspire'
     }
   };
 
@@ -2343,6 +2941,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-quick-fly').addEventListener('click', () => {
     sfx.snap();
     show('sim');
+    if (sim) { sim.stop(); sim = null; }
     sim = new FlightSim('sim-canvas','cam-feed', hudUpdate);
     sim.launch({wg:610,thrN:85.5,cells:6,frame:'fr-avata'},'city');
     document.getElementById('hud').classList.remove('hidden');
@@ -2358,6 +2957,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const env = btn.dataset.launch;
     sfx.snap();
     show('sim');
+    if (sim) { sim.stop(); sim = null; }
     sim = new FlightSim('sim-canvas','cam-feed', hudUpdate);
     sim.launch(lab.specs(), env);
     document.getElementById('hud').classList.remove('hidden');
@@ -2411,10 +3011,20 @@ document.addEventListener('DOMContentLoaded', () => {
   function buildTabs() {
     const container = document.getElementById('catalog-tabs');
     container.innerHTML = '';
+    const NAMES = {
+      frame: 'FRAME',
+      motors: 'MOTOR',
+      esc: 'ESC',
+      propellers: 'PROP',
+      flight_controller: 'FC',
+      battery: 'BATT',
+      camera: 'CAM',
+      transmitter: 'TX'
+    };
     Object.keys(PARTS).forEach(cat => {
       const b = document.createElement('button');
       b.className = 'catalog-tab' + (cat===tab?' active':'');
-      b.innerText = cat.replace('_',' ').toUpperCase();
+      b.innerText = NAMES[cat] || cat.replace('_',' ').toUpperCase();
       b.onclick = () => { tab=cat; document.querySelectorAll('.catalog-tab').forEach(t=>t.classList.remove('active')); b.classList.add('active'); renderList(); };
       container.appendChild(b);
     });
