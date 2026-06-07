@@ -118,7 +118,7 @@ function makeTextSprite(message) {
 function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
   const g = new THREE.Group(), M = AssemblyLab.MAT;
   const duct = frameId === 'fr-neo' || frameId === 'fr-avata';
-  const s = frameId === 'fr-neo' ? 0.3 : frameId === 'fr-avata' ? 0.35 : (frameId === 'fr-mavic' ? 0.42 : (frameId === 'fr-phantom' ? 0.48 : (frameId === 'fr-inspire' ? 0.65 : 0.45)));
+  const s = frameId === 'fr-neo' ? 0.38 : frameId === 'fr-avata' ? 0.44 : (frameId === 'fr-mavic' ? 0.52 : (frameId === 'fr-phantom' ? 0.58 : (frameId === 'fr-inspire' ? 0.80 : 0.56)));
   const motorY = frameId === 'fr-inspire' ? 0.06 : (frameId === 'fr-phantom' ? 0.03 : (frameId === 'fr-mavic' ? 0.03 : 0.02));
   
   const getMotorPos = (fid, s, mY) => {
@@ -361,8 +361,9 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
       });
 
       if(id==='fr-avata'){
-        [[.35,.04,.35],[-.35,.04,.35],[.35,.04,-.35],[-.35,.04,-.35]].forEach(p=>{
-          g.add(new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.18,32,1,true), M.orange).translateX(p[0]).translateY(p[1]).translateZ(p[2]));
+        const ductR = 0.38;
+        motorPos.forEach(p => {
+          g.add(new THREE.Mesh(new THREE.CylinderGeometry(ductR, ductR, .18, 32, 1, true), M.orange).translateX(p[0]).translateY(.03).translateZ(p[2]));
         });
       }
       
