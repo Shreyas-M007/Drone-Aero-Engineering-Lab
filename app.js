@@ -3028,7 +3028,7 @@ document.addEventListener('DOMContentLoaded', () => {
       frame: 'fr-mavic',
       motors: 'mt-2008',
       esc: 'es-40a',
-      propellers: 'pr-2b',
+      propellers: 'pr-5b',
       flight_controller: 'fc-mavic',
       battery: 'bt-mavic',
       camera: 'cm-mavic',
