@@ -121,7 +121,7 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
   const actualMotorId = motorId || (frameId === 'fr-inspire' ? 'mt-3512' : (frameId === 'fr-phantom' ? 'mt-2312' : (frameId === 'fr-mavic' ? 'mt-2008' : (frameId === 'fr-redbull' ? 'mt-2806' : 'mt-2207'))));
   const duct = frameId === 'fr-neo' || frameId === 'fr-avata';
   const s = frameId === 'fr-neo' ? 0.38 : frameId === 'fr-avata' ? 0.44 : (frameId === 'fr-mavic' ? 0.52 : (frameId === 'fr-phantom' ? 0.58 : (frameId === 'fr-inspire' ? 0.80 : (frameId === 'fr-redbull' ? 0.56 : 0.56))));
-  const motorY = frameId === 'fr-inspire' ? 0.06 : (frameId === 'fr-phantom' ? 0.03 : (frameId === 'fr-mavic' ? 0.03 : (frameId === 'fr-redbull' ? 0.07 : 0.02)));
+  const motorY = frameId === 'fr-inspire' ? 0.06 : (frameId === 'fr-phantom' ? 0.03 : (frameId === 'fr-mavic' ? 0.03 : (frameId === 'fr-redbull' ? -0.05 : 0.02)));
   
   const getMotorPos = (fid, s, mY) => {
     if (fid === 'fr-mavic') {
@@ -293,63 +293,94 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
         legGroup.add(foot);
         
         // White foot caps
-        [-0.24, 0.24].forEach(z => {
-          const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.017, 0.017, 0.02, 10), M.white);
-          cap.rotation.x = Math.PI / 2;
-          cap.position.set(0, -0.22, z);
-          legGroup.add(cap);
-        });
-        
-        g.add(legGroup);
-      });
-    }
-    else if(id==='fr-redbull'){
-      // Red Bull Drone 1 Rocket-shaped aerodynamic fairing
-      const redBullBlue = new THREE.MeshStandardMaterial({color:0x0b132b, roughness:0.2, metalness:0.8});
-      const redBullRed = new THREE.MeshStandardMaterial({color:0xef4444, roughness:0.3, metalness:0.5});
-      const redBullYellow = new THREE.MeshStandardMaterial({color:0xeab308, roughness:0.3, metalness:0.5});
+        [-0.24    else if(id==='fr-redbull'){
+      const redBullBlack = new THREE.MeshStandardMaterial({color: 0x18181b, roughness: 0.7, metalness: 0.1});
+      const redBullRed = new THREE.MeshStandardMaterial({color: 0xef4444, roughness: 0.4, metalness: 0.1});
+      const redBullYellow = new THREE.MeshStandardMaterial({color: 0xfacc15, roughness: 0.4, metalness: 0.1});
       
-      // Main torpedo/rocket body fuselage
-      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.36, 24), redBullBlue);
-      body.rotation.x = Math.PI / 2;
-      body.position.set(0, 0.07, -0.02);
+      // Vertical cylinder body (matte black)
+      // Bottom at y = -0.15, top at y = 0.18 (height 0.33)
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.33, 32), redBullBlack);
+      body.position.set(0, 0.015, 0);
       g.add(body);
       
-      // Red nose cone (front)
-      const nose = new THREE.Mesh(new THREE.CylinderGeometry(0, 0.055, 0.10, 24), redBullRed);
-      nose.rotation.x = Math.PI / 2;
-      nose.position.set(0, 0.07, 0.21);
-      g.add(nose);
+      // Dome top (matte black)
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(0.065, 32, 16, 0, Math.PI*2, 0, Math.PI/2), redBullBlack);
+      dome.position.set(0, 0.18, 0);
+      g.add(dome);
       
-      // Tail cone (rear)
-      const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.02, 0.08, 24), redBullBlue);
-      tail.rotation.x = Math.PI / 2;
-      tail.position.set(0, 0.07, -0.24);
-      g.add(tail);
+      // Recessed angled camera port on the dome top pointing slightly forward-down
+      const camPort = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.012, 16), redBullBlack);
+      camPort.position.set(0, 0.23, 0.035);
+      camPort.rotation.x = Math.PI / 4;
+      const glassMat = new THREE.MeshBasicMaterial({color: 0x111827});
+      const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.002, 16), glassMat);
+      lens.position.y = 0.006;
+      camPort.add(lens);
+      g.add(camPort);
       
-      // Yellow decal stripe ring around the body
-      const stripe = new THREE.Mesh(new THREE.CylinderGeometry(0.056, 0.056, 0.03, 24), redBullYellow);
-      stripe.rotation.x = Math.PI / 2;
-      stripe.position.set(0, 0.07, -0.06);
-      g.add(stripe);
-
-      // Red tail warning light at the very back tip
-      const tailLight = new THREE.Mesh(new THREE.SphereGeometry(0.016, 8, 8), new THREE.MeshBasicMaterial({color:0xef4444}));
-      tailLight.position.set(0, 0.07, -0.28);
-      g.add(tailLight);
-
-      // 4 carbon fiber arms to motor mounts (lying in the x-z plane at y = 0.07)
+      // Upper vertical red stripes (peaked in the center)
+      for(let i = -4; i <= 4; i++) {
+        const angle = i * 0.18;
+        const height = 0.14 - Math.abs(i) * 0.018;
+        const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.006, height, 0.001), redBullRed);
+        stripe.position.set(Math.sin(angle) * 0.066, 0.08 + (height - 0.14) / 2, Math.cos(angle) * 0.066);
+        stripe.rotation.y = angle;
+        g.add(stripe);
+      }
+      
+      // Lower vertical red stripes
+      for(let i = -3; i <= 3; i++) {
+        const angle = i * 0.18;
+        const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.045, 0.001), redBullRed);
+        stripe.position.set(Math.sin(angle) * 0.066, -0.10, Math.cos(angle) * 0.066);
+        stripe.rotation.y = angle;
+        g.add(stripe);
+      }
+      
+      // Red Bull Logo - Yellow Sun Circle in the center
+      const sun = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.001, 16), redBullYellow);
+      sun.rotation.x = Math.PI / 2;
+      sun.position.set(0, -0.005, 0.066);
+      g.add(sun);
+      
+      // Red Bull Logo - Left charging shape (red)
+      const bullL = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.005, 0.002), redBullRed);
+      bullL.position.set(-0.009, -0.005, 0.067);
+      bullL.rotation.z = Math.PI / 10;
+      g.add(bullL);
+      
+      // Red Bull Logo - Right charging shape (red)
+      const bullR = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.005, 0.002), redBullRed);
+      bullR.position.set(0.009, -0.005, 0.067);
+      bullR.rotation.z = -Math.PI / 10;
+      g.add(bullR);
+      
+      // Red Bull Logo - "Red Bull" text bar below
+      const rbText = new THREE.Mesh(new THREE.BoxGeometry(0.036, 0.005, 0.002), redBullRed);
+      rbText.position.set(0, -0.016, 0.067);
+      g.add(rbText);
+      
+      // Red aerodynamic arms and vertical motor pods
       armConfigs.forEach(cfg => {
-        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, cfg.length, 12), M.carbon);
+        // Horizontal arm from center to motor position (extended by cfg.length)
+        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, cfg.length, 16), redBullRed);
         arm.rotation.x = Math.PI / 2;
+        // Align arm to point in the direction of the motor
         arm.rotation.y = cfg.angle;
-        arm.position.set(cfg.x, 0.07, cfg.z);
+        // Position arm centered between the main body and the motor
+        arm.position.set(cfg.x, -0.02, cfg.z);
         g.add(arm);
         
-        // Compact motor mounts
-        const mount = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.02, 12), M.dark);
-        mount.position.set(cfg.x * 2, 0.07, cfg.z * 2);
-        g.add(mount);
+        // Vertical motor pod cylinder
+        const pod = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.13, 16), redBullRed);
+        pod.position.set(cfg.x * 2, 0.015, cfg.z * 2);
+        g.add(pod);
+        
+        // Rounded dome top of motor pod
+        const podDome = new THREE.Mesh(new THREE.SphereGeometry(0.024, 16, 8, 0, Math.PI*2, 0, Math.PI/2), redBullRed);
+        podDome.position.set(cfg.x * 2, 0.08, cfg.z * 2);
+        g.add(podDome);
       });
     }
     else {
@@ -440,6 +471,9 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
     let h = id==='mt-1404' ? 0.045 : (id==='mt-1306' ? 0.05 : (id==='mt-2008' ? 0.055 : (id==='mt-2312'||id==='mt-2207' ? 0.08 : (id==='mt-2806' ? 0.09 : (id==='mt-3512' ? 0.12 : 0.08)))));
     motorPos.forEach(p=>{
       const mg=new THREE.Group(); mg.position.set(p[0],p[1],p[2]);
+      if (frameId === 'fr-redbull') {
+        mg.rotation.x = Math.PI; // Invert motor pointing downwards
+      }
       
       // Motor base (black)
       mg.add(new THREE.Mesh(new THREE.CylinderGeometry(r-.004,r,h*.2,12),M.dark));
@@ -471,12 +505,13 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
       bell.add(new THREE.Mesh(new THREE.CylinderGeometry(.008,.008,h*1.3,8),M.dark).translateY(bellHeight*.1));
       mg.add(bell); 
       g.add(mg);
-
+ 
       // Silicon Motor Wires running along carbon arm
       const wireLen = Math.hypot(p[0], p[2]) - 0.05;
       const wireAngle = Math.atan2(p[0], p[2]);
       const wiresGroup = new THREE.Group();
-      wiresGroup.position.set(p[0]/2, p[1] - 0.008, p[2]/2);
+      const wireY = frameId === 'fr-redbull' ? p[1] + 0.008 : p[1] - 0.008;
+      wiresGroup.position.set(p[0]/2, wireY, p[2]/2);
       wiresGroup.rotation.y = wireAngle;
       
       [-0.008, 0, 0.008].forEach((offset, idx) => {
@@ -490,6 +525,7 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
     });
   }
   else if(cat==='esc'){
+    if (frameId === 'fr-redbull') return g; // Internal ESC
     const w=id==='es-70a'||id==='es-80a'?.26:id==='es-15a'?.12:id==='es-30a'?.16:id==='es-40a'?.20:.18;
     // Main double-sided PCB board
     g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.012,w),M.dark).translateY(.015).translateZ(-.02));
@@ -513,11 +549,12 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
     let h = actualMotorId==='mt-1404' ? 0.045 : (actualMotorId==='mt-1306' ? 0.05 : (actualMotorId==='mt-2008' ? 0.055 : (actualMotorId==='mt-2312'||actualMotorId==='mt-2207' ? 0.08 : (actualMotorId==='mt-2806' ? 0.09 : (actualMotorId==='mt-3512' ? 0.12 : 0.08)))));
     const span=id==='pr-3b'?.28:(id==='pr-3-5b'||id==='pr-5b'?.34:(id==='pr-9b'||id==='pr-9-4'?.52:(id==='pr-15b'?.72:.5)));
     const nb=id==='pr-2b'||id==='pr-9b'||id==='pr-9-4'||id==='pr-15b'?2:(id==='pr-3-5b'||id==='pr-5b'?5:3);
-    const propMat = id==='pr-15b'?M.carbon:(id==='pr-9b'?M.white:M.orange);
+    const propMat = frameId === 'fr-redbull' ? M.dark : (id==='pr-15b'?M.carbon:(id==='pr-9b'?M.white:M.orange));
 
     if (propsArray) propsArray.length = 0;
     motorPos.forEach(p=>{
-      const pg=new THREE.Group(); pg.position.set(p[0],p[1]+h*0.9,p[2]);
+      const propY = frameId === 'fr-redbull' ? p[1] - h * 0.9 : p[1] + h * 0.9;
+      const pg=new THREE.Group(); pg.position.set(p[0],propY,p[2]);
       
       // Central propeller hub assembly
       pg.add(new THREE.Mesh(new THREE.CylinderGeometry(.032,.032,.022,10),M.dark));
@@ -561,6 +598,7 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
     });
   }
   else if(cat==='flight_controller'){
+    if (frameId === 'fr-redbull') return g; // Internal FC
     const w=id==='fc-o3'?.22:id==='fc-inspire'?.28:id==='fc-mavic'?.22:.16;
     // Stacked FC Board (mounted higher on stack pins)
     g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.012,w),id==='fc-f7'?M.indigo:(id==='fc-inspire'?M.silver:(id==='fc-mavic'?M.orange:M.dark))).translateY(.12).translateZ(-.02));
@@ -598,6 +636,7 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
     }
   }
   else if(cat==='battery'){
+    if (frameId === 'fr-redbull') return g; // Internal Battery
     const bw = id==='bt-3s'?.10 : id==='bt-6s'?.14 : id==='bt-phantom'?.15 : id==='bt-mavic'?.14 : id==='bt-inspire'?.18 : .12;
     const bh = id==='bt-3s'?.03 : id==='bt-6s'?.05 : id==='bt-phantom'?.06 : id==='bt-mavic'?.05 : id==='bt-inspire'?.07 : .04;
     const bl = id==='bt-3s'?.18 : id==='bt-6s'?.28 : id==='bt-phantom'?.32 : id==='bt-mavic'?.28 : id==='bt-inspire'?.35 : .24;
@@ -699,7 +738,7 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
       if (fid === 'fr-phantom') return { y: 0.08, z: 0.20 };
       if (fid === 'fr-mavic') return { y: 0.06, z: 0.24 };
       if (fid === 'fr-inspire') return { y: 0.08, z: 0.22 };
-      if (fid === 'fr-redbull') return { y: 0.07, z: 0.24 };
+      if (fid === 'fr-redbull') return { y: 0.03, z: 0.24 };
       return { y: 0.11, z: 0.32 }; // default/FPV 5"
     };
 
@@ -808,54 +847,57 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
       g.add(camBody);
     }
     else {
-      const fpvPos = getFpvCamPos(frameId);
-      const camY = fpvPos.y;
-      const camZ = fpvPos.z;
-      // Metal FPV Camera mount plates (narrowed slightly from 0.08 to 0.075 to avoid overlapping cage plates)
-      [-0.075, 0.075].forEach(x => {
-        const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.1, 0.12), M.silver);
-        bracket.position.set(x, camY, camZ - 0.02);
-        bracket.rotation.x = -Math.PI / 8;
-        g.add(bracket);
-      });
+      if (frameId !== 'fr-redbull') {
+        const fpvPos = getFpvCamPos(frameId);
+        const camY = fpvPos.y;
+        const camZ = fpvPos.z;
+        // Metal FPV Camera mount plates (narrowed slightly from 0.08 to 0.075 to avoid overlapping cage plates)
+        [-0.075, 0.075].forEach(x => {
+          const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.1, 0.12), M.silver);
+          bracket.position.set(x, camY, camZ - 0.02);
+          bracket.rotation.x = -Math.PI / 8;
+          g.add(bracket);
+        });
 
-      // Camera module housing (black shell)
-      const cameraHousing = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.09, 0.09), M.dark);
-      cameraHousing.position.set(0, camY, camZ);
-      cameraHousing.rotation.x = -Math.PI / 8;
+        // Camera module housing (black shell)
+        const cameraHousing = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.09, 0.09), M.dark);
+        cameraHousing.position.set(0, camY, camZ);
+        cameraHousing.rotation.x = -Math.PI / 8;
 
-      // Photorealistic Lens cylinder with glass element
-      const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.038, 0.05, 16), M.silver);
-      lens.rotation.x = Math.PI / 2;
-      lens.position.set(0, 0, 0.05);
-      const glass = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.004, 16), new THREE.MeshBasicMaterial({color: 0x111827}));
-      glass.position.y = 0.024;
-      lens.add(glass);
-      cameraHousing.add(lens);
-      g.add(cameraHousing);
+        // Photorealistic Lens cylinder with glass element
+        const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.038, 0.05, 16), M.silver);
+        lens.rotation.x = Math.PI / 2;
+        lens.position.set(0, 0, 0.05);
+        const glass = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.004, 16), new THREE.MeshBasicMaterial({color: 0x111827}));
+        glass.position.y = 0.024;
+        lens.add(glass);
+        cameraHousing.add(lens);
+        g.add(cameraHousing);
 
-      // GoPro Action Camera on Top-Front if premium camera is selected
-      if (id === 'cm-4k') {
-        const topY = frameId === 'fr-neo' ? 0.08 : 0.22;
-        const mount = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.05, 0.08), M.orange);
-        mount.position.set(0, topY + 0.02, 0.08);
-        mount.rotation.x = -Math.PI/12;
-        g.add(mount);
-        const gopro = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.06), M.dark);
-        gopro.position.set(0, topY + 0.06, 0.09);
-        gopro.rotation.x = -Math.PI/12;
-        const gpLens = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.015, 16), M.silver);
-        gpLens.rotation.x = Math.PI/2;
-        gpLens.position.set(0.025, 0.01, 0.03);
-        gopro.add(gpLens);
-        const gpScreen = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.025, 0.002), M.indigo);
-        gpScreen.position.set(-0.025, -0.01, 0.031);
-        gopro.add(gpScreen);
-        g.add(gopro);
+        // GoPro Action Camera on Top-Front if premium camera is selected
+        if (id === 'cm-4k') {
+          const topY = frameId === 'fr-neo' ? 0.08 : 0.22;
+          const mount = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.05, 0.08), M.orange);
+          mount.position.set(0, topY + 0.02, 0.08);
+          mount.rotation.x = -Math.PI/12;
+          g.add(mount);
+          const gopro = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.06), M.dark);
+          gopro.position.set(0, topY + 0.06, 0.09);
+          gopro.rotation.x = -Math.PI/12;
+          const gpLens = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.015, 16), M.silver);
+          gpLens.rotation.x = Math.PI/2;
+          gpLens.position.set(0.025, 0.01, 0.03);
+          gopro.add(gpLens);
+          const gpScreen = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.025, 0.002), M.indigo);
+          gpScreen.position.set(-0.025, -0.01, 0.031);
+          gopro.add(gpScreen);
+          g.add(gopro);
+        }
       }
     }
   }
   else if(cat==='transmitter'){
+    if (frameId === 'fr-redbull') return g; // Internal Transmitter
     g.add(new THREE.Mesh(new THREE.BoxGeometry(.1,.015,.1),M.carbon).translateY(.035).translateZ(-.32));
     if(id==='tx-o3'){
       [.05,-.05].forEach(x=>{
@@ -3004,7 +3046,7 @@ class FlightSim {
         if (fid === 'fr-phantom') return { y: 0.08, z: 0.20 };
         if (fid === 'fr-mavic') return { y: 0.06, z: 0.24 };
         if (fid === 'fr-inspire') return { y: 0.08, z: 0.22 };
-        if (fid === 'fr-redbull') return { y: 0.07, z: 0.24 };
+        if (fid === 'fr-redbull') return { y: 0.20, z: -0.05 };
         return { y: 0.11, z: 0.32 };
       };
       const fpvPos = getFpvCamPos(frameId);
