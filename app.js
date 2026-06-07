@@ -3092,7 +3092,7 @@ document.addEventListener('DOMContentLoaded', () => {
       sim = new FlightSim('sim-canvas','cam-feed', hudUpdate);
       sim.launch({wg:610,thrN:85.5,cells:6,frame:'fr-avata'},'city');
       document.getElementById('hud').classList.remove('hidden');
-    }, 20);
+    }, 50);
   });
 
   /* builder → env */
@@ -3110,7 +3110,7 @@ document.addEventListener('DOMContentLoaded', () => {
       sim = new FlightSim('sim-canvas','cam-feed', hudUpdate);
       sim.launch(lab.specs(), env);
       document.getElementById('hud').classList.remove('hidden');
-    }, 20);
+    }, 50);
   }));
 
   /* env card highlight */
