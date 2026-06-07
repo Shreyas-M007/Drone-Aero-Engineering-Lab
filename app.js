@@ -293,7 +293,17 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
         legGroup.add(foot);
         
         // White foot caps
-        [-0.24    else if(id==='fr-redbull'){
+        [-0.24, 0.24].forEach(z => {
+          const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.017, 0.017, 0.02, 10), M.white);
+          cap.rotation.x = Math.PI / 2;
+          cap.position.set(0, -0.22, z);
+          legGroup.add(cap);
+        });
+        
+        g.add(legGroup);
+      });
+    }
+    else if(id==='fr-redbull'){
       const redBullBlack = new THREE.MeshStandardMaterial({color: 0x18181b, roughness: 0.7, metalness: 0.1});
       const redBullRed = new THREE.MeshStandardMaterial({color: 0xef4444, roughness: 0.4, metalness: 0.1});
       const redBullYellow = new THREE.MeshStandardMaterial({color: 0xfacc15, roughness: 0.4, metalness: 0.1});
