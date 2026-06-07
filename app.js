@@ -1307,17 +1307,26 @@ class AssemblyLab {
     if(twr>0){
       const frameId = this.slots.frame?.id;
       let cd = 0.08;
-      if (frameId === 'fr-neo') cd = 0.078;
-      else if (frameId === 'fr-avata') cd = 0.122;
-      else if (frameId === 'fr-fpv5') cd = 0.079;
-      else if (frameId === 'fr-phantom') cd = 0.144;
-      else if (frameId === 'fr-mavic') cd = 0.106;
-      else if (frameId === 'fr-inspire') cd = 0.255;
-      else if (frameId === 'fr-redbull') cd = 0.0127;
+      if (frameId === 'fr-neo') cd = 0.0518;
+      else if (frameId === 'fr-avata') cd = 0.0816;
+      else if (frameId === 'fr-fpv5') cd = 0.0529;
+      else if (frameId === 'fr-phantom') cd = 0.0961;
+      else if (frameId === 'fr-mavic') cd = 0.0705;
+      else if (frameId === 'fr-inspire') cd = 0.1691;
+      else if (frameId === 'fr-redbull') cd = 0.00847;
       
-      const thrN_sim = (thr / 1000) * 9.81 * 1.5;
+      const thrN_sim = (thr / 1000) * 9.81;
       const v_max = Math.sqrt(thrN_sim / (cd * 1.225));
       spd = Math.round(v_max * 3.6);
+
+      const maxSpeedLimit = frameId === 'fr-neo' ? 58 : 
+                            (frameId === 'fr-avata' ? 97 : 
+                            (frameId === 'fr-fpv5' ? 140 : 
+                            (frameId === 'fr-phantom' ? 72 : 
+                            (frameId === 'fr-mavic' ? 76 : 
+                            (frameId === 'fr-inspire' ? 94 : 
+                            (frameId === 'fr-redbull' ? 350 : 100))))));
+      spd = Math.min(spd, maxSpeedLimit);
     }
 
     let propOverlapError = false;
@@ -1345,7 +1354,7 @@ class AssemblyLab {
   specs() {
     return {
       wg: Object.values(this.slots).reduce((s,v)=>s+(v? v.w*(v.id?.startsWith('mt')||v.id?.startsWith('pr')?4:1) :0),0),
-      thrN: ((this.slots.motors?.thrust*4||1200)/1000)*9.81*1.5,
+      thrN: ((this.slots.motors?.thrust*4||1200)/1000)*9.81,
       cells: this.slots.battery?.sp?.V ? (this.slots.battery.sp.V.includes('6S')?6:(this.slots.battery.sp.V.includes('3S')?3:(this.slots.battery.sp.V.includes('1S')?1:4))) : 4,
       frame: this.slots.frame?.id||'fr-fpv5',
       cap: this.slots.battery ? parseInt(this.slots.battery.sp.Cap) : 2000,
@@ -2659,13 +2668,13 @@ class FlightSim {
     const grav = _tempV1.set(0, -9.81 * mass, 0);
     const thrDir = _tempV2.set(0, 1, 0).applyQuaternion(this.quat).multiplyScalar(thrForce * gef);
     const frameId = this.droneSpec.frame || 'fr-fpv5';
-    const cd = frameId === 'fr-neo' ? 0.078 : 
-               (frameId === 'fr-avata' ? 0.122 : 
-               (frameId === 'fr-fpv5' ? 0.079 : 
-               (frameId === 'fr-phantom' ? 0.144 : 
-               (frameId === 'fr-mavic' ? 0.106 : 
-               (frameId === 'fr-inspire' ? 0.255 : 
-               (frameId === 'fr-redbull' ? 0.0127 : 0.08))))));
+    const cd = frameId === 'fr-neo' ? 0.0518 : 
+               (frameId === 'fr-avata' ? 0.0816 : 
+               (frameId === 'fr-fpv5' ? 0.0529 : 
+               (frameId === 'fr-phantom' ? 0.0961 : 
+               (frameId === 'fr-mavic' ? 0.0705 : 
+               (frameId === 'fr-inspire' ? 0.1691 : 
+               (frameId === 'fr-redbull' ? 0.00847 : 0.08))))));
     const drag = _tempV3.copy(this.vel).multiplyScalar(-cd * 1.225 * this.vel.length());
     
     let wind = _tempV4.set(0, 0, 0);
@@ -2676,6 +2685,20 @@ class FlightSim {
     
     const acc = _tempV5.copy(grav).add(thrDir).add(drag).add(wind).divideScalar(mass);
     this.vel.addScaledVector(acc, dt);
+    
+    // Electronic speed limiter (velocity capping at real-world model max speed)
+    const maxSpeedLimit = frameId === 'fr-neo' ? 58 : 
+                          (frameId === 'fr-avata' ? 97 : 
+                          (frameId === 'fr-fpv5' ? 140 : 
+                          (frameId === 'fr-phantom' ? 72 : 
+                          (frameId === 'fr-mavic' ? 76 : 
+                          (frameId === 'fr-inspire' ? 94 : 
+                          (frameId === 'fr-redbull' ? 350 : 100))))));
+    const maxSpeedMS = maxSpeedLimit / 3.6;
+    if (this.vel.length() > maxSpeedMS) {
+      this.vel.setLength(maxSpeedMS);
+    }
+    
     this.pos.addScaledVector(this.vel, dt);
 
     if (this.env === 'cyber') {
@@ -3297,7 +3320,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       if (sim) { sim.stop(); sim = null; }
       sim = new FlightSim('sim-canvas','cam-feed', hudUpdate);
-      sim.launch({wg:610,thrN:85.5,cells:6,frame:'fr-avata'},'city');
+      sim.launch({wg:577,thrN:72.6,cells:6,frame:'fr-avata'},'city');
       document.getElementById('hud').classList.remove('hidden');
     }, 50);
   });
