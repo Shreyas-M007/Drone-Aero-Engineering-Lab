@@ -246,6 +246,13 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
           g.add(peg);
         }
       });
+
+      // Rear landing pillars under the fuselage
+      [-1, 1].forEach(side => {
+        const rearLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.006, 0.03, 8), M.dark);
+        rearLeg.position.set(side * 0.04, -0.02, -0.16);
+        g.add(rearLeg);
+      });
     }
     else if(id==='fr-inspire'){
       // Aerodynamic white fuselage cockpit
@@ -1153,7 +1160,7 @@ class AssemblyLab {
     } else if (frameId === 'fr-inspire') {
       frameLowestY = -0.18;
     } else if (frameId === 'fr-mavic') {
-      frameLowestY = -0.01; // pegs are at -0.01
+      frameLowestY = -0.035; // pegs and rear pillars are at -0.035
     } else {
       // For Neo, Avata, FPV 5" and default frames
       const getBatteryHeight = id => {
@@ -1376,7 +1383,7 @@ class FlightSim {
       return 0.04;
     };
     const bh = batteryId ? getBatteryHeight(batteryId) : 0;
-    const baseLandingHeight = frameId === 'fr-phantom' ? 0.13 : (frameId === 'fr-inspire' ? 0.235 : (frameId === 'fr-mavic' ? 0.06 : 0.18));
+    const baseLandingHeight = frameId === 'fr-phantom' ? 0.13 : (frameId === 'fr-inspire' ? 0.235 : (frameId === 'fr-mavic' ? 0.035 : 0.18));
     this.landingHeight = frameId === 'fr-phantom' || frameId === 'fr-inspire' || frameId === 'fr-mavic' ? baseLandingHeight : Math.max(baseLandingHeight, bh + 0.006);
 
     document.getElementById('crash-overlay').classList.add('hidden');
