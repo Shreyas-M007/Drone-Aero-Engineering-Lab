@@ -1,20 +1,5 @@
 # 🚁 Drone Aero Engineering Lab
 
-<div align="center">
-
-# Drone Aero Engineering Lab
-
-### Design • Analyze • Simulate • Build • Fly
-
-An open-source aerospace engineering initiative focused on drone technology, aerodynamics, flight dynamics, control systems, simulation, and UAV development.
-
-![GitHub Repo stars](https://img.shields.io/github/stars/Shreyas-M007/Drone-Aero-Engineering-Lab?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/Shreyas-M007/Drone-Aero-Engineering-Lab?style=for-the-badge)
-![GitHub issues](https://img.shields.io/github/issues/Shreyas-M007/Drone-Aero-Engineering-Lab?style=for-the-badge)
-![License](https://img.shields.io/github/license/Shreyas-M007/Drone-Aero-Engineering-Lab?style=for-the-badge)
-
-</div>
-
 ---
 
 ## 📖 About The Project
@@ -81,41 +66,8 @@ Our mission is to bridge the gap between aerospace engineering theory and practi
 | Embedded Systems | STM32, ESP32, Arduino |
 | Data Analysis | NumPy, Pandas, Matplotlib |
 
----
 
-## 📂 Repository Structure
 
-```text
-Drone-Aero-Engineering-Lab/
-│
-├── Aerodynamics/
-│   ├── Airfoil Analysis
-│   ├── CFD Studies
-│   └── Rotor Analysis
-│
-├── Flight Dynamics/
-│   ├── Stability Analysis
-│   ├── Performance Studies
-│   └── Simulations
-│
-├── Control Systems/
-│   ├── PID Controllers
-│   ├── Autonomous Flight
-│   └── Sensor Fusion
-│
-├── Propulsion/
-│   ├── Motors
-│   ├── ESC Systems
-│   └── Battery Analysis
-│
-├── Structural Design/
-│
-├── Research Papers/
-│
-├── Documentation/
-│
-└── README.md
-```
 
 ---
 
