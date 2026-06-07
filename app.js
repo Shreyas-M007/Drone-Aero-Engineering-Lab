@@ -3280,5 +3280,5 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
   }
 
-
+  // Trigger Vercel clean rebuild for revert
 });
