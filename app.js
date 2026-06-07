@@ -3270,34 +3270,5 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
   }
 
-  /* ── showcase preview ── */
-  const pvCv = document.getElementById('hub-drone-preview');
-  if(pvCv){
-    const sc=new THREE.Scene(); sc.background=new THREE.Color(0xF6F5F2);
-    const d=pvCv.getBoundingClientRect(), cam=new THREE.PerspectiveCamera(40,d.width/d.height,.1,10);
-    cam.position.set(1.5,1.2,1.5);
-    const ren=new THREE.WebGLRenderer({canvas:pvCv,antialias:true}); ren.setSize(d.width,d.height);
-    const oc=new OrbitControls(cam,ren.domElement); oc.enableZoom=false; oc.enablePan=false; oc.autoRotate=true; oc.autoRotateSpeed=4;
-    sc.add(new THREE.AmbientLight(0xffffff,.7));
-    sc.add(new THREE.PointLight(0x6366F1,1.2,10).translateX(2).translateY(2).translateZ(2));
-    const g=new THREE.Group(), mat=new THREE.MeshStandardMaterial({color:0x242426,metalness:.8});
-    const arm1 = new THREE.Mesh(new THREE.BoxGeometry(.03,.02,.99),mat);
-    arm1.rotation.y = Math.PI/4;
-    g.add(arm1);
-    const arm2 = new THREE.Mesh(new THREE.BoxGeometry(.03,.02,.99),mat);
-    arm2.rotation.y = -Math.PI/4;
-    g.add(arm2);
-    const body = new THREE.Mesh(new THREE.SphereGeometry(0.08,16,16),mat);
-    body.position.y = 0.01;
-    g.add(body);
-    const rotors=[];
-    [[.35,.35],[-.35,.35],[.35,-.35],[-.35,-.35]].forEach(o=>{
-      g.add(new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,.05,8),new THREE.MeshStandardMaterial({color:0xe5e7eb,metalness:.9})).translateX(o[0]).translateY(.03).translateZ(o[1]));
-      const p=new THREE.Mesh(new THREE.BoxGeometry(.015,.002,.28),new THREE.MeshStandardMaterial({color:0xD97706}));
-      p.position.set(o[0],.06,o[1]); g.add(p); rotors.push(p);
-    });
-    sc.add(g);
-    (function tick(){requestAnimationFrame(tick);rotors.forEach(r=>r.rotation.y+=.2);oc.update();ren.render(sc,cam);})();
-    window.addEventListener('resize',()=>{const b=pvCv.parentElement.getBoundingClientRect();cam.aspect=b.width/b.height;cam.updateProjectionMatrix();ren.setSize(b.width,b.height);});
-  }
+
 });

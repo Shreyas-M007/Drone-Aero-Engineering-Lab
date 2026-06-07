@@ -58,7 +58,7 @@
       <canvas id="hub-particle-canvas"></canvas>
       <div class="hub-container">
         <div class="hub-left-panel">
-          <div class="badge-tag"><span class="badge-ring"></span>Drone Engineering Terminal v3</div>
+          <div class="badge-tag"><span class="badge-ring"></span>Drone Engineering Terminal</div>
           <h1 class="hub-headline">
             <span class="line-bold">Configure.</span><br>
             <span class="line-gradient">Calibrate.</span><br>
@@ -77,32 +77,9 @@
               <span class="btn-arrow">→</span>
             </button>
           </div>
-          <div class="hub-specs-row">
-            <div class="spec-tile"><span class="tile-val">08</span><span class="tile-lbl">Systems</span></div>
-            <div class="tile-sep"></div>
-            <div class="spec-tile"><span class="tile-val">DJI</span><span class="tile-lbl">Reference</span></div>
-            <div class="tile-sep"></div>
-            <div class="spec-tile"><span class="tile-val">AR</span><span class="tile-lbl">Scan</span></div>
-            <div class="tile-sep"></div>
-            <div class="spec-tile"><span class="tile-val">AAA</span><span class="tile-lbl">Graphics</span></div>
-          </div>
         </div>
 
-        <div class="hub-right-panel">
-          <div class="showcase-frame">
-            <div class="showcase-bar">
-              <span class="showcase-title">DJI AVATA PREVIEW</span>
-              <span class="showcase-status"><span class="status-dot"></span>STANDBY</span>
-            </div>
-            <div class="showcase-3d-wrap"><canvas id="hub-drone-preview"></canvas></div>
-            <div class="showcase-strips">
-              <div class="strip-node active">FRAME</div><div class="strip-node active">MTR</div>
-              <div class="strip-node active">ESC</div><div class="strip-node active">PROP</div>
-              <div class="strip-node active">FC</div><div class="strip-node active">BAT</div>
-              <div class="strip-node active">CAM</div><div class="strip-node active">TX</div>
-            </div>
-          </div>
-        </div>
+
       </div>
     </section>
 
@@ -200,20 +177,6 @@
         </div>
 
         <div class="env-flex-cards">
-          <div id="card-ar" class="env-deck-card" data-env="ar">
-            <div class="env-deck-visual ar-scanner-simulation-visual">
-              <div class="scanning-beam"></div><div class="laser-mesh-grid"></div>
-              <div class="env-deck-tag">📱 ROOM RECONSTRUCTION</div>
-              <div class="decor-corner top-l"></div><div class="decor-corner top-r"></div>
-              <div class="decor-corner bot-l"></div><div class="decor-corner bot-r"></div>
-            </div>
-            <div class="env-deck-body">
-              <h3 class="env-deck-title">Simulated AR Room Scanner</h3>
-              <p class="env-deck-desc">Reconstruct your room via camera simulation. Spawns point-cloud meshes, builds collision boundaries over furniture models.</p>
-              <div class="env-deck-pills"><span class="env-pill">Webcam Overlay</span><span class="env-pill">Triangulated Mesh</span></div>
-            </div>
-            <button class="env-deck-btn" data-launch="ar">Select &amp; Launch AR</button>
-          </div>
 
           <div id="card-city" class="env-deck-card active-selection" data-env="city">
             <div class="env-deck-visual city-simulation-visual">
