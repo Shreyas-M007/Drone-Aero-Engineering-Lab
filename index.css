@@ -224,13 +224,14 @@ body, html {
 }
 
 .hub-container {
-  max-width: 700px;
+  max-width: 1300px;
   height: 100%;
   margin: 0 auto;
   padding: 40px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 80px;
 }
 
 .hub-left-panel {
