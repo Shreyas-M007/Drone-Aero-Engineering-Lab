@@ -1020,15 +1020,85 @@ class AssemblyLab {
     this.workbenchGroup.position.y = -0.3;
     this.scene.add(this.workbenchGroup);
 
-    /* workbench tabletop board */
-    const fm = new THREE.MeshStandardMaterial({color:0xffffff,roughness:.25,metalness:.1,side:THREE.DoubleSide});
-    const fl = new THREE.Mesh(new THREE.RingGeometry(.01,1.8,64), fm);
-    fl.rotation.x=-Math.PI/2; fl.position.y=0; fl.receiveShadow=true;
-    this.workbenchGroup.add(fl);
+    /* workbench tabletop board (Redesigned as 3D Helipad) */
+    // 1. Concrete base cylinder
+    const baseGeo = new THREE.CylinderGeometry(1.8, 1.8, 0.06, 64);
+    const baseMat = new THREE.MeshStandardMaterial({
+      color: 0x20242c,
+      roughness: 0.8,
+      metalness: 0.1
+    });
+    const baseMesh = new THREE.Mesh(baseGeo, baseMat);
+    baseMesh.position.y = -0.03;
+    baseMesh.receiveShadow = true;
+    baseMesh.castShadow = true;
+    this.workbenchGroup.add(baseMesh);
+
+    // 2. Yellow outer border ring (safety line)
+    const yellowMat = new THREE.MeshStandardMaterial({
+      color: 0xeab308,
+      roughness: 0.5,
+      metalness: 0.1,
+      side: THREE.DoubleSide
+    });
+    const outerRing = new THREE.Mesh(new THREE.RingGeometry(1.70, 1.80, 64), yellowMat);
+    outerRing.rotation.x = -Math.PI / 2;
+    outerRing.position.y = 0.001; // slightly above base to avoid Z-fighting
+    outerRing.receiveShadow = true;
+    this.workbenchGroup.add(outerRing);
+
+    // 3. White inner warning ring
+    const whiteMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.6,
+      metalness: 0.1,
+      side: THREE.DoubleSide
+    });
+    const innerRing = new THREE.Mesh(new THREE.RingGeometry(0.90, 0.95, 64), whiteMat);
+    innerRing.rotation.x = -Math.PI / 2;
+    innerRing.position.y = 0.001;
+    innerRing.receiveShadow = true;
+    this.workbenchGroup.add(innerRing);
+
+    // 4. Central yellow "H" marking
+    const hGroup = new THREE.Group();
+    hGroup.position.y = 0.001;
     
-    const rim = new THREE.Mesh(new THREE.RingGeometry(1.78,1.8,64), new THREE.MeshBasicMaterial({color:0x6366F1,transparent:true,opacity:.75}));
-    rim.rotation.x=-Math.PI/2; rim.position.y=0.01;
-    this.workbenchGroup.add(rim);
+    // Left vertical bar
+    const leftBar = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.002, 0.6), yellowMat);
+    leftBar.position.set(-0.22, 0, 0);
+    leftBar.receiveShadow = true;
+    hGroup.add(leftBar);
+    
+    // Right vertical bar
+    const rightBar = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.002, 0.6), yellowMat);
+    rightBar.position.set(0.22, 0, 0);
+    rightBar.receiveShadow = true;
+    hGroup.add(rightBar);
+    
+    // Middle crossbar
+    const crossbar = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.002, 0.12), yellowMat);
+    crossbar.position.set(0, 0, 0);
+    crossbar.receiveShadow = true;
+    hGroup.add(crossbar);
+    
+    this.workbenchGroup.add(hGroup);
+
+    // 5. Perimeter warning lights (8 green glowing LEDs)
+    const lightGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.015, 8);
+    const lightMat = new THREE.MeshStandardMaterial({
+      color: 0x22c55e,
+      emissive: 0x22c55e,
+      emissiveIntensity: 1.5,
+      roughness: 0.2
+    });
+    for (let i = 0; i < 8; i++) {
+      const angle = (i * Math.PI) / 4;
+      const lightMesh = new THREE.Mesh(lightGeo, lightMat);
+      lightMesh.position.set(Math.cos(angle) * 1.75, 0.0075, Math.sin(angle) * 1.75);
+      lightMesh.castShadow = true;
+      this.workbenchGroup.add(lightMesh);
+    }
     
     // Grid helper acts as the floor, positioned 0.42m below the tabletop bench
     const grid = new THREE.GridHelper(10,20,0x6366F1,0xE0DDD6);
@@ -1037,20 +1107,8 @@ class AssemblyLab {
 
     // Initialize drone pivot resting on the tabletop board
     this.pivot = new THREE.Group();
-    const frameId = this.slots.frame?.id;
-    const landingHeight = frameId === 'fr-phantom' ? 0.13 : (frameId === 'fr-inspire' ? 0.235 : (frameId === 'fr-mavic' ? 0.06 : 0.18));
-    const getBatteryHeight = id => {
-      if (id === 'bt-1s') return 0.04;
-      if (id === 'bt-3s') return 0.08;
-      if (id === 'bt-6s') return 0.15;
-      if (id === 'bt-phantom') return 0.20;
-      if (id === 'bt-mavic') return 0.16;
-      if (id === 'bt-inspire') return 0.22;
-      return 0.12;
-    };
-    const bh = this.slots.battery ? getBatteryHeight(this.slots.battery.id) : 0;
-    this.pivot.position.y = frameId === 'fr-phantom' || frameId === 'fr-inspire' || frameId === 'fr-mavic' ? landingHeight : Math.max(landingHeight, bh + 0.006);
     this.workbenchGroup.add(this.pivot);
+    this.updatePivotHeight();
     
     this._tick();
     window.addEventListener('resize', ()=>{
@@ -1070,6 +1128,75 @@ class AssemblyLab {
     white:    new THREE.MeshStandardMaterial({color:0xffffff,roughness:.4,metalness:.1}),
     dark:     new THREE.MeshStandardMaterial({color:0x1f2937,roughness:.9}),
   };
+
+  updatePivotHeight() {
+    const frameId = this.slots.frame?.id;
+    if (!frameId) {
+      this.pivot.position.y = 0.18;
+      return;
+    }
+    
+    // Calculate lowest Y point of the frame relative to the pivot
+    let frameLowestY = 0;
+    if (frameId === 'fr-phantom') {
+      frameLowestY = -0.18;
+    } else if (frameId === 'fr-inspire') {
+      frameLowestY = -0.18;
+    } else if (frameId === 'fr-mavic') {
+      frameLowestY = -0.01; // pegs are at -0.01
+    } else {
+      // For Neo, Avata, FPV 5" and default frames
+      const getBatteryHeight = id => {
+        if (id === 'bt-1s') return 0.04;
+        if (id === 'bt-3s') return 0.08;
+        if (id === 'bt-6s') return 0.15;
+        if (id === 'bt-phantom') return 0.20;
+        if (id === 'bt-mavic') return 0.16;
+        if (id === 'bt-inspire') return 0.22;
+        return 0.12;
+      };
+      const bh = this.slots.battery ? getBatteryHeight(this.slots.battery.id) : 0;
+      const legH = Math.max(0.18, bh + 0.006);
+      frameLowestY = -legH;
+    }
+
+    // Calculate lowest Y point of the battery relative to the pivot
+    let batteryLowestY = 0;
+    if (this.slots.battery) {
+      const getBatteryHeight = id => {
+        if (id === 'bt-1s') return 0.04;
+        if (id === 'bt-3s') return 0.08;
+        if (id === 'bt-6s') return 0.15;
+        if (id === 'bt-phantom') return 0.20;
+        if (id === 'bt-mavic') return 0.16;
+        if (id === 'bt-inspire') return 0.22;
+        return 0.12;
+      };
+      const bh = getBatteryHeight(this.slots.battery.id);
+      batteryLowestY = -bh - 0.008; // including strap and cables
+    }
+
+    // Calculate lowest Y point of the camera relative to the pivot
+    let cameraLowestY = 0;
+    if (this.slots.camera) {
+      const camId = this.slots.camera.id;
+      if (camId === 'cm-phantom') {
+        cameraLowestY = -0.135;
+      } else if (camId === 'cm-mavic') {
+        cameraLowestY = -0.085;
+      } else if (camId === 'cm-inspire') {
+        cameraLowestY = -0.14;
+      } else if (camId !== 'cm-neo' && camId !== 'cm-avata') {
+        cameraLowestY = -0.14; // default gimbal
+      }
+    }
+
+    // Find the absolute lowest Y point of all equipped parts
+    const minLocalY = Math.min(frameLowestY, batteryLowestY, cameraLowestY);
+
+    // Position the pivot so that this lowest point sits exactly 5mm above the deck (y = 0)
+    this.pivot.position.y = -minLocalY + 0.005;
+  }
 
   equip(cat, id) {
     const item = PARTS[cat].find(p=>p.id===id); if(!item) return;
@@ -1095,20 +1222,8 @@ class AssemblyLab {
       });
     }
 
-    // Dynamic height adjustment: Rest bottom of drone frame/battery flat on tabletop (Y = 0)
-    const frameId = this.slots.frame?.id;
-    const landingHeight = frameId === 'fr-phantom' ? 0.13 : (frameId === 'fr-inspire' ? 0.235 : (frameId === 'fr-mavic' ? 0.06 : 0.18));
-    const getBatteryHeight = id => {
-      if (id === 'bt-1s') return 0.04;
-      if (id === 'bt-3s') return 0.08;
-      if (id === 'bt-6s') return 0.15;
-      if (id === 'bt-phantom') return 0.20;
-      if (id === 'bt-mavic') return 0.16;
-      if (id === 'bt-inspire') return 0.22;
-      return 0.12;
-    };
-    const bh = this.slots.battery ? getBatteryHeight(this.slots.battery.id) : 0;
-    this.pivot.position.y = frameId === 'fr-phantom' || frameId === 'fr-inspire' || frameId === 'fr-mavic' ? landingHeight : Math.max(landingHeight, bh + 0.006);
+    // Dynamic height adjustment to prevent overlap with helipad surface (y = 0)
+    this.updatePivotHeight();
 
     this._calc();
   }
