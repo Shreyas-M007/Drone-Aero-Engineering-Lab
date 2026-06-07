@@ -348,7 +348,7 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
 
     // GoPro Action Camera on Top-Front if premium camera is selected
     if (id === 'cm-4k') {
-      const topY = duct ? 0.32 + 0.18 : 0.2 + 0.18;
+      const topY = 0.13;
       const mount = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.05, 0.08), M.orange);
       mount.position.set(0, topY + 0.02, 0.08);
       mount.rotation.x = -Math.PI/12;
