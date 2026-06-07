@@ -120,7 +120,7 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
   const g = new THREE.Group(), M = AssemblyLab.MAT;
   const actualMotorId = motorId || (frameId === 'fr-inspire' ? 'mt-3512' : (frameId === 'fr-phantom' ? 'mt-2312' : (frameId === 'fr-mavic' ? 'mt-2008' : (frameId === 'fr-redbull' ? 'mt-2806' : 'mt-2207'))));
   const duct = frameId === 'fr-neo' || frameId === 'fr-avata';
-  const s = frameId === 'fr-neo' ? 0.38 : frameId === 'fr-avata' ? 0.44 : (frameId === 'fr-mavic' ? 0.52 : (frameId === 'fr-phantom' ? 0.58 : (frameId === 'fr-inspire' ? 0.80 : (frameId === 'fr-redbull' ? 0.56 : 0.56))));
+  const s = frameId === 'fr-neo' ? 0.38 : frameId === 'fr-avata' ? 0.44 : (frameId === 'fr-mavic' ? 0.52 : (frameId === 'fr-phantom' ? 0.58 : (frameId === 'fr-inspire' ? 0.80 : (frameId === 'fr-redbull' ? 0.28 : 0.56))));
   const motorY = frameId === 'fr-inspire' ? 0.06 : (frameId === 'fr-phantom' ? 0.03 : (frameId === 'fr-mavic' ? 0.03 : (frameId === 'fr-redbull' ? -0.05 : 0.02)));
   
   const getMotorPos = (fid, s, mY) => {
@@ -373,14 +373,20 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
       
       // Red aerodynamic arms and vertical motor pods
       armConfigs.forEach(cfg => {
-        // Horizontal arm from center to motor position (extended by cfg.length)
-        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, cfg.length, 16), redBullRed);
-        arm.rotation.x = Math.PI / 2;
-        // Align arm to point in the direction of the motor
-        arm.rotation.y = cfg.angle;
-        // Position arm centered between the main body and the motor
-        arm.position.set(cfg.x, -0.02, cfg.z);
-        g.add(arm);
+        const dist = Math.hypot(cfg.x * 2, cfg.z * 2);
+        const armLen = Math.hypot(dist, 0.08);
+        
+        const armGroup = new THREE.Group();
+        armGroup.position.set(0, 0.03, 0); // start higher on body
+        armGroup.rotation.y = cfg.angle; // point to motor
+        
+        // Swept-back aerodynamic wing/fin (red)
+        const fin = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.08, armLen), redBullRed);
+        fin.rotation.x = -Math.atan2(0.08, dist);
+        fin.position.set(0, -0.04, dist / 2);
+        armGroup.add(fin);
+        
+        g.add(armGroup);
         
         // Vertical motor pod cylinder
         const pod = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.13, 16), redBullRed);
@@ -602,6 +608,9 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
           
           pg.add(bladeGroup);
         }
+      }
+      if (frameId === 'fr-redbull') {
+        pg.scale.set(0.5, 0.5, 0.5);
       }
       g.add(pg);
       if(propsArray) propsArray.push(pg);
