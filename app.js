@@ -1016,6 +1016,7 @@ class AssemblyLab {
 
     /* rotating workbench turntable */
     this.workbenchGroup = new THREE.Group();
+    this.workbenchGroup.position.y = -0.3;
     this.scene.add(this.workbenchGroup);
 
     /* workbench tabletop board */
@@ -1030,7 +1031,7 @@ class AssemblyLab {
     
     // Grid helper acts as the floor, positioned 0.42m below the tabletop bench
     const grid = new THREE.GridHelper(10,20,0x6366F1,0xE0DDD6);
-    grid.position.y = -0.42;
+    grid.position.y = -0.72;
     this.scene.add(grid);
 
     // Initialize drone pivot resting on the tabletop board
