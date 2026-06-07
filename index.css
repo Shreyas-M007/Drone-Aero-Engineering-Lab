@@ -879,6 +879,11 @@ body, html {
   color: var(--tint-amber);
 }
 
+.verdict-banner.error {
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--tint-rose);
+}
+
 .panel-divider {
   height: 1px;
   background: var(--border-rim);

@@ -274,15 +274,15 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
       
       // Top carbon deck plate (elevated)
       const topPlate = new THREE.Mesh(new THREE.BoxGeometry(duct?.2:.26, .006, duct?.32:.48), M.carbon);
-      topPlate.position.y = 0.13;
+      topPlate.position.y = 0.22;
       topPlate.position.z = -0.05;
       g.add(topPlate);
 
       // Standoff columns
-      const standoffHeight = 0.124;
+      const standoffHeight = 0.22;
       const standoffPositions = duct ? 
-        [[0.09, 0.062, 0.14], [-0.09, 0.062, 0.14], [0.09, 0.062, -0.18], [-0.09, 0.062, -0.18]] :
-        [[0.11, 0.062, 0.2], [-0.11, 0.062, 0.2], [0.11, 0.062, -0.2], [-0.11, 0.062, -0.2], [0.09, 0.062, 0], [-0.09, 0.062, 0]];
+        [[0.09, 0.11, 0.14], [-0.09, 0.11, 0.14], [0.09, 0.11, -0.18], [-0.09, 0.11, -0.18]] :
+        [[0.11, 0.11, 0.2], [-0.11, 0.11, 0.2], [0.11, 0.11, -0.2], [-0.11, 0.11, -0.2], [0.09, 0.11, 0], [-0.09, 0.11, 0]];
         
       standoffPositions.forEach(p => {
         const column = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, standoffHeight, 8), M.indigo);
@@ -290,15 +290,15 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
         g.add(column);
         
         const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.006, 6), M.silver);
-        bolt.position.set(p[0], 0.133, p[2]);
+        bolt.position.set(p[0], 0.223, p[2]);
         g.add(bolt);
       });
 
       // Camera Cage side carbon plates
       const cageZ = duct ? 0.24 : 0.32;
       [-0.08, 0.08].forEach(x => {
-        const cagePlate = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.12, 0.15), M.carbon);
-        cagePlate.position.set(x, 0.06, cageZ);
+        const cagePlate = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.22, 0.15), M.carbon);
+        cagePlate.position.set(x, 0.11, cageZ);
         g.add(cagePlate);
       });
 
@@ -453,37 +453,39 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
   else if(cat==='flight_controller'){
     const w=id==='fc-o3'?.22:id==='fc-inspire'?.28:id==='fc-mavic'?.22:.16;
     // Stacked FC Board (mounted higher on stack pins)
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.012,w),id==='fc-f7'?M.indigo:(id==='fc-inspire'?M.silver:(id==='fc-mavic'?M.orange:M.dark))).translateY(.075).translateZ(-.02));
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.012,w),id==='fc-f7'?M.indigo:(id==='fc-inspire'?M.silver:(id==='fc-mavic'?M.orange:M.dark))).translateY(.12).translateZ(-.02));
     
     // USB-C port metal bracket
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(.03,.015,.04),M.silver).position.set(w/2 - 0.01, .082, 0));
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(.03,.015,.04),M.silver).position.set(w/2 - 0.01, .127, 0));
     
     // Tiny colored status LEDs
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(.008,.004,.008),new THREE.MeshBasicMaterial({color:0x22c55e})).position.set(-w/4, .082, w/4));
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(.008,.004,.008),new THREE.MeshBasicMaterial({color:0xef4444})).position.set(-w/4 + 0.015, .082, w/4));
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(.008,.004,.008),new THREE.MeshBasicMaterial({color:0x22c55e})).position.set(-w/4, .127, w/4));
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(.008,.004,.008),new THREE.MeshBasicMaterial({color:0xef4444})).position.set(-w/4 + 0.015, .127, w/4));
 
     if (id === 'fc-inspire') {
       // White/silver image processor box on top of FC stack
-      g.add(new THREE.Mesh(new THREE.BoxGeometry(w*0.9, .026, w*0.9), M.white).translateY(.094).translateZ(-.02));
-      g.add(new THREE.Mesh(new THREE.BoxGeometry(w*0.6, .002, w*0.4), goldMat).translateY(.108).translateZ(-.02));
+      g.add(new THREE.Mesh(new THREE.BoxGeometry(w*0.9, .026, w*0.9), M.white).translateY(.139).translateZ(-.02));
+      g.add(new THREE.Mesh(new THREE.BoxGeometry(w*0.6, .002, w*0.4), goldMat).translateY(.153).translateZ(-.02));
     } else if (id === 'fc-mavic') {
       // Second stacked plate
-      g.add(new THREE.Mesh(new THREE.BoxGeometry(w*0.8, .01, w*0.8), M.dark).translateY(.086).translateZ(-.02));
+      g.add(new THREE.Mesh(new THREE.BoxGeometry(w*0.8, .01, w*0.8), M.dark).translateY(.131).translateZ(-.02));
     }
 
     // Wiring Harness ribbon connecting FC to ESC below
-    const ribbon = new THREE.Mesh(new THREE.BoxGeometry(w*0.4, 0.04, 0.01), M.white);
-    ribbon.position.set(0, 0.045, -w/3);
+    const ribbon = new THREE.Mesh(new THREE.BoxGeometry(w*0.4, 0.10, 0.01), M.white);
+    ribbon.position.set(0, 0.0675, -w/3);
     g.add(ribbon);
 
-    // GPS Mast & Module puck
-    const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.16, 8), M.carbon);
-    mast.position.set(0, 0.13, -0.15);
-    g.add(mast);
-    const puck = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.015, 0.06), M.dark);
-    puck.position.set(0, 0.21, -0.15);
-    puck.add(new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.002, 0.045), M.white).translateY(0.008));
-    g.add(puck);
+    // GPS Mast & Module puck: Only render on Inspire Cine frame
+    if (frameId === 'fr-inspire') {
+      const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.16, 8), M.carbon);
+      mast.position.set(0, 0.20, -0.15);
+      g.add(mast);
+      const puck = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.015, 0.06), M.dark);
+      puck.position.set(0, 0.28, -0.15);
+      puck.add(new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.002, 0.045), M.white).translateY(0.008));
+      g.add(puck);
+    }
   }
   else if(cat==='battery'){
     const bw = id==='bt-3s'?.14 : id==='bt-6s'?.22 : id==='bt-phantom'?.26 : id==='bt-mavic'?.22 : id==='bt-inspire'?.30 : .18;
@@ -667,19 +669,21 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
       g.add(camBody);
     }
     else {
+      const camZ = frameId === 'fr-neo' ? 0.18 : (frameId === 'fr-avata' ? 0.24 : (frameId === 'fr-inspire' ? 0.35 : 0.32));
+      const camY = 0.11;
       // Metal FPV Camera mount plates
       [-0.08, 0.08].forEach(x => {
         const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.1, 0.12), M.silver);
-        bracket.position.set(x, 0.06, 0.36);
+        bracket.position.set(x, camY, camZ - 0.02);
         bracket.rotation.x = -Math.PI / 8;
         g.add(bracket);
       });
-      
+
       // Camera module housing (black shell)
       const cameraHousing = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.09, 0.09), M.dark);
-      cameraHousing.position.set(0, 0.06, 0.38);
+      cameraHousing.position.set(0, camY, camZ);
       cameraHousing.rotation.x = -Math.PI / 8;
-      
+
       // Photorealistic Lens cylinder with glass element
       const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.038, 0.05, 16), M.silver);
       lens.rotation.x = Math.PI / 2;
@@ -692,7 +696,7 @@ function buildComponentMesh(cat, id, frameId, propsArray) {
 
       // GoPro Action Camera on Top-Front if premium camera is selected
       if (id === 'cm-4k') {
-        const topY = 0.13;
+        const topY = frameId === 'fr-neo' ? 0.08 : 0.22;
         const mount = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.05, 0.08), M.orange);
         mount.position.set(0, topY + 0.02, 0.08);
         mount.rotation.x = -Math.PI/12;
@@ -1042,7 +1046,27 @@ class AssemblyLab {
     let hover=0;
     if(w>0&&cap>0){ const draw=5.5+w*.011+(twr>4.5?(twr-4.5)*1.6:0); hover=+((cap/1000/draw)*60).toFixed(1); }
     const spd=twr>0?Math.round(twr*28):0;
-    this.onStats({w,thr,twr,bat:cap?cap+' mAh':'—',hover:hover?hover+' min':'—',spd:spd?spd+' km/h':'—',cam,rng,cells:cells+'S',pct:this.pct(),ok:this.done()});
+
+    let propOverlapError = false;
+    let errMsg = '';
+    if (this.slots.frame && this.slots.propellers) {
+      const frameId = this.slots.frame.id;
+      let maxSpan = 15.0;
+      if (frameId === 'fr-neo') maxSpan = 3.0;
+      else if (frameId === 'fr-avata') maxSpan = 3.5;
+      else if (frameId === 'fr-mavic') maxSpan = 5.3;
+      else if (frameId === 'fr-fpv5') maxSpan = 5.3;
+      else if (frameId === 'fr-phantom') maxSpan = 9.4;
+      else if (frameId === 'fr-inspire') maxSpan = 15.0;
+      
+      const propSpan = parseFloat(this.slots.propellers.sp.Span);
+      if (propSpan > maxSpan) {
+        propOverlapError = true;
+        errMsg = "Propellers too large! Does not fit this frame.";
+      }
+    }
+
+    this.onStats({w,thr,twr,bat:cap?cap+' mAh':'—',hover:hover?hover+' min':'—',spd:spd?spd+' km/h':'—',cam,rng,cells:cells+'S',pct:this.pct(),ok:this.done() && !propOverlapError, error:errMsg});
   }
 
   specs() {
@@ -2648,7 +2672,9 @@ class FlightSim {
       const lookTarget = _tempV3.copy(this.pos).add(_tempV4.set(0, .4, 0));
       this.cam3.lookAt(lookTarget);
     } else if(this.camMode==='fpv'){
-      const off = _tempV1.set(0, 0.06, 0.35).applyQuaternion(this.quat);
+      const frameId = this.droneSpec ? this.droneSpec.frame : 'fr-fpv5';
+      const camZ = frameId === 'fr-neo' ? 0.18 : (frameId === 'fr-avata' ? 0.24 : (frameId === 'fr-inspire' ? 0.35 : 0.32));
+      const off = _tempV1.set(0, 0.14, camZ + 0.09).applyQuaternion(this.quat);
       this.cam3.position.copy(this.pos).add(off);
       
       const lookOffset = _tempV2.set(0, 5.07, 10.88).applyQuaternion(this.quat);
@@ -3061,8 +3087,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('val-twr').innerText = s.twr+'×';
 
     const v = document.getElementById('twr-verdict');
-    if(s.ok){ v.innerText=s.twr>=2?`TWR ${s.twr}× — flight capable`:`TWR ${s.twr}× — weak lift`; v.className='verdict-banner '+(s.twr>=2?'success':'warning'); }
-    else { v.innerText='Snap remaining parts…'; v.className='verdict-banner'; }
+    if (s.error) {
+      v.innerText = s.error;
+      v.className = 'verdict-banner error';
+    } else if(s.ok){
+      v.innerText=s.twr>=2?`TWR ${s.twr}× — flight capable`:`TWR ${s.twr}× — weak lift`;
+      v.className='verdict-banner '+(s.twr>=2?'success':'warning');
+    } else {
+      v.innerText='Snap remaining parts…';
+      v.className='verdict-banner';
+    }
 
     document.getElementById('progress-fill').style.width = s.pct+'%';
     document.getElementById('progress-pct').innerText = s.pct+' %';
