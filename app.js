@@ -119,9 +119,41 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
   const g = new THREE.Group(), M = AssemblyLab.MAT;
   const duct = frameId === 'fr-neo' || frameId === 'fr-avata';
   const s = frameId === 'fr-neo' ? 0.3 : frameId === 'fr-avata' ? 0.35 : (frameId === 'fr-mavic' ? 0.42 : (frameId === 'fr-phantom' ? 0.48 : (frameId === 'fr-inspire' ? 0.65 : 0.45)));
-  const armAngles = [Math.PI/4,-Math.PI/4,3*Math.PI/4,-3*Math.PI/4];
   const motorY = frameId === 'fr-inspire' ? 0.06 : (frameId === 'fr-phantom' ? 0.03 : (frameId === 'fr-mavic' ? 0.03 : 0.02));
-  const motorPos = [[s,motorY,s],[-s,motorY,s],[s,motorY,-s],[-s,motorY,-s]];
+  
+  const getMotorPos = (fid, s, mY) => {
+    if (fid === 'fr-mavic') {
+      const fL = s * 0.95 * Math.sqrt(2);
+      const bL = s * 0.85 * Math.sqrt(2);
+      const sin = Math.sin(Math.PI/4), cos = Math.cos(Math.PI/4);
+      return [
+        [fL*sin, mY, fL*cos],
+        [-fL*sin, mY, fL*cos],
+        [bL*sin, mY, -bL*cos],
+        [-bL*sin, mY, -bL*cos]
+      ];
+    }
+    const r = s * Math.sqrt(2);
+    const sin = Math.sin(Math.PI/4), cos = Math.cos(Math.PI/4);
+    return [
+      [r*sin, mY, r*cos],
+      [-r*sin, mY, r*cos],
+      [r*sin, mY, -r*cos],
+      [-r*sin, mY, -r*cos]
+    ];
+  };
+  const motorPos = getMotorPos(frameId, s, motorY);
+  
+  const armConfigs = motorPos.map(p => {
+    const dist = Math.hypot(p[0], p[2]);
+    const angle = Math.atan2(p[0], p[2]);
+    return {
+      x: p[0] * 0.5,
+      z: p[2] * 0.5,
+      length: dist * 1.05,
+      angle: angle
+    };
+  });
 
   const getBatteryHeight = bid => {
     if (bid === 'bt-1s') return 0.04;
@@ -147,15 +179,15 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
       g.add(body);
       
       // White arms
-      armAngles.forEach(a=>{
-        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.03, s * 1.05), M.white);
-        arm.rotation.y = a;
-        arm.position.set(Math.sin(a)*s*0.5, 0.03, Math.cos(a)*s*0.5);
+      armConfigs.forEach(cfg => {
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.03, cfg.length), M.white);
+        arm.rotation.y = cfg.angle;
+        arm.position.set(cfg.x, 0.03, cfg.z);
         g.add(arm);
         
         // Motor mounts
         const mount = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.04, 12), M.white);
-        mount.position.set(Math.sin(a)*s, 0.03, Math.cos(a)*s);
+        mount.position.set(cfg.x * 2, 0.03, cfg.z * 2);
         g.add(mount);
       });
       
@@ -193,23 +225,23 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
       g.add(accent);
       
       // Thin folding arms
-      armAngles.forEach((a, idx) => {
+      armConfigs.forEach((cfg, idx) => {
         const isFront = idx < 2;
-        const armL = isFront ? s * 0.95 : s * 0.85;
-        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.026, 0.022, armL * 1.05), M.carbon);
-        arm.rotation.y = a;
-        arm.position.set(Math.sin(a)*armL*0.5, 0.03, Math.cos(a)*armL*0.5);
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.026, 0.022, cfg.length), M.carbon);
+        arm.rotation.y = cfg.angle;
+        arm.position.set(cfg.x, 0.03, cfg.z);
         g.add(arm);
         
         // Motor pods
         const pod = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.03, 10), M.dark);
-        pod.position.set(Math.sin(a)*armL, 0.03, Math.cos(a)*armL);
+        pod.position.set(cfg.x * 2, 0.03, cfg.z * 2);
         g.add(pod);
         
         // Small landing pegs under the front motor pods
         if (isFront) {
           const peg = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.004, 0.05, 6), M.dark);
-          peg.position.set(Math.sin(a)*armL, -0.01, Math.cos(a)*armL);
+          const podP = motorPos[idx];
+          peg.position.set(podP[0], -0.01, podP[2]);
           g.add(peg);
         }
       });
@@ -238,16 +270,16 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
       });
       
       // Heavy carbon arm tubes to motor mounts
-      armAngles.forEach(a => {
-        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, s * 1.05, 10), M.carbon);
+      armConfigs.forEach(cfg => {
+        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, cfg.length, 10), M.carbon);
         arm.rotation.z = Math.PI / 2;
-        arm.rotation.y = a;
-        arm.position.set(Math.sin(a)*s*0.5, 0.06, Math.cos(a)*s*0.5);
+        arm.rotation.y = cfg.angle;
+        arm.position.set(cfg.x, 0.06, cfg.z);
         g.add(arm);
         
         // Large motor mounts
         const mount = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.04, 12), M.dark);
-        mount.position.set(Math.sin(a)*s, 0.06, Math.cos(a)*s);
+        mount.position.set(cfg.x * 2, 0.06, cfg.z * 2);
         g.add(mount);
       });
       
@@ -335,9 +367,9 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
       }
       
       // Frame arms
-      armAngles.forEach(a=>{
-        const arm=new THREE.Mesh(new THREE.BoxGeometry(.04,.016,s * 1.05),M.carbon);
-        arm.rotation.y=a; arm.position.set(Math.sin(a)*s*0.5,0,Math.cos(a)*s*0.5); g.add(arm);
+      armConfigs.forEach(cfg => {
+        const arm=new THREE.Mesh(new THREE.BoxGeometry(.04,.016,cfg.length),M.carbon);
+        arm.rotation.y=cfg.angle; arm.position.set(cfg.x,0,cfg.z); g.add(arm);
       });
       
       if(duct){ 
@@ -609,10 +641,29 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
     g.add(jstPlug);
   }
   else if(cat==='camera'){
+    const getFpvCamPos = (fid) => {
+      if (fid === 'fr-neo') return { y: 0.06, z: 0.20 };
+      if (fid === 'fr-avata') return { y: 0.11, z: 0.24 };
+      if (fid === 'fr-phantom') return { y: 0.08, z: 0.20 };
+      if (fid === 'fr-mavic') return { y: 0.06, z: 0.24 };
+      if (fid === 'fr-inspire') return { y: 0.08, z: 0.22 };
+      return { y: 0.11, z: 0.32 }; // default/FPV 5"
+    };
+
+    const getGimbalCamPos = (fid) => {
+      if (fid === 'fr-phantom') return { y: -0.02, z: 0.15 };
+      if (fid === 'fr-mavic') return { y: -0.02, z: 0.22 };
+      if (fid === 'fr-inspire') return { y: -0.04, z: 0.18 };
+      return { y: -0.04, z: 0.18 }; // default hanging below
+    };
+
     if (id === 'cm-neo') {
+      const fpvPos = getFpvCamPos(frameId);
+      const camY = fpvPos.y;
+      const camZ = fpvPos.z;
       // Micro Whoop recessed camera
       const cameraHousing = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.06, 0.06), M.dark);
-      cameraHousing.position.set(0, 0.06, 0.22);
+      cameraHousing.position.set(0, camY, camZ);
       const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.02, 12), M.silver);
       lens.rotation.x = Math.PI / 2;
       lens.position.set(0, 0, 0.025);
@@ -620,19 +671,22 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
       g.add(cameraHousing);
     }
     else if (id === 'cm-phantom') {
+      const gimbPos = getGimbalCamPos(frameId);
+      const camY = gimbPos.y;
+      const camZ = gimbPos.z;
       // 3-axis gimbal mount arm
       const mount = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.08, 0.04), M.white);
-      mount.position.set(0, -0.02, 0.15);
+      mount.position.set(0, camY, camZ);
       g.add(mount);
       
       // Yaw/Roll gimbal motors (small cylinders)
       const yawMotor = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.02, 8), M.silver);
-      yawMotor.position.set(0, -0.06, 0.15);
+      yawMotor.position.set(0, camY - 0.04, camZ);
       g.add(yawMotor);
       
       // Sphere camera body
       const camBall = new THREE.Mesh(new THREE.SphereGeometry(0.045, 12, 12), M.white);
-      camBall.position.set(0, -0.09, 0.17);
+      camBall.position.set(0, camY - 0.07, camZ + 0.02);
       
       // Silver lens
       const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.03, 12), M.silver);
@@ -642,14 +696,17 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
       g.add(camBall);
     }
     else if (id === 'cm-mavic') {
+      const gimbPos = getGimbalCamPos(frameId);
+      const camY = gimbPos.y;
+      const camZ = gimbPos.z;
       // Gimbal arm
       const arm = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.05, 0.03), M.dark);
-      arm.position.set(0, -0.02, 0.22);
+      arm.position.set(0, camY, camZ);
       g.add(arm);
       
       // Squared camera body
       const cameraBox = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.07, 0.06), M.dark);
-      cameraBox.position.set(0, -0.05, 0.25);
+      cameraBox.position.set(0, camY - 0.03, camZ + 0.03);
       
       // 3 lenses on front face
       const mainLens = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.01, 10), M.silver);
@@ -670,21 +727,24 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
       g.add(cameraBox);
     }
     else if (id === 'cm-inspire') {
+      const gimbPos = getGimbalCamPos(frameId);
+      const camY = gimbPos.y;
+      const camZ = gimbPos.z;
       // Large white gimbal arm
       const arm = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.12, 0.04), M.white);
-      arm.position.set(0, -0.04, 0.18);
+      arm.position.set(0, camY, camZ);
       g.add(arm);
       
       // Circular gimbal ring/pitch housing
       const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.03, 16), M.dark);
       ring.rotation.z = Math.PI/2;
-      ring.position.set(-0.02, -0.10, 0.20);
+      ring.position.set(-0.02, camY - 0.06, camZ + 0.02);
       g.add(ring);
       
       // Large camera body (drum shape)
       const camBody = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.08, 16), M.dark);
       camBody.rotation.x = Math.PI/2;
-      camBody.position.set(0, -0.10, 0.22);
+      camBody.position.set(0, camY - 0.06, camZ + 0.04);
       
       // Large silver prime lens
       const primeLens = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.05, 16), M.silver);
@@ -695,10 +755,11 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId) {
       g.add(camBody);
     }
     else {
-      const camZ = frameId === 'fr-neo' ? 0.18 : (frameId === 'fr-avata' ? 0.24 : (frameId === 'fr-inspire' ? 0.35 : 0.32));
-      const camY = 0.11;
-      // Metal FPV Camera mount plates
-      [-0.08, 0.08].forEach(x => {
+      const fpvPos = getFpvCamPos(frameId);
+      const camY = fpvPos.y;
+      const camZ = fpvPos.z;
+      // Metal FPV Camera mount plates (narrowed slightly from 0.08 to 0.075 to avoid overlapping cage plates)
+      [-0.075, 0.075].forEach(x => {
         const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.1, 0.12), M.silver);
         bracket.position.set(x, camY, camZ - 0.02);
         bracket.rotation.x = -Math.PI / 8;
@@ -1229,9 +1290,10 @@ class FlightSim {
     this.timeActive = 0;
     this._gamepadActive = false;
     this._gamepadFpvThrottle = false;
+    const spawnX = env === 'city' ? 15 : 0;
     const spawnY = env==='ar' ? this.landingHeight : (env==='cyber' ? 40.0 + this.landingHeight : (env==='city' ? 4.4 + this.landingHeight : this.landingHeight));
-    const spawnZ = env==='ar' ? 1.2 : (env==='cyber' ? 0 : (env==='city' ? 15 : 10));
-    this.pos.set(0, spawnY, spawnZ);
+    const spawnZ = env==='ar' ? 1.2 : (env==='cyber' ? 0 : (env==='city' ? 0 : 10));
+    this.pos.set(spawnX, spawnY, spawnZ);
     this.vel.set(0,0,0);
     this.quat.identity();
 
@@ -2721,8 +2783,16 @@ class FlightSim {
       this.cam3.lookAt(lookTarget);
     } else if(this.camMode==='fpv'){
       const frameId = this.droneSpec ? this.droneSpec.frame : 'fr-fpv5';
-      const camZ = frameId === 'fr-neo' ? 0.18 : (frameId === 'fr-avata' ? 0.24 : (frameId === 'fr-inspire' ? 0.35 : 0.32));
-      const off = _tempV1.set(0, 0.14, camZ + 0.09).applyQuaternion(this.quat);
+      const getFpvCamPos = (fid) => {
+        if (fid === 'fr-neo') return { y: 0.06, z: 0.18 };
+        if (fid === 'fr-avata') return { y: 0.11, z: 0.24 };
+        if (fid === 'fr-phantom') return { y: 0.08, z: 0.20 };
+        if (fid === 'fr-mavic') return { y: 0.06, z: 0.24 };
+        if (fid === 'fr-inspire') return { y: 0.08, z: 0.22 };
+        return { y: 0.11, z: 0.32 };
+      };
+      const fpvPos = getFpvCamPos(frameId);
+      const off = _tempV1.set(0, fpvPos.y + 0.03, fpvPos.z + 0.09).applyQuaternion(this.quat);
       this.cam3.position.copy(this.pos).add(off);
       
       const lookOffset = _tempV2.set(0, 5.07, 10.88).applyQuaternion(this.quat);
@@ -2760,9 +2830,10 @@ class FlightSim {
     this.timeActive = 0;
     this._gamepadActive = false;
     this._gamepadFpvThrottle = false;
-    const spawnY = this.env==='ar' ? 0.42 : (this.env==='cyber' ? 40.42 : (this.env==='city' ? 4.82 : 0.42));
-    const spawnZ = this.env==='ar' ? 1.2 : (this.env==='cyber' ? 0 : (this.env==='city' ? 15 : 10));
-    this.pos.set(0, spawnY, spawnZ);
+    const spawnX = this.env === 'city' ? 15 : 0;
+    const spawnY = this.env==='ar' ? this.landingHeight : (this.env==='cyber' ? 40.0 + this.landingHeight : (this.env==='city' ? 4.4 + this.landingHeight : this.landingHeight));
+    const spawnZ = this.env==='ar' ? 1.2 : (this.env==='cyber' ? 0 : (this.env==='city' ? 0 : 10));
+    this.pos.set(spawnX, spawnY, spawnZ);
     this.vel.set(0,0,0); this.quat.identity();
     this.crashed=false; this.cutoff=false; this.bat=100;
     document.body.classList.remove('glitch-active');
