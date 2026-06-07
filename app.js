@@ -568,21 +568,24 @@ class AssemblyLab {
     this.workbenchGroup = new THREE.Group();
     this.scene.add(this.workbenchGroup);
 
-    /* floor board */
+    /* workbench tabletop board */
     const fm = new THREE.MeshStandardMaterial({color:0xffffff,roughness:.25,metalness:.1,side:THREE.DoubleSide});
     const fl = new THREE.Mesh(new THREE.RingGeometry(.01,1.8,64), fm);
-    fl.rotation.x=-Math.PI/2; fl.position.y=-.42; fl.receiveShadow=true;
+    fl.rotation.x=-Math.PI/2; fl.position.y=0; fl.receiveShadow=true;
     this.workbenchGroup.add(fl);
     
     const rim = new THREE.Mesh(new THREE.RingGeometry(1.78,1.8,64), new THREE.MeshBasicMaterial({color:0x6366F1,transparent:true,opacity:.75}));
-    rim.rotation.x=-Math.PI/2; rim.position.y=-.41;
+    rim.rotation.x=-Math.PI/2; rim.position.y=0.01;
     this.workbenchGroup.add(rim);
     
-    this.scene.add(new THREE.GridHelper(10,20,0x6366F1,0xE0DDD6));
+    // Grid helper acts as the floor, positioned 0.42m below the tabletop bench
+    const grid = new THREE.GridHelper(10,20,0x6366F1,0xE0DDD6);
+    grid.position.y = -0.42;
+    this.scene.add(grid);
 
-    // Initialize drone pivot resting on the board (Avata is default frame, offset = 0.05)
+    // Initialize drone pivot resting on the tabletop board (Avata is default frame, offset = 0.05)
     this.pivot = new THREE.Group();
-    this.pivot.position.y = -0.37;
+    this.pivot.position.y = 0.05;
     this.workbenchGroup.add(this.pivot);
     
     this._tick();
@@ -628,10 +631,10 @@ class AssemblyLab {
       });
     }
 
-    // Dynamic height adjustment: Rest bottom of drone frame flat on tabletop (Y = -0.42)
+    // Dynamic height adjustment: Rest bottom of drone frame flat on tabletop (Y = 0)
     const frameId = this.slots.frame?.id;
     const offset = frameId === 'fr-avata' ? 0.05 : 0.01;
-    this.pivot.position.y = -0.42 + offset;
+    this.pivot.position.y = 0 + offset;
 
     this._calc();
   }
