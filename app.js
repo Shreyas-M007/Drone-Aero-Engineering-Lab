@@ -620,14 +620,20 @@ function buildComponentMesh(cat, id, frameId, propsArray, batteryId, motorId) {
     if (frameId === 'fr-redbull') return g; // Internal FC
     const w=id==='fc-o3'?.22:id==='fc-inspire'?.28:id==='fc-mavic'?.22:.16;
     // Stacked FC Board (mounted higher on stack pins)
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(w,.012,w),id==='fc-f7'?M.indigo:(id==='fc-inspire'?M.silver:(id==='fc-mavic'?M.orange:M.dark))).translateY(.12).translateZ(-.02));
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(w, 0.012, w), id === 'fc-f7' ? M.indigo : (id === 'fc-inspire' ? M.silver : (id === 'fc-mavic' ? M.orange : M.dark))).translateY(0.12).translateZ(-0.02));
     
     // USB-C port metal bracket
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(.03,.015,.04),M.silver).position.set(w/2 - 0.01, .127, 0));
+    const chip1 = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.015, 0.04), M.silver);
+    chip1.position.set(w/2 - 0.01, 0.127, 0);
+    g.add(chip1);
     
     // Tiny colored status LEDs
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(.008,.004,.008),new THREE.MeshBasicMaterial({color:0x22c55e})).position.set(-w/4, .127, w/4));
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(.008,.004,.008),new THREE.MeshBasicMaterial({color:0xef4444})).position.set(-w/4 + 0.015, .127, w/4));
+    const chip2 = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.004, 0.008), new THREE.MeshBasicMaterial({color:0x22c55e}));
+    chip2.position.set(-w/4, 0.127, w/4);
+    g.add(chip2);
+    const chip3 = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.004, 0.008), new THREE.MeshBasicMaterial({color:0xef4444}));
+    chip3.position.set(-w/4 + 0.015, 0.127, w/4);
+    g.add(chip3);
 
     if (id === 'fc-inspire') {
       // White/silver image processor box on top of FC stack

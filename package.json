@@ -4,10 +4,10 @@
   "description": "Aero Lab — Build DJI-referenced quadcopters and fly them in AR room scans or AAA city sandbox environments.",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "build:win": "electron-builder --win",
-    "build:mac": "electron-builder --mac",
-    "build:all": "electron-builder --win --mac"
+    "start": "npx esbuild app.js --bundle --outfile=bundle.js --format=esm && electron .",
+    "build:win": "npx esbuild app.js --bundle --outfile=bundle.js --format=esm && electron-builder --win",
+    "build:mac": "npx esbuild app.js --bundle --outfile=bundle.js --format=esm && electron-builder --mac",
+    "build:all": "npx esbuild app.js --bundle --outfile=bundle.js --format=esm && electron-builder --win --mac"
   },
   "build": {
     "appId": "com.aerolab.drone-simulator",
@@ -16,8 +16,7 @@
       "main.js",
       "index.html",
       "index.css",
-      "app.js",
-      "node_modules/three/**/*"
+      "bundle.js"
     ],
     "directories": {
       "output": "dist"
@@ -26,7 +25,9 @@
       "target": [
         {
           "target": "portable",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "icon": null,
@@ -37,7 +38,10 @@
       "target": [
         {
           "target": "dmg",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ],
       "category": "public.app-category.simulation-games"
@@ -50,7 +54,8 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^33.0.0",
-    "electron-builder": "^25.0.0"
+    "electron-builder": "^25.0.0",
+    "esbuild": "^0.28.0"
   },
   "dependencies": {
     "three": "0.160.0"
