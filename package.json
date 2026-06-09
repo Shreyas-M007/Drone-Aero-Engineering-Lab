@@ -1,0 +1,58 @@
+{
+  "name": "aero-lab",
+  "version": "1.0.0",
+  "description": "Aero Lab — Build DJI-referenced quadcopters and fly them in AR room scans or AAA city sandbox environments.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:all": "electron-builder --win --mac"
+  },
+  "build": {
+    "appId": "com.aerolab.drone-simulator",
+    "productName": "Aero Lab",
+    "files": [
+      "main.js",
+      "index.html",
+      "index.css",
+      "app.js",
+      "node_modules/three/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": null,
+      "signAndEditExecutable": false,
+      "forceCodeSigning": false
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "category": "public.app-category.simulation-games"
+    },
+    "portable": {
+      "artifactName": "AeroLab-${version}-Setup.exe"
+    }
+  },
+  "author": "Shreyas M",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "dependencies": {
+    "three": "0.160.0"
+  }
+}

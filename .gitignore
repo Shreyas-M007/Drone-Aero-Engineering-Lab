@@ -5,3 +5,5 @@ Thumbs.db
 android/
 ios/
 .idea/
+dist/
+build/
