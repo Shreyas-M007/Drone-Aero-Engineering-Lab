@@ -1,88 +1,81 @@
-# 🛸 Drone Aero-Engineering Lab
+# 🚁 Drone Aero Engineering Lab
+---
+## 📖 About The Project
 
-A premium, photorealistic DJI-referenced drone engineering simulator built with pure HTML, CSS, and JavaScript + Three.js.
+Drone Aero Engineering Lab is a comprehensive aerospace engineering repository dedicated to the research, design, development, and analysis of Unmanned Aerial Vehicles (UAVs).
 
-![License](https://img.shields.io/badge/license-MIT-blue)
-![Platform](https://img.shields.io/badge/platform-Web%20%7C%20Android%20%7C%20iOS-green)
+This project aims to provide engineering-driven resources, simulations, design methodologies, and technical documentation for students, researchers, drone developers, and aerospace enthusiasts interested in modern UAV systems.
 
-## ✨ Features
+The repository serves as a knowledge hub covering multiple disciplines of drone engineering, from aerodynamic design and propulsion systems to flight control and autonomous navigation.
 
-### 🔧 Assembly Workbench
-- Select real-world DJI-referenced components: carbon frames, brushless motors, ESCs, propellers, flight controllers, batteries, cameras, and transmitters
-- 3D snap-assembly with elastic bounce animations
-- Live SVG gauge telemetry (weight, thrust, TWR ratio) updates dynamically
-- Practical flight statistics: estimated hover time, max speed, camera quality
+---
 
-### 📱 AR Room Scanner
-- Simulated LIDAR spatial reconstruction using device camera
-- Active point cloud mesh (1,300 green vertices)
-- Progressive wireframe furniture detection (sofa, cabinet, desk)
-- Collision boundary compilation for virtual flight
+## 🎯 Mission
 
-### 🌆 AAA City Sandbox
-- Procedural terrain with sine-wave rolling hills
-- Animated vertex-wave river with reflective water
-- Glass-facade reflective skyscrapers
-- Instanced pine forests
-- Neon suspension bridge with cable wires
-- 8-checkpoint race course with glowing torus rings
+Our mission is to bridge the gap between aerospace engineering theory and practical drone development by providing open-source resources that enable learning, experimentation, and innovation.
 
-### 🎮 Flight Physics Engine
-- 6-DOF rigid body aerodynamics
-- Real drag vectors, ISA air density, ground effect lift
-- PID auto-leveling stabilization (Level mode) and raw rate controls (Acro mode)
-- Wind gust turbulence simulation
-- Battery voltage drain with emergency cutoff
-- 3 camera views: Chase, FPV nose-cam, Orbit spectator
+---
 
-### 💥 Crash & Damage System
-- Explosive spark particle bursts
-- Trailing smoke particle emitters
-- Screen static glitch overlays
-- Camera impact shake animations
-- Black Box Flight Recorder diagnostic terminal
+## 🔬 Core Areas of Research
 
-### 🔊 FM Sound Synthesis
-- Carrier-modulator FM oscillator pairs for realistic motor whines
-- Dynamic pitch/filter scaling with throttle
-- Dual-tone battery alarm chimes
-- White noise crash impact sounds
+### Aerodynamics
+- Airfoil analysis
+- Rotor aerodynamics
+- Lift and drag estimation
+- Propeller performance studies
+- CFD-based flow analysis
 
-## 🚀 Quick Start
+### Flight Dynamics
+- Stability analysis
+- Aircraft equations of motion
+- Performance calculations
+- Mission profile evaluation
 
-```bash
-# Serve locally with Python
-python -m http.server 8000
+### Control Systems
+- PID control design
+- State-space modeling
+- Sensor fusion
+- Autonomous flight algorithms
+- Flight controller development
 
-# Or with Node.js
-npx serve .
-```
+### Propulsion Systems
+- Motor selection
+- ESC integration
+- Battery performance evaluation
+- Power-to-weight optimization
 
-Open [http://localhost:8000](http://localhost:8000) in your browser.
+### Structural Design
+- Frame development
+- Material selection
+- Weight reduction techniques
+- Structural integrity analysis
 
-## 🎮 Controls
+---
 
-| Action | Keyboard | Mobile |
-|--------|----------|--------|
-| Throttle Up/Down | W / S | Left Joystick Y |
-| Yaw Left/Right | A / D | Left Joystick X |
-| Pitch Forward/Back | ↑ / ↓ | Right Joystick Y |
-| Roll Left/Right | ← / → | Right Joystick X |
-| Toggle Camera | C | HUD Button |
-| Toggle Flight Mode | F | HUD Button |
-| Reset Position | R | HUD Button |
+## 🚀 Features
 
-## 📱 Mobile Deployment
+- UAV Design Methodologies
+- Aerodynamic Analysis Resources
+- Flight Dynamics Models
+- Control System Development
+- Engineering Simulations
+- Research Documentation
+- Educational Learning Material
+- Open-Source Collaboration
 
-See [mobile_deployment_guide.md](mobile_deployment_guide.md) for full instructions on packaging with Capacitor for Android (Play Store) and iOS (App Store).
+---
 
-## 🛠️ Tech Stack
+## 📚 Learning Outcomes
 
-- **HTML5 / CSS3 / JavaScript (ES Modules)**
-- **Three.js** — 3D WebGL rendering
-- **Web Audio API** — FM synthesis sound engine
-- **Capacitor** — Native mobile packaging
+This repository provides practical exposure to:
 
-## 📄 License
+- Aerospace Engineering Fundamentals
+- UAV Design Principles
+- Aerodynamics
+- Flight Mechanics
+- Stability and Control
+- Propulsion Systems
+- Embedded Systems
+- Autonomous Navigation
+- Engineering Simulations
 
-MIT License — free to use, modify, and distribute.
