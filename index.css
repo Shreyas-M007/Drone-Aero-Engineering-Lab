@@ -2102,6 +2102,26 @@ body.glitch-active #sim-canvas {
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
 }
 
+.mac-buttons-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.mac-btn.secondary-btn {
+  background: transparent;
+  color: var(--text-bold);
+  border: 1px solid var(--border-rim);
+}
+
+.mac-btn.secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--text-bold);
+  color: var(--text-bold);
+  box-shadow: none;
+}
+
 .download-card-btn .btn-sub-lbl {
   font-size: 10px;
   font-weight: 400;

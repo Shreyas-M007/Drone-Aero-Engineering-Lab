@@ -24582,24 +24582,27 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!response.ok) return;
       const data = await response.json();
       let winUrl = "";
-      let macUrl = "";
+      let macArmUrl = "";
+      let macIntelUrl = "";
       if (data.assets && data.assets.length > 0) {
         data.assets.forEach((asset) => {
           if (asset.name.endsWith(".exe") || asset.name.endsWith(".zip")) {
             winUrl = asset.browser_download_url;
           } else if (asset.name.endsWith(".dmg")) {
             if (asset.name.includes("arm64")) {
-              macUrl = asset.browser_download_url;
-            } else if (!macUrl) {
-              macUrl = asset.browser_download_url;
+              macArmUrl = asset.browser_download_url;
+            } else {
+              macIntelUrl = asset.browser_download_url;
             }
           }
         });
       }
       const winLink = document.getElementById("win-download-link");
-      const macLink = document.getElementById("mac-download-link");
+      const macArmLink = document.getElementById("mac-arm-download-link");
+      const macIntelLink = document.getElementById("mac-intel-download-link");
       if (winLink && winUrl) winLink.href = winUrl;
-      if (macLink && macUrl) macLink.href = macUrl;
+      if (macArmLink && macArmUrl) macArmLink.href = macArmUrl;
+      if (macIntelLink && macIntelUrl) macIntelLink.href = macIntelUrl;
     } catch (err) {
       console.warn("Failed to fetch dynamic release download links:", err);
     }
