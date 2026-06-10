@@ -24557,51 +24557,47 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })();
   }
-
-  /* ── download page & dynamic releases ── */
-  const btnDownloadPage = document.getElementById('btn-download-page');
+  const btnDownloadPage = document.getElementById("btn-download-page");
   if (btnDownloadPage) {
-    btnDownloadPage.addEventListener('click', () => {
+    btnDownloadPage.addEventListener("click", () => {
       sfx.snap();
-      if (sim) { sim.stop(); sim = null; document.getElementById('hud').classList.add('hidden'); }
-      show('downloads');
+      if (sim) {
+        sim.stop();
+        sim = null;
+        document.getElementById("hud").classList.add("hidden");
+      }
+      show("downloads");
     });
   }
-
-  const btnBackHome = document.getElementById('btn-back-home');
+  const btnBackHome = document.getElementById("btn-back-home");
   if (btnBackHome) {
-    btnBackHome.addEventListener('click', () => {
+    btnBackHome.addEventListener("click", () => {
       sfx.snap();
-      show('home');
+      show("home");
     });
   }
-
   const fetchGitHubReleases = async () => {
     try {
-      const response = await fetch('https://api.github.com/repos/Shreyas-M007/Drone-Aero-Engineering-Lab/releases/latest');
+      const response = await fetch("https://api.github.com/repos/Shreyas-M007/Drone-Aero-Engineering-Lab/releases/latest");
       if (!response.ok) return;
       const data = await response.json();
-      
-      let winUrl = '';
-      let macUrl = '';
-      
+      let winUrl = "";
+      let macUrl = "";
       if (data.assets && data.assets.length > 0) {
-        data.assets.forEach(asset => {
-          if (asset.name.endsWith('.exe')) {
+        data.assets.forEach((asset) => {
+          if (asset.name.endsWith(".exe")) {
             winUrl = asset.browser_download_url;
-          } else if (asset.name.endsWith('.dmg')) {
+          } else if (asset.name.endsWith(".dmg")) {
             macUrl = asset.browser_download_url;
           }
         });
       }
-      
-      const winLink = document.getElementById('win-download-link');
-      const macLink = document.getElementById('mac-download-link');
-      
+      const winLink = document.getElementById("win-download-link");
+      const macLink = document.getElementById("mac-download-link");
       if (winLink && winUrl) winLink.href = winUrl;
       if (macLink && macUrl) macLink.href = macUrl;
     } catch (err) {
-      console.warn('Failed to fetch dynamic release download links:', err);
+      console.warn("Failed to fetch dynamic release download links:", err);
     }
   };
   fetchGitHubReleases();
