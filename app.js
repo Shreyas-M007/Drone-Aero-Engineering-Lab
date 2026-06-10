@@ -3603,10 +3603,15 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if (data.assets && data.assets.length > 0) {
         data.assets.forEach(asset => {
-          if (asset.name.endsWith('.exe')) {
+          if (asset.name.endsWith('.exe') || asset.name.endsWith('.zip')) {
             winUrl = asset.browser_download_url;
           } else if (asset.name.endsWith('.dmg')) {
-            macUrl = asset.browser_download_url;
+            // Prefer arm64 for Apple Silicon, fallback to Intel dmg
+            if (asset.name.includes('arm64')) {
+              macUrl = asset.browser_download_url;
+            } else if (!macUrl) {
+              macUrl = asset.browser_download_url;
+            }
           }
         });
       }
