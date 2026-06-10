@@ -24557,17 +24557,22 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })();
   }
+  const isElectron = navigator.userAgent.toLowerCase().includes("electron");
   const btnDownloadPage = document.getElementById("btn-download-page");
   if (btnDownloadPage) {
-    btnDownloadPage.addEventListener("click", () => {
-      sfx.snap();
-      if (sim) {
-        sim.stop();
-        sim = null;
-        document.getElementById("hud").classList.add("hidden");
-      }
-      show("downloads");
-    });
+    if (isElectron) {
+      btnDownloadPage.style.display = "none";
+    } else {
+      btnDownloadPage.addEventListener("click", () => {
+        sfx.snap();
+        if (sim) {
+          sim.stop();
+          sim = null;
+          document.getElementById("hud").classList.add("hidden");
+        }
+        show("downloads");
+      });
+    }
   }
   const btnBackHome = document.getElementById("btn-back-home");
   if (btnBackHome) {
