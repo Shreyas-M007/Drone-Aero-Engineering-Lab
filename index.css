@@ -2036,8 +2036,17 @@ body.glitch-active #sim-canvas {
 }
 
 .platform-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.brand-logo-img {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
 }
 
 .platform-title {
