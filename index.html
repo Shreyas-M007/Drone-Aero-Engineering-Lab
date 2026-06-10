@@ -39,7 +39,7 @@
     </nav>
 
     <div class="header-utilities">
-      <div class="connection-pill"><span class="indicator-dot"></span><span class="indicator-text">ONLINE</span></div>
+      <button id="btn-download-page" class="utility-btn download-header-btn">📥 Download</button>
       <button id="btn-sound-toggle" class="utility-btn">🔊 Audio</button>
     </div>
   </header>
@@ -314,6 +314,45 @@
 
         <div id="joy-l" class="touch-joystick-zone zone-left"><div class="joystick-ring"><div class="joystick-stick"></div></div><span class="joystick-label">THR / YAW</span></div>
         <div id="joy-r" class="touch-joystick-zone zone-right"><div class="joystick-ring"><div class="joystick-stick"></div></div><span class="joystick-label">PITCH / ROLL</span></div>
+      </div>
+    </section>
+
+    <!-- ── DOWNLOADS ── -->
+    <section id="view-downloads" class="lab-view">
+      <div class="downloads-layout">
+        <div class="downloads-container">
+          <div class="badge-tag">DESKTOP APP</div>
+          <h2 class="downloads-headline">Get Aero Lab Desktop</h2>
+          <p class="downloads-tagline">Download the native desktop simulator for Windows or macOS to experience high-fidelity flight performance with zero latency.</p>
+          
+          <div class="downloads-cards">
+            <!-- Windows Download -->
+            <div class="download-card">
+              <div class="platform-icon">🪟</div>
+              <h3 class="platform-title">Windows Portable</h3>
+              <p class="platform-desc">Run the simulator directly without installation. Includes optimized DirectX support.</p>
+              <a id="win-download-link" href="https://github.com/Shreyas-M007/Drone-Aero-Engineering-Lab/releases" target="_blank" class="download-card-btn win-btn">
+                <span>Download for Windows</span>
+                <span class="btn-sub-lbl">.exe portable</span>
+              </a>
+            </div>
+
+            <!-- macOS Download -->
+            <div class="download-card">
+              <div class="platform-icon">🍏</div>
+              <h3 class="platform-title">macOS DMG</h3>
+              <p class="platform-desc">Universal installer supporting both Apple Silicon (M1/M2/M3) and Intel processors.</p>
+              <a id="mac-download-link" href="https://github.com/Shreyas-M007/Drone-Aero-Engineering-Lab/releases" target="_blank" class="download-card-btn mac-btn">
+                <span>Download for macOS</span>
+                <span class="btn-sub-lbl">.dmg installer</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="downloads-footer">
+            <button id="btn-back-home" class="utility-btn">← Back to Workbench</button>
+          </div>
+        </div>
       </div>
     </section>
   </main>

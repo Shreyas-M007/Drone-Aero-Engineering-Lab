@@ -24,7 +24,6 @@ function createWindow() {
   // Show window once content is ready to avoid white flash
   win.once('ready-to-show', () => {
     win.show();
-    win.webContents.openDevTools();
   });
 
   // Set window title explicitly (overrides HTML <title>)
