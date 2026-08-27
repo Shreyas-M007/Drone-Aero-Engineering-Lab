@@ -51,7 +51,7 @@
     }
   },
   "author": "Shreyas M",
-  "license": "MIT",
+  "license": "GPL-3.0-only",
   "devDependencies": {
     "electron": "^33.0.0",
     "electron-builder": "^25.0.0",

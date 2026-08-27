@@ -79,3 +79,10 @@ This repository provides practical exposure to:
 - Autonomous Navigation
 - Engineering Simulations
 
+---
+
+## 📄 License
+
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](file:///C:/Users/shrey/.gemini/antigravity/scratch/Drone-Aero-Engineering-Lab/LICENSE) file for details.
+
+
